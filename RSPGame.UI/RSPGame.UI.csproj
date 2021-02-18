@@ -9,4 +9,12 @@
       <Folder Include="Menus" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\RSPGame\RSPGame.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="settings.json" />
+    </ItemGroup>
+
 </Project>
