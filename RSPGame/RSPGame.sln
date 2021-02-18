@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RSPGame", "RSPGame.csproj", "{8386B7BD-C3B9-484A-AEF5-212BD1C203AF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RSPGame.UI", "..\RSPGame.UI\RSPGame.UI.csproj", "{E0066E06-32C8-48B6-83EC-5C4F15EF3152}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{8386B7BD-C3B9-484A-AEF5-212BD1C203AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8386B7BD-C3B9-484A-AEF5-212BD1C203AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8386B7BD-C3B9-484A-AEF5-212BD1C203AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0066E06-32C8-48B6-83EC-5C4F15EF3152}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0066E06-32C8-48B6-83EC-5C4F15EF3152}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0066E06-32C8-48B6-83EC-5C4F15EF3152}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0066E06-32C8-48B6-83EC-5C4F15EF3152}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
