@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RSPGame", "RSPGame.csproj", "{8386B7BD-C3B9-484A-AEF5-212BD1C203AF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8386B7BD-C3B9-484A-AEF5-212BD1C203AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8386B7BD-C3B9-484A-AEF5-212BD1C203AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8386B7BD-C3B9-484A-AEF5-212BD1C203AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8386B7BD-C3B9-484A-AEF5-212BD1C203AF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
