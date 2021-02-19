@@ -40,8 +40,7 @@ namespace RoomPrototype
 
         private Task StartGame()
         {
-            Thread.Sleep(1000);
-            Console.WriteLine($"Game in room #{_id} is starting.");
+            //solution
             return Task.CompletedTask;
         }
 
