@@ -16,13 +16,6 @@ namespace Prototype
             Task.Run(GamersCheck);
         }
 
-        public RoomPrototype(int id)
-        {
-            _id = id;
-            _gamers = new List<GameInfo>();
-            Task.Run(GamersCheck);
-        }
-
         private async void GamersCheck()
         {
             while (true)
@@ -37,17 +30,14 @@ namespace Prototype
 
         private Task StartGame()
         {
-            //Console.WriteLine("game started!");
-
             //solution
+
             return Task.CompletedTask;
         }
 
         public Task AddGamer(GameInfo gamer)
         {
             if (gamer == null) throw new ArgumentNullException();
-
-            //Console.WriteLine($"gamer {gamer.Id} added!");
 
             _gamers.Add(gamer);
             return Task.CompletedTask;

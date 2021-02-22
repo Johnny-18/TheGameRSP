@@ -5,7 +5,7 @@ using Prototype;
 
 namespace RSPGame.Storages
 {
-    public class SearchingPlayerStorage
+    public class PublicRoomStorage
     {
         //todo: присоединиться по номеру комнаты
         //todo: логика игры
@@ -14,12 +14,12 @@ namespace RSPGame.Storages
         //todo: отправление результатов раунда игрокам
         //todo: отправление результатов матча игрокам
 
-        private static readonly ConcurrentQueue<GameInfo> ListGameInfos
+        private static readonly ConcurrentQueue<GameInfo> QueueGameInfos
             = new ConcurrentQueue<GameInfo>();
-        private static readonly ConcurrentQueue<RoomPrototype> ListRooms
+        private static readonly ConcurrentQueue<RoomPrototype> QueueRooms
             = new ConcurrentQueue<RoomPrototype>();
 
-        public SearchingPlayerStorage()
+        public PublicRoomStorage()
         {
             Task.Run(CheckQueue);
         }
@@ -28,11 +28,11 @@ namespace RSPGame.Storages
         {
             while (true)
             {
-                if (ListGameInfos.IsEmpty) continue;
-                if (!ListRooms.IsEmpty)
+                if (QueueGameInfos.IsEmpty) continue;
+                if (!QueueRooms.IsEmpty)
                 {
-                    ListRooms.TryDequeue(out RoomPrototype room);
-                    ListGameInfos.TryDequeue(out GameInfo gamer);
+                    QueueRooms.TryDequeue(out RoomPrototype room);
+                    QueueGameInfos.TryDequeue(out GameInfo gamer);
                     if (room == null)
                         throw new ArgumentNullException(nameof(room));
                     await room.AddGamer(gamer);
@@ -44,13 +44,11 @@ namespace RSPGame.Storages
         private async Task CreateRoom()
         {
             var room = new RoomPrototype();
-            ListGameInfos.TryDequeue(out GameInfo gamer);
-
-            //Console.WriteLine("room created!");
+            QueueGameInfos.TryDequeue(out GameInfo gamer);
 
             await room.AddGamer(gamer);
 
-            ListRooms.Enqueue(room);
+            QueueRooms.Enqueue(room);
         }
 
         public Task AddToQueue(GameInfo gamer)
@@ -58,7 +56,7 @@ namespace RSPGame.Storages
             if (gamer == null)
                 throw new ArgumentNullException(nameof(gamer));
 
-            ListGameInfos.Enqueue(gamer);
+            QueueGameInfos.Enqueue(gamer);
             return Task.CompletedTask;
         }
 
