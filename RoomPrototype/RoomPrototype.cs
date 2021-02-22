@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Channels;
 using System.Threading.Tasks;
 
-namespace RoomPrototype
+namespace Prototype
 {
-    public class RoomPrototype : IDisposable
+    public class RoomPrototype
     {
-        private readonly int _id = 0;
+        private readonly int _id = new Random().Next(0, 1000);
 
         private readonly List<GameInfo> _gamers;
 
@@ -32,7 +30,6 @@ namespace RoomPrototype
                 if (_gamers.Count == 2)
                 {
                     await StartGame();
-                    Dispose();
                     break;
                 }
             }
@@ -40,6 +37,8 @@ namespace RoomPrototype
 
         private Task StartGame()
         {
+            //Console.WriteLine("game started!");
+
             //solution
             return Task.CompletedTask;
         }
@@ -48,12 +47,11 @@ namespace RoomPrototype
         {
             if (gamer == null) throw new ArgumentNullException();
 
+            //Console.WriteLine($"gamer {gamer.Id} added!");
+
             _gamers.Add(gamer);
             return Task.CompletedTask;
         }
 
-        public void Dispose()
-        {
-        }
     }
 }
