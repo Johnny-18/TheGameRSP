@@ -6,16 +6,16 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace RSPGame.Services.Authentication
 {
-    public class JwtAuthenticationManager : IJwtAuthenticationManager
+    public class JwtTokenGenerator : IJwtTokenGenerator
     {
         private readonly string _key;
 
-        public JwtAuthenticationManager(string key)
+        public JwtTokenGenerator(string key)
         {
             _key = key;
         }
         
-        public string Authenticate(string userName, string password)
+        public string GenerateToken(string userName, string password)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
 

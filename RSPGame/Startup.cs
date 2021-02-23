@@ -41,7 +41,7 @@ namespace RSPGame
                     };
                 });
             
-            services.AddSingleton<IJwtAuthenticationManager>(new JwtAuthenticationManager(key));
+            services.AddSingleton<IJwtTokenGenerator>(new JwtTokenGenerator(key));
             services.AddSingleton<IFileWorker, FileWorker>();
             services.AddSingleton<RspRepository>();
 
