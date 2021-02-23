@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using RSPGame.Models;
 using RSPGame.Services;
 
@@ -8,10 +9,10 @@ namespace RSPGame.Storage
 {
     public class RspStorage
     {
-        public RspStorage(IFileWorker fileWorker, string path)
+        public RspStorage(IFileWorker fileWorker, IOptions<FilesOptions> path)
         {
             _fileWorker = fileWorker;
-            _path = path;
+            _path = path.Value.Users;
         }
 
         private readonly IFileWorker _fileWorker;

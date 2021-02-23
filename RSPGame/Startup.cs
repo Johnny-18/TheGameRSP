@@ -41,6 +41,8 @@ namespace RSPGame
                     };
                 });
             
+            services.Configure<FilesOptions>(Configuration.GetSection("Files"));
+            
             services.AddSingleton<IJwtTokenGenerator>(new JwtTokenGenerator(key));
             services.AddSingleton<IFileWorker, FileWorker>();
             services.AddSingleton<RspStorage>();
