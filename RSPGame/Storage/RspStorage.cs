@@ -22,10 +22,7 @@ namespace RSPGame.Storage
 
         public async Task<User> GetUserByUserName(string userName)
         {
-            if (_users == null)
-            {
-                await GetFromFile(_path);
-            }
+            await CheckCollection();
 
             _users.TryGetValue(userName, out var user);
 
@@ -34,15 +31,29 @@ namespace RSPGame.Storage
 
         public async Task<bool> TryAddUser(User user)
         {
+            await CheckCollection();
+            
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
+
+            if (_users.ContainsKey(user.UserName))
+            {
+                return false;
+            }
 
             if (!_users.TryAdd(user.UserName, user)) 
                 return false;
 
             await SaveToFile();
             return true;
+        }
 
+        private async Task CheckCollection()
+        {
+            if (_users == null)
+            {
+                await GetFromFile(_path);
+            }
         }
 
         private async Task SaveToFile()
