@@ -1,6 +1,8 @@
 using System;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace RSPGame.Services
 {
@@ -18,21 +20,23 @@ namespace RSPGame.Services
             Salt = Convert.ToBase64String(buff);
         }
 
-        public string GenerateHash(string password)
+        public async Task<string> GenerateHash(string password)
         { 
             var bytes = Encoding.UTF8.GetBytes(password + Salt);
+
+            var stream = new MemoryStream();
+            stream.Write(bytes);
             
             var sHa256ManagedString = new SHA256Managed();
             
-            //todo change to async
-            var hash = sHa256ManagedString.ComputeHash(bytes);
+            var hash = await sHa256ManagedString.ComputeHashAsync(stream);
             
             return Convert.ToBase64String(hash);
         }
 
-        public bool AreEqual(string password, string hashedPassword)
+        public async Task<bool> AreEqual(string password, string hashedPassword)
         {
-            var newHashedPin = GenerateHash(password);
+            var newHashedPin = await GenerateHash(password);
             
             return newHashedPin.Equals(hashedPassword); 
         }

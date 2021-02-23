@@ -1,12 +1,13 @@
+using System.Threading.Tasks;
 using RSPGame.Models;
 
 namespace RSPGame.Services.Authentication
 {
     public interface IAuthService
     {
-        public Session Register(RequestUser userForRegister);
+        public Task<Session> Register(RequestUser userForRegister);
         
-        public Session Login(RequestUser user);
+        public Task<Session> Login(RequestUser user);
 
         public void Logout(Session user);
     }
