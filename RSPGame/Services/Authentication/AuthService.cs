@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using RSPGame.Models;
 using RSPGame.Storage;
@@ -8,17 +7,17 @@ namespace RSPGame.Services.Authentication
 {
     public class AuthService : IAuthService
     {
-        private readonly RspRepository _repository;
+        private readonly RspStorage _storage;
 
         private readonly IJwtTokenGenerator _tokenGenerator;
 
         private readonly PasswordHashGenerator _hashGenerator;
 
-        public AuthService(IJwtTokenGenerator manager, RspRepository repository, PasswordHashGenerator hashGenerator)
+        public AuthService(IJwtTokenGenerator manager, RspStorage storage, PasswordHashGenerator hashGenerator)
         {
             _hashGenerator = hashGenerator;
             _tokenGenerator = manager;
-            _repository = repository;
+            _storage = storage;
         }
         
         public async Task<Session> Register(RequestUser userForRegister)
@@ -40,13 +39,10 @@ namespace RSPGame.Services.Authentication
                 PasswordHash = passwordHash
             };
 
-            if (_repository.Users == null)
-                _repository.Users = new ConcurrentDictionary<string, User>();
-            
             //try to add new user
-            if (!_repository.Users.TryAdd(user.UserName, user))
+            if (!await _storage.TryAddUser(user))
                 return null;
-            
+
             //get token for new user
             var token = _tokenGenerator.GenerateToken(user.UserName, user.PasswordHash);
                 
@@ -64,10 +60,8 @@ namespace RSPGame.Services.Authentication
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            if (_repository.Users == null)
-                return null;
-
-            if (!_repository.Users.TryGetValue(user.UserName, out var userFromStorage))
+            var userFromStorage = await _storage.GetUserByUserName(user.UserName);
+            if (userFromStorage == null)
                 return null;
 
             if (!await _hashGenerator.AreEqual(user.Password, userFromStorage.PasswordHash))

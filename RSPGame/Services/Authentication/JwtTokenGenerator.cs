@@ -2,7 +2,9 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using RSPGame.Models.OptionsModel;
 
 namespace RSPGame.Services.Authentication
 {
@@ -10,9 +12,9 @@ namespace RSPGame.Services.Authentication
     {
         private readonly string _key;
 
-        public JwtTokenGenerator(string key)
+        public JwtTokenGenerator(IOptions<AuthKeyOptions> authKeyOptions)
         {
-            _key = key;
+            _key = authKeyOptions.Value.SecretKey;
         }
         
         public string GenerateToken(string userName, string password)
