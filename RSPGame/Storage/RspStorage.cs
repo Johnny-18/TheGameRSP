@@ -6,9 +6,9 @@ using RSPGame.Services;
 
 namespace RSPGame.Storage
 {
-    public class RspRepository
+    public class RspStorage
     {
-        public RspRepository(IFileWorker fileWorker, string path)
+        public RspStorage(IFileWorker fileWorker, string path)
         {
             _fileWorker = fileWorker;
             _path = path;

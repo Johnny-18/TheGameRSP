@@ -43,7 +43,7 @@ namespace RSPGame
             
             services.AddSingleton<IJwtTokenGenerator>(new JwtTokenGenerator(key));
             services.AddSingleton<IFileWorker, FileWorker>();
-            services.AddSingleton<RspRepository>();
+            services.AddSingleton<RspStorage>();
 
             services.AddTransient<IRspService, RspService>();
             services.AddTransient<PasswordHashGenerator>();

@@ -32,8 +32,10 @@ namespace RSPGame.Storage
                 {
                     QueueRooms.TryDequeue(out Room room);
                     QueueGameInfos.TryDequeue(out GamerInfo gamer);
+                    
                     if (room == null)
                         throw new ArgumentNullException(nameof(room));
+                    
                     await room.AddGamer(gamer);
                 }
                 else await CreateRoom();
@@ -58,6 +60,5 @@ namespace RSPGame.Storage
             QueueGameInfos.Enqueue(gamer);
             return Task.CompletedTask;
         }
-
     }
 }

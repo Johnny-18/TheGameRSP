@@ -7,17 +7,17 @@ namespace RSPGame.Services.Authentication
 {
     public class AuthService : IAuthService
     {
-        private readonly RspRepository _repository;
+        private readonly RspStorage _storage;
 
         private readonly IJwtTokenGenerator _tokenGenerator;
 
         private readonly PasswordHashGenerator _hashGenerator;
 
-        public AuthService(IJwtTokenGenerator manager, RspRepository repository, PasswordHashGenerator hashGenerator)
+        public AuthService(IJwtTokenGenerator manager, RspStorage storage, PasswordHashGenerator hashGenerator)
         {
             _hashGenerator = hashGenerator;
             _tokenGenerator = manager;
-            _repository = repository;
+            _storage = storage;
         }
         
         public async Task<Session> Register(RequestUser userForRegister)
@@ -40,7 +40,7 @@ namespace RSPGame.Services.Authentication
             };
 
             //try to add new user
-            if (!await _repository.TryAddUser(user))
+            if (!await _storage.TryAddUser(user))
                 return null;
 
             //get token for new user
@@ -60,7 +60,7 @@ namespace RSPGame.Services.Authentication
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            var userFromStorage = await _repository.GetUserByUserName(user.UserName);
+            var userFromStorage = await _storage.GetUserByUserName(user.UserName);
             if (userFromStorage == null)
                 return null;
 
