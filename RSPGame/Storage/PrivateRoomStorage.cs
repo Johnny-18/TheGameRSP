@@ -3,22 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Prototype;
+using RSPGame.Models;
 
-namespace RSPGame.Storages
+namespace RSPGame.Storage
 {
     public class PrivateRoomStorage
     {
-        private static readonly List<RoomPrototype> ListRooms
-            = new List<RoomPrototype>();
+        private static readonly List<Room> ListRooms
+            = new List<Room>();
         private static readonly object Locker = new object();
 
-        public async Task CreateRoom(GameInfo gamer)
+        public async Task CreateRoom(GamerInfo gamer)
         {
             if (gamer == null)
                 throw new ArgumentNullException(nameof(gamer));
 
-            var room = new RoomPrototype();
+            var room = new Room();
             await room.AddGamer(gamer);
             Console.WriteLine("room`s id:\t" + room.GetId());
 
@@ -35,7 +35,7 @@ namespace RSPGame.Storages
 
         }
 
-        public async Task JoinRoom(GameInfo gamer, int id)
+        public async Task JoinRoom(GamerInfo gamer, int id)
         {
             if (gamer == null)
                 throw new ArgumentNullException(nameof(gamer));

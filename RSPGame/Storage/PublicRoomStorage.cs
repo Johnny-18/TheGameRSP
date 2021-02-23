@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using Prototype;
+using RSPGame.Models;
 
-namespace RSPGame.Storages
+namespace RSPGame.Storage
 {
     public class PublicRoomStorage
     {
@@ -13,10 +13,10 @@ namespace RSPGame.Storages
         //todo: get round result by gamers 
         //todo: get match result by gamers 
 
-        private static readonly ConcurrentQueue<GameInfo> QueueGameInfos
-            = new ConcurrentQueue<GameInfo>();
-        private static readonly ConcurrentQueue<RoomPrototype> QueueRooms
-            = new ConcurrentQueue<RoomPrototype>();
+        private static readonly ConcurrentQueue<GamerInfo> QueueGameInfos
+            = new ConcurrentQueue<GamerInfo>();
+        private static readonly ConcurrentQueue<Room> QueueRooms
+            = new ConcurrentQueue<Room>();
 
         public PublicRoomStorage()
         {
@@ -30,8 +30,8 @@ namespace RSPGame.Storages
                 if (QueueGameInfos.IsEmpty) continue;
                 if (!QueueRooms.IsEmpty)
                 {
-                    QueueRooms.TryDequeue(out RoomPrototype room);
-                    QueueGameInfos.TryDequeue(out GameInfo gamer);
+                    QueueRooms.TryDequeue(out Room room);
+                    QueueGameInfos.TryDequeue(out GamerInfo gamer);
                     if (room == null)
                         throw new ArgumentNullException(nameof(room));
                     await room.AddGamer(gamer);
@@ -42,15 +42,15 @@ namespace RSPGame.Storages
 
         private async Task CreateRoom()
         {
-            var room = new RoomPrototype();
-            QueueGameInfos.TryDequeue(out GameInfo gamer);
+            var room = new Room();
+            QueueGameInfos.TryDequeue(out GamerInfo gamer);
 
             await room.AddGamer(gamer);
 
             QueueRooms.Enqueue(room);
         }
 
-        public Task AddToQueue(GameInfo gamer)
+        public Task AddToQueue(GamerInfo gamer)
         {
             if (gamer == null)
                 throw new ArgumentNullException(nameof(gamer));

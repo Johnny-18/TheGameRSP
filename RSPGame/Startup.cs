@@ -1,7 +1,14 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using RSPGame.Services;
+using RSPGame.Services.Authentication;
+using RSPGame.Storage;
+using Serilog;
 
 namespace RSPGame
 {
@@ -14,18 +21,49 @@ namespace RSPGame
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            
+            var key = Configuration.GetSection("AuthKey:SecretKey").Value;
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(x =>
+                {
+                    x.RequireHttpsMetadata = false;
+                    x.SaveToken = true;
+                    x.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)),
+                        ValidateIssuer = false,
+                        ValidateAudience = false
+                    };
+                });
+            
+            services.AddSingleton<IJwtAuthenticationManager>(new JwtAuthenticationManager(key));
+            services.AddSingleton<IFileWorker, FileWorker>();
+            services.AddSingleton<RspRepository>();
+
+            services.AddTransient<IRspService, RspService>();
+            services.AddTransient<PasswordHashGenerator>();
+            
+            services.AddScoped<IAuthService, AuthService>();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseSerilogRequestLogging();
+            
             app.UseRouting();
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }
