@@ -39,12 +39,10 @@ namespace RSPGame.Services.Authentication
                 PasswordHash = passwordHash
             };
 
-            var userRep = await _repository.GetUsers();
-
             //try to add new user
-            if (!userRep.TryAdd(user.UserName, user))
+            if (!await _repository.TryAddUser(user))
                 return null;
-            
+
             //get token for new user
             var token = _tokenGenerator.GenerateToken(user.UserName, user.PasswordHash);
                 
@@ -62,12 +60,8 @@ namespace RSPGame.Services.Authentication
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            var userRep = await _repository.GetUsers();
-
-            if (userRep.Count == 0)
-                return null;
-
-            if (!userRep.TryGetValue(user.UserName, out var userFromStorage))
+            var userFromStorage = await _repository.GetUserByUserName(user.UserName);
+            if (userFromStorage == null)
                 return null;
 
             if (!await _hashGenerator.AreEqual(user.Password, userFromStorage.PasswordHash))
