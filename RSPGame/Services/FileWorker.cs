@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace RSPGame.Services
 {
-    public class FileWorker
+    public class FileWorker : IFileWorker
     {
         public async Task SaveToFileAsync<T>(string path, T obj)
         {
