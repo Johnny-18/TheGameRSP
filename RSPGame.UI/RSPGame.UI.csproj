@@ -6,10 +6,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Menus" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\RSPGame\RSPGame.csproj" />
     </ItemGroup>
 
