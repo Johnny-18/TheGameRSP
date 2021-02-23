@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using RSPGame.Models;
@@ -26,6 +27,15 @@ namespace RSPGame.Storage
             await CheckCollection();
 
             _users.TryGetValue(userName, out var user);
+
+            return user;
+        }
+
+        public async Task<User> GetUserById(Guid id)
+        {
+            await CheckCollection();
+
+            var user = _users.FirstOrDefault(x => x.Value.Id == id).Value;
 
             return user;
         }
