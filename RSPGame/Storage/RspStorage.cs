@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using RSPGame.Models;
+using RSPGame.Models.OptionsModel;
 using RSPGame.Services;
 
 namespace RSPGame.Storage
