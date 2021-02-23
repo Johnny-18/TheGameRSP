@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Prototype
@@ -30,8 +31,9 @@ namespace Prototype
 
         private Task StartGame()
         {
+            Console.WriteLine("Rock > scissors; scissors > paper; paper > rock.");
             //solution
-
+            
             return Task.CompletedTask;
         }
 
@@ -43,5 +45,6 @@ namespace Prototype
             return Task.CompletedTask;
         }
 
+        public int GetId() => _id;
     }
 }

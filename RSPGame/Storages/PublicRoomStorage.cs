@@ -7,12 +7,11 @@ namespace RSPGame.Storages
 {
     public class PublicRoomStorage
     {
-        //todo: присоединиться по номеру комнаты
-        //todo: логика игры
-        //todo: сбор статистики 
-        //todo: отправление ходов на сервер
-        //todo: отправление результатов раунда игрокам
-        //todo: отправление результатов матча игрокам
+        //todo: game logic
+        //todo: statistics 
+        //todo: post step on server
+        //todo: get round result by gamers 
+        //todo: get match result by gamers 
 
         private static readonly ConcurrentQueue<GameInfo> QueueGameInfos
             = new ConcurrentQueue<GameInfo>();
