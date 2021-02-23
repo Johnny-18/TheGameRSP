@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using RSPGame.Models;
 using RSPGame.Storage;
@@ -40,11 +39,10 @@ namespace RSPGame.Services.Authentication
                 PasswordHash = passwordHash
             };
 
-            if (_repository.Users == null)
-                _repository.Users = new ConcurrentDictionary<string, User>();
-            
+            var userRep = await _repository.GetUsers();
+
             //try to add new user
-            if (!_repository.Users.TryAdd(user.UserName, user))
+            if (!userRep.TryAdd(user.UserName, user))
                 return null;
             
             //get token for new user
@@ -64,10 +62,12 @@ namespace RSPGame.Services.Authentication
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            if (_repository.Users == null)
+            var userRep = await _repository.GetUsers();
+
+            if (userRep.Count == 0)
                 return null;
 
-            if (!_repository.Users.TryGetValue(user.UserName, out var userFromStorage))
+            if (!userRep.TryGetValue(user.UserName, out var userFromStorage))
                 return null;
 
             if (!await _hashGenerator.AreEqual(user.Password, userFromStorage.PasswordHash))
