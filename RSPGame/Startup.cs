@@ -25,7 +25,7 @@ namespace RSPGame
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            
+
             services.Configure<FilesOptions>(Configuration.GetSection(FilesOptions.Files));
             services.Configure<AuthKeyOptions>(Configuration.GetSection(AuthKeyOptions.AuthKey));
 
@@ -38,7 +38,7 @@ namespace RSPGame
                     {
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration
-                            .GetSection(AuthKeyOptions.AuthKey).Get<AuthKeyOptions>().SecretKey)),        
+                            .GetSection(AuthKeyOptions.AuthKey).Get<AuthKeyOptions>().SecretKey)),
                         ValidateIssuer = false,
                         ValidateAudience = false
                     };
@@ -50,14 +50,17 @@ namespace RSPGame
 
             services.AddTransient<IRspService, RspService>();
             services.AddTransient<PasswordHashGenerator>();
-            
+
             services.AddScoped<IAuthService, AuthService>();
+
+            services.AddSingleton<RoomStorage>();
+            services.AddSingleton<IRoomService, RoomService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseSerilogRequestLogging();
-            
+
             app.UseRouting();
 
             app.UseAuthentication();

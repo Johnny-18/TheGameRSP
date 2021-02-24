@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using RSPGame.Services;
-
-namespace RSPGame.UI
+﻿namespace RSPGame.UI
 {
     public static class Program
     {
