@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using RSPGame.Models.OptionsModel;
 using RSPGame.Services;
 using RSPGame.Services.Authentication;
 using RSPGame.Storage;
@@ -25,7 +26,8 @@ namespace RSPGame
         {
             services.AddControllers();
             
-            var key = Configuration.GetSection("AuthKey:SecretKey").Value;
+            services.Configure<FilesOptions>(Configuration.GetSection(FilesOptions.Files));
+            services.Configure<AuthKeyOptions>(Configuration.GetSection(AuthKeyOptions.AuthKey));
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(x =>
@@ -35,15 +37,16 @@ namespace RSPGame
                     x.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)),
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration
+                            .GetSection(AuthKeyOptions.AuthKey).Get<AuthKeyOptions>().SecretKey)),        
                         ValidateIssuer = false,
                         ValidateAudience = false
                     };
                 });
-            
-            services.AddSingleton<IJwtAuthenticationManager>(new JwtAuthenticationManager(key));
+
+            services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
             services.AddSingleton<IFileWorker, FileWorker>();
-            services.AddSingleton<RspRepository>();
+            services.AddSingleton<RspStorage>();
 
             services.AddTransient<IRspService, RspService>();
             services.AddTransient<PasswordHashGenerator>();

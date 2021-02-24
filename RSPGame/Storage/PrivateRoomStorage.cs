@@ -32,7 +32,6 @@ namespace RSPGame.Storage
             {
                 if (acquiredLock) Monitor.Exit(Locker);
             }
-
         }
 
         public async Task JoinRoom(GamerInfo gamer, int id)
@@ -60,7 +59,6 @@ namespace RSPGame.Storage
             {
                 if (acquiredLock) Monitor.Exit(Locker);
             }
-            
         }
     }
 }

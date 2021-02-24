@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Concurrent;
+using System.Threading.Tasks;
 using RSPGame.Models;
 using RSPGame.Storage;
 
@@ -7,20 +7,20 @@ namespace RSPGame.Services.Authentication
 {
     public class AuthService : IAuthService
     {
-        private readonly RspRepository _repository;
+        private readonly RspStorage _storage;
 
-        private readonly IJwtAuthenticationManager _authenticationManager;
+        private readonly IJwtTokenGenerator _tokenGenerator;
 
         private readonly PasswordHashGenerator _hashGenerator;
 
-        public AuthService(IJwtAuthenticationManager manager, RspRepository repository, PasswordHashGenerator hashGenerator)
+        public AuthService(IJwtTokenGenerator manager, RspStorage storage, PasswordHashGenerator hashGenerator)
         {
             _hashGenerator = hashGenerator;
-            _authenticationManager = manager;
-            _repository = repository;
+            _tokenGenerator = manager;
+            _storage = storage;
         }
         
-        public Session Register(RequestUser userForRegister)
+        public async Task<Session> Register(RequestUser userForRegister)
          {
             if (userForRegister == null)
                 throw new ArgumentNullException(nameof(userForRegister));
@@ -28,7 +28,7 @@ namespace RSPGame.Services.Authentication
             var id = Guid.NewGuid();
 
             //generate password hash
-            var passwordHash = _hashGenerator.GenerateHash(userForRegister.Password);
+            var passwordHash = await _hashGenerator.GenerateHash(userForRegister.Password);
             
             //create user
             var user = new User
@@ -39,15 +39,12 @@ namespace RSPGame.Services.Authentication
                 PasswordHash = passwordHash
             };
 
-            if (_repository.Users == null)
-                _repository.Users = new ConcurrentDictionary<string, User>();
-            
             //try to add new user
-            if (!_repository.Users.TryAdd(user.UserName, user))
+            if (!await _storage.TryAddUser(user))
                 return null;
-            
+
             //get token for new user
-            var token = _authenticationManager.Authenticate(user.UserName, user.PasswordHash);
+            var token = _tokenGenerator.GenerateToken(user.UserName, user.PasswordHash);
                 
             //return new session with token
             return new Session
@@ -58,19 +55,20 @@ namespace RSPGame.Services.Authentication
             };
         }
 
-        public Session Login(RequestUser user)
+        public async Task<Session> Login(RequestUser user)
         {
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            if (!_repository.Users.TryGetValue(user.UserName, out var userFromStorage))
+            var userFromStorage = await _storage.GetUserByUserName(user.UserName);
+            if (userFromStorage == null)
                 return null;
 
-            if (!_hashGenerator.AreEqual(user.Password, userFromStorage.PasswordHash))
+            if (!await _hashGenerator.AreEqual(user.Password, userFromStorage.PasswordHash))
                 return null;
 
             //get user token
-            var token = _authenticationManager.Authenticate(userFromStorage.UserName, userFromStorage.PasswordHash);
+            var token = _tokenGenerator.GenerateToken(userFromStorage.UserName, userFromStorage.PasswordHash);
             
             //create session
             return new Session
