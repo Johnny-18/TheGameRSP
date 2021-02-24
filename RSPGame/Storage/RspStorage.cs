@@ -9,7 +9,7 @@ using RSPGame.Services;
 
 namespace RSPGame.Storage
 {
-    public class RspStorage
+    public class RspStorage : IRspStorage
     {
         public RspStorage(IFileWorker fileWorker, IOptions<FilesOptions> path)
         {

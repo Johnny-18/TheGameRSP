@@ -7,6 +7,6 @@ namespace RSPGame.Services.Statistics
 {
     public interface IGeneralStatService
     {
-        Task<IEnumerable<GamerInfo>> GetStatAsync(RspStorage storage);
+        Task<IEnumerable<GamerInfo>> GetStatAsync(IRspStorage storage);
     }
 }
