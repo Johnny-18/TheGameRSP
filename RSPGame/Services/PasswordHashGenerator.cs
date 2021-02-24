@@ -1,42 +1,35 @@
 using System;
-using System.IO;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
 namespace RSPGame.Services
 {
     public class PasswordHashGenerator
     {
-        private static readonly string Salt;
+        private static readonly byte[] Salt;
 
         static PasswordHashGenerator()
         {
-            var rng = new RNGCryptoServiceProvider();
-            var buff = new byte[16];
-            
-            rng.GetBytes(buff);
-            
-            Salt = Convert.ToBase64String(buff);
+            Salt = new byte[128 / 8];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(Salt);
         }
-
-        public async Task<string> GenerateHash(string password)
-        { 
-            var bytes = Encoding.UTF8.GetBytes(password + Salt);
-
-            var stream = new MemoryStream();
-            stream.Write(bytes);
-            
-            var sHa256ManagedString = new SHA256Managed();
-            
-            var hash = await sHa256ManagedString.ComputeHashAsync(stream);
-            
-            return Convert.ToBase64String(hash);
-        }
-
-        public async Task<bool> AreEqual(string password, string hashedPassword)
+        
+        public string GenerateHash(string password)
         {
-            var newHashedPin = await GenerateHash(password);
+            string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                password: password,
+                salt: Salt,
+                prf: KeyDerivationPrf.HMACSHA1,
+                iterationCount: 10000,
+                numBytesRequested: 256 / 8));
+        
+            return hashed;
+        }
+
+        public bool AreEqual(string password, string hashedPassword)
+        {
+            var newHashedPin = GenerateHash(password);
             
             return newHashedPin.Equals(hashedPassword); 
         }

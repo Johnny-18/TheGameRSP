@@ -6,18 +6,63 @@
     <projectFile>../RSPGame.UI/RSPGame.UI.csproj</projectFile>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b31eb8a9-d0d5-4804-831a-3583ad333a7e" name="Default Changelist" comment="" />
+    <list default="true" id="b31eb8a9-d0d5-4804-831a-3583ad333a7e" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/Services/IRspStorage.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Tests/GeneralStatTests.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Tests/IndividualTests.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Tests/Tests.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../RSPGame.UI/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../RSPGame.UI/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.RSPGame/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.RSPGame/.idea/contentModel.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.RSPGame/.idea/riderModule.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.RSPGame/.idea/riderModule.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.RSPGame/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.RSPGame/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RSPGame.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/RSPGame.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RSPGame.sln" beforeDir="false" afterPath="$PROJECT_DIR$/RSPGame.sln" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Services/Statistics/GeneralStatService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/Statistics/GeneralStatService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Services/Statistics/IGeneralStatService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/Statistics/IGeneralStatService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Services/Statistics/IIndividualStatService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/Statistics/IIndividualStatService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Startup.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Startup.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Storage/RspStorage.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Storage/RspStorage.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users.json" beforeDir="false" afterPath="$PROJECT_DIR$/users.json" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/CB5AD5F0-2D8D-47B7-8F84-5C504D4C629F/2C/JsonSerializer.Read.HandleMetadata.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/CB5AD5F0-2D8D-47B7-8F84-5C504D4C629F/2D/JsonSerializer.Read.HandlePropertyName.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://E:/Study/PM/TheGameRSP/RSPGame.UI/Program.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/49954EB5-6C67-4E76-8BE7-A97E2A6794C3/13/Guard.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://E:/Study/PM/TheGameRSP/RSPGame/Services/Statistics/GeneralStatService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://E:/Study/PM/TheGameRSP/RSPGame/Controllers/AuthController.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/3DEDFE94-EFAC-43A1-B396-C10221F57565/23/File.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://E:/Study/PM/TheGameRSP/RSPGame/Services/PasswordHashGenerator.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://E:/Study/PM/TheGameRSP/RSPGame.UI/Program.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://E:/Study/PM/TheGameRSP/RSPGame.UI/Program.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://E:/Study/PM/TheGameRSP/RSPGame/Services/Statistics/GeneralStatService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/CB5AD5F0-2D8D-47B7-8F84-5C504D4C629F/2C/JsonSerializer.Read.HandleMetadata.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://E:/Study/PM/TheGameRSP/RSPGame/Startup.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://E:/Study/PM/TheGameRSP/RSPGame/Models/GamerInfo.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/CB5AD5F0-2D8D-47B7-8F84-5C504D4C629F/2D/JsonSerializer.Read.HandlePropertyName.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://E:/Study/PM/TheGameRSP/RSPGame/Storage/RspStorage.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://E:/Study/PM/TheGameRSP/RSPGame/Models/User.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://E:/Study/PM/TheGameRSP/RSPGame/Services/Statistics/IGeneralStatService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://E:/Study/PM/TheGameRSP/RSPGame/Services/Statistics/IIndividualStatService.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/CB5AD5F0-2D8D-47B7-8F84-5C504D4C629F/2B/JsonSerializer.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://E:/Study/PM/TheGameRSP/RSPGame/Services/Authentication/AuthService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://E:/Study/PM/TheGameRSP/RSPGame/Services/Authentication/AuthService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://E:/Study/PM/TheGameRSP/RSPGame/Services/Authentication/IAuthService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://E:/Study/PM/TheGameRSP/RSPGame/Storage/RspStorage.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://E:/Study/PM/TheGameRSP/RSPGame/Storage/RspStorage.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/CB5AD5F0-2D8D-47B7-8F84-5C504D4C629F/30/JsonSerializer.Read.Stream.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://E:/Study/PM/TheGameRSP/RSPGame/Services/Statistics/IGeneralStatService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://E:/Study/PM/TheGameRSP/RSPGame.UI/Program.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://E:/Study/PM/TheGameRSP/RSPGame/Storage/RspStorage.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://E:/Study/PM/TheGameRSP/RSPGame/Models/Session.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://E:/Study/PM/TheGameRSP/RSPGame/Services/Statistics/GeneralStatService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/377B61B6-13EA-444F-826F-377D9474FFCA/e4/640008f2/TestInvoker`1.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="IdeDocumentHistory">
     <changedPaths>
@@ -25,20 +70,87 @@
       <option value="$PROJECT_DIR$/Models/GameActions.cs" />
       <option value="$PROJECT_DIR$/Services/IRspService.cs" />
       <option value="$PROJECT_DIR$/Services/RspService.cs" />
+      <option value="$PROJECT_DIR$/Services/IGeneralStat.cs" />
+      <option value="$PROJECT_DIR$/Services/GeneralStat.cs" />
+      <option value="$PROJECT_DIR$/Services/IGeneralStatService.cs" />
+      <option value="$PROJECT_DIR$/Models/GamerInfo.cs" />
+      <option value="$PROJECT_DIR$/Services/GeneralStatService.cs" />
+      <option value="$PROJECT_DIR$/Models/GameStatus.cs" />
+      <option value="$PROJECT_DIR$/Models/RoundResult.cs" />
+      <option value="$PROJECT_DIR$/Models/User.cs" />
+      <option value="$PROJECT_DIR$/Models/Session.cs" />
+      <option value="$PROJECT_DIR$/Services/Statistics/IndividualStatService.cs" />
+      <option value="$PROJECT_DIR$/../RSPGame.UI/Program.cs" />
+      <option value="$PROJECT_DIR$/TestProject/UnitTest1.cs" />
+      <option value="$PROJECT_DIR$/TestProject/GeneralStatTests.cs" />
+      <option value="$PROJECT_DIR$/Tests/UnitTest1.cs" />
+      <option value="$PROJECT_DIR$/../Tests/UnitTest1.cs" />
+      <option value="$PROJECT_DIR$/Services/Authentication/IAuthService.cs" />
+      <option value="$PROJECT_DIR$/Controllers/AuthController.cs" />
+      <option value="$PROJECT_DIR$/Services/PasswordHashGenerator.cs" />
+      <option value="$PROJECT_DIR$/Services/Authentication/AuthService.cs" />
+      <option value="$PROJECT_DIR$/Services/IRspStorage.cs" />
+      <option value="$PROJECT_DIR$/Services/Statistics/IGeneralStatService.cs" />
+      <option value="$PROJECT_DIR$/Startup.cs" />
+      <option value="$PROJECT_DIR$/Storage/RspStorage.cs" />
+      <option value="$PROJECT_DIR$/Services/Statistics/GeneralStatService.cs" />
+      <option value="$PROJECT_DIR$/../Tests/GeneralStatTests.cs" />
+      <option value="$PROJECT_DIR$/Services/Statistics/IIndividualStatService.cs" />
+      <option value="$PROJECT_DIR$/../Tests/IndividualTests.cs" />
     </changedPaths>
   </component>
   <component name="ProjectId" id="1ofNzxj5f72hRU680RLHv5BmAAA" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="DebuggerViewTab_PTCS_FirstProportionKey" value="0.3502052" />
+    <property name="DebuggerViewTab_PTCS_LastProportionKey" value="0.0" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="XThreadsFramesViewSplitterKey" value="0.4169381" />
   </component>
   <component name="RunManager" selected=".NET Launch Settings Profile.RSPGame">
+    <configuration name="RSPGame.UI" type="DotNetProject" factoryName=".NET Project" temporary="true">
+      <option name="EXE_PATH" value="$PROJECT_DIR$/../RSPGame.UI/bin/Debug/net5.0/RSPGame.UI.dll" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../RSPGame.UI/bin/Debug/net5.0" />
+      <option name="PASS_PARENT_ENVS" value="1" />
+      <option name="USE_EXTERNAL_CONSOLE" value="0" />
+      <option name="USE_MONO" value="0" />
+      <option name="RUNTIME_ARGUMENTS" value="" />
+      <option name="PROJECT_PATH" value="$PROJECT_DIR$/../RSPGame.UI/RSPGame.UI.csproj" />
+      <option name="PROJECT_EXE_PATH_TRACKING" value="1" />
+      <option name="PROJECT_ARGUMENTS_TRACKING" value="1" />
+      <option name="PROJECT_WORKING_DIRECTORY_TRACKING" value="1" />
+      <option name="PROJECT_KIND" value="DotNetCore" />
+      <option name="PROJECT_TFM" value="net5.0" />
+      <method v="2">
+        <option name="Build" />
+      </method>
+    </configuration>
+    <configuration default="true" type="DotNetProject" factoryName=".NET Project">
+      <option name="EXE_PATH" value="$PROJECT_DIR$/../RSPGame.UI/bin/Debug/net5.0/RSPGame.UI.dll" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../RSPGame.UI/bin/Debug/net5.0" />
+      <option name="PASS_PARENT_ENVS" value="1" />
+      <option name="USE_EXTERNAL_CONSOLE" value="0" />
+      <option name="USE_MONO" value="0" />
+      <option name="RUNTIME_ARGUMENTS" value="" />
+      <option name="PROJECT_PATH" value="$PROJECT_DIR$/../RSPGame.UI/RSPGame.UI.csproj" />
+      <option name="PROJECT_EXE_PATH_TRACKING" value="1" />
+      <option name="PROJECT_ARGUMENTS_TRACKING" value="1" />
+      <option name="PROJECT_WORKING_DIRECTORY_TRACKING" value="1" />
+      <option name="PROJECT_KIND" value="DotNetCore" />
+      <option name="PROJECT_TFM" value="net5.0" />
+      <method v="2">
+        <option name="Build" />
+      </method>
+    </configuration>
     <configuration name="RSPGame" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/RSPGame.csproj" />
       <option name="LAUNCH_PROFILE_TFM" value="net5.0" />
@@ -54,25 +166,15 @@
         <option name="Build" />
       </method>
     </configuration>
-    <configuration name="RSPGame: IIS Express" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
-      <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/RSPGame.csproj" />
-      <option name="LAUNCH_PROFILE_TFM" value="net5.0" />
-      <option name="LAUNCH_PROFILE_NAME" value="IIS Express" />
-      <option name="USE_EXTERNAL_CONSOLE" value="0" />
-      <option name="USE_MONO" value="0" />
-      <option name="RUNTIME_ARGUMENTS" value="" />
-      <option name="GENERATE_APPLICATIONHOST_CONFIG" value="1" />
-      <option name="SHOW_IIS_EXPRESS_OUTPUT" value="0" />
-      <option name="SEND_DEBUG_REQUEST" value="1" />
-      <option name="ADDITIONAL_IIS_EXPRESS_ARGUMENTS" value="" />
-      <method v="2">
-        <option name="Build" />
-      </method>
-    </configuration>
     <list>
       <item itemvalue=".NET Launch Settings Profile.RSPGame" />
-      <item itemvalue=".NET Launch Settings Profile.RSPGame: IIS Express" />
+      <item itemvalue=".NET Project.RSPGame.UI" />
     </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue=".NET Project.RSPGame.UI" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -83,9 +185,82 @@
       <option name="presentableId" value="Default" />
       <updated>1613673953230</updated>
       <workItem from="1613673962920" duration="728000" />
+      <workItem from="1614167064396" duration="15622000" />
     </task>
+    <task id="LOCAL-00001" summary="add general and individual stat service">
+      <created>1614170161850</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1614170161851</updated>
+    </task>
+    <task id="LOCAL-00002" summary="change general stat service">
+      <created>1614172246321</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1614172246321</updated>
+    </task>
+    <task id="LOCAL-00003" summary="change names of methods, change hash method">
+      <created>1614194451991</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1614194451991</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="UnityUnitTestConfiguration" currentTestLauncher="Both" />
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="add general and individual stat service" />
+    <MESSAGE value="change general stat service" />
+    <MESSAGE value="change names of methods, change hash method" />
+    <MESSAGE value="add general statistic service and add tests for statistics services" />
+    <option name="LAST_COMMIT_MESSAGE" value="add general statistic service and add tests for statistics services" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Controllers/AuthController.cs</url>
+          <line>25</line>
+          <properties documentPath="E:\Study\PM\TheGameRSP\RSPGame\Controllers\AuthController.cs" initialLine="25" containingFunctionPresentation="method 'Login'">
+            <startOffsets>
+              <option value="669" />
+            </startOffsets>
+            <endOffsets>
+              <option value="719" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Services/Authentication/AuthService.cs</url>
+          <line>63</line>
+          <properties documentPath="E:\Study\PM\TheGameRSP\RSPGame\Services\Authentication\AuthService.cs" initialLine="63" containingFunctionPresentation="method 'LoginAsync'">
+            <startOffsets>
+              <option value="2040" />
+            </startOffsets>
+            <endOffsets>
+              <option value="2114" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
 </project>
