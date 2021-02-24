@@ -5,9 +5,7 @@ namespace RSPGame.Models
 {
     public class User
     {
-        [JsonPropertyName("id")]
-        public Guid Id { get; set; }
-        
+
         [JsonPropertyName("userName")]
         public string UserName { get; set; }
         
