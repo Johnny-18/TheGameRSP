@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using RSPGame.Models;
 using RSPGame.Storage;
+using System.Linq;
 
 namespace RSPGame.Controllers
 {
@@ -19,13 +16,24 @@ namespace RSPGame.Controllers
             _gameStorage = gameStorage;
         }
 
-        [HttpPost("/{roomId}")]
-        public async Task<IActionResult> PostGame([FromRoute] int roomId, [FromBody] string userName1, [FromBody] string userName2)
+        [HttpPost]
+        public IActionResult PostGame([FromBody] Game game)
         {
+            if (game.RoomId == 0 || game.UsersName.Any(string.IsNullOrWhiteSpace))
+                return BadRequest();
 
-            _gameStorage.DictionaryGame.TryAdd(roomId, new[] {userName1, userName2});
+            if (!ModelState.IsValid) return BadRequest(game.RoomId);
 
-            return Ok();
+            var result = _gameStorage.DictionaryGame.TryAdd(game.RoomId, game.UsersName);
+
+            if (result) return Ok();
+            return Conflict();
+        }
+
+        [HttpGet("{roomId}")]
+        public IActionResult GetGame()
+        {
+            return Ok(_gameStorage.DictionaryGame.First());
         }
     }
 }

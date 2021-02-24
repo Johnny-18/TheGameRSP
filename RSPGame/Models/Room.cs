@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Security.Policy;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace RSPGame.Models
 {
@@ -38,14 +40,19 @@ namespace RSPGame.Models
 
         private async Task StartGame()
         {
-            using var client = new HttpClient()
-            {
-                BaseAddress = new Uri("http://localhost:5000")
-            };
-            {
-                await PostGameResponse(client, _gamers[0], _gamers[1]);
-                await PostGameResponse(client, _gamers[1], _gamers[0]);
-            }
+            using var client = new HttpClient();
+
+            using var message = new HttpRequestMessage(HttpMethod.Post, new Uri($"http://localhost:5000/api/game/{_id}"));
+
+            var json = JsonSerializer.Serialize(
+                new Game(new[] { _gamers[0].UserName, _gamers[1].UserName }, _id)
+                );
+
+            message.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            await client.SendAsync(message);
+
+            //var response = await client.GetAsync($"http://localhost:5000/api/game/{_id}");
 
             //solution
 
@@ -53,20 +60,6 @@ namespace RSPGame.Models
             //инфой /api/game/{id_игрока}
             //{ номер комнаты и противника }
 
-        }
-
-        private async Task PostGameResponse(HttpClient client, GamerInfo gamer1, GamerInfo gamer2)
-        {
-            StringContent content = new StringContent(
-                JsonSerializer
-                    .Serialize(new GameResponse(gamer2.UserName, _id))
-            );
-
-            var request = await client.PostAsync(
-                $"api/game/{gamer1.UserName}",
-                content);
-
-            var response = await client.GetAsync($"api/game/{gamer1.UserName}");
         }
 
         public Task AddGamer(GamerInfo gamer)
