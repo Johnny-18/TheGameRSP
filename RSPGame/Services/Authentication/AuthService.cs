@@ -20,13 +20,13 @@ namespace RSPGame.Services.Authentication
             _storage = storage;
         }
         
-        public async Task<Session> Register(RequestUser userForRegister)
+        public async Task<Session> RegisterAsync(RequestUser userForRegister)
          {
             if (userForRegister == null)
                 throw new ArgumentNullException(nameof(userForRegister));
 
             //generate password hash
-            var passwordHash = await _hashGenerator.GenerateHash(userForRegister.Password);
+            var passwordHash = _hashGenerator.GenerateHash(userForRegister.Password);
             
             //create user
             var user = new User
@@ -37,7 +37,7 @@ namespace RSPGame.Services.Authentication
             };
 
             //try to add new user
-            if (!await _storage.TryAddUser(user))
+            if (!await _storage.TryAddUserAsync(user))
                 return null;
 
             //get token for new user
@@ -52,16 +52,16 @@ namespace RSPGame.Services.Authentication
             };
         }
 
-        public async Task<Session> Login(RequestUser user)
+        public async Task<Session> LoginAsync(RequestUser user)
         {
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            var userFromStorage = await _storage.GetUserByUserName(user.UserName);
+            var userFromStorage = await _storage.GetUserByUserNameAsync(user.UserName);
             if (userFromStorage == null)
                 return null;
 
-            if (!await _hashGenerator.AreEqual(user.Password, userFromStorage.PasswordHash))
+            if (!_hashGenerator.AreEqual(user.Password, userFromStorage.PasswordHash))
                 return null;
 
             //get user token

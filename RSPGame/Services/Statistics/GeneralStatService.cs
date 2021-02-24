@@ -8,16 +8,11 @@ namespace RSPGame.Services.Statistics
 {
     public class GeneralStatService : IGeneralStatService
     {
-        private readonly RspStorage _storage;
-
-        public GeneralStatService(RspStorage storage)
+        public async Task<IEnumerable<GamerInfo>> GetStatAsync(RspStorage storage)
         {
-            _storage = storage;
-        }
-        
-        public async Task<IEnumerable<GamerInfo>> GetStat()
-        {
-            var users = (await _storage.GetUsers()).Where(x => x.GamerInfo.Games > 10).OrderByDescending(x => x.GamerInfo.Games).Take(10).ToList();
+            var usersFromStorage = (await storage.GetUsersAsync()).Where(x => x.GamerInfo.Games > 10);
+            var users = usersFromStorage.OrderByDescending(x => x.GamerInfo.Games).Take(10).ToList();
+            
             var result = new List<GamerInfo>();
             
             foreach (var user in users)

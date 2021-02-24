@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using RSPGame.Models;
@@ -24,7 +23,7 @@ namespace RSPGame.Storage
 
         private ConcurrentDictionary<string, User> _users;
 
-        public async Task<User> GetUserByUserName(string userName)
+        public async Task<User> GetUserByUserNameAsync(string userName)
         {
             await CheckCollection();
 
@@ -33,7 +32,7 @@ namespace RSPGame.Storage
             return user;
         }
 
-        public async Task<bool> TryAddUser(User user)
+        public async Task<bool> TryAddUserAsync(User user)
         {
             await CheckCollection();
             
@@ -52,7 +51,7 @@ namespace RSPGame.Storage
             return true;
         }
 
-        public async Task<IEnumerable<User>> GetUsers()
+        public async Task<IEnumerable<User>> GetUsersAsync()
         {
             await CheckCollection();
             
