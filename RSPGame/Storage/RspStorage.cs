@@ -9,7 +9,7 @@ using RSPGame.Services;
 
 namespace RSPGame.Storage
 {
-    public class RspStorage
+    public class RspStorage : IRspStorage
     {
         public RspStorage(IFileWorker fileWorker, IOptions<FilesOptions> path)
         {
@@ -23,7 +23,7 @@ namespace RSPGame.Storage
 
         private ConcurrentDictionary<string, User> _users;
 
-        public async Task<User> GetUserByUserName(string userName)
+        public async Task<User> GetUserByUserNameAsync(string userName)
         {
             await CheckCollection();
 
@@ -32,7 +32,7 @@ namespace RSPGame.Storage
             return user;
         }
 
-        public async Task<bool> TryAddUser(User user)
+        public async Task<bool> TryAddUserAsync(User user)
         {
             await CheckCollection();
             
@@ -51,7 +51,7 @@ namespace RSPGame.Storage
             return true;
         }
 
-        public async Task<IEnumerable<User>> GetUsers()
+        public async Task<IEnumerable<User>> GetUsersAsync()
         {
             await CheckCollection();
             

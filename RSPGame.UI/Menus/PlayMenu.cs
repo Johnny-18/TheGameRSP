@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net.Http;
+using System.Threading.Tasks;
 using RSPGame.Models;
+using RSPGame.UI.PlayRequests;
 
 namespace RSPGame.UI.Menus
 {
@@ -27,7 +29,7 @@ namespace RSPGame.UI.Menus
                 switch (num)
                 {
                     case 1:
-                        //
+                        RoomRequests.QuickSearch(client, gamer);
                         break;
                     case 2:
                         PrivateRoomMenu.Start(client, gamer);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using RSPGame.Models;
+using RSPGame.UI.PlayRequests;
 
 namespace RSPGame.UI.Menus
 {
@@ -26,10 +27,21 @@ namespace RSPGame.UI.Menus
                 switch (num)
                 {
                     case 1:
-                        //
+                        RoomRequests.CreateRoom(client, gamer);
                         break;
                     case 2:
-                        //
+                        Console.Write("Enter the id of the desired room: ");
+                        if (!int.TryParse(Console.ReadLine(), out var i))
+                        {
+                            Console.WriteLine("\nERROR:\tThe only numbers can be entered. Try again\n\n");
+                            break;
+                        }
+                        else if (i < 1 || i > 1000)
+                        {
+                            Console.WriteLine("\nERROR:\tIncorrect number. Try again\n\n");
+                            break;
+                        }
+                        RoomRequests.JoinRoom(client, gamer, i);
                         break;
                     case 3:
                         return;
