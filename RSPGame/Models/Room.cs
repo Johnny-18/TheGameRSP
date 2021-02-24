@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace RSPGame.Models
@@ -11,6 +15,8 @@ namespace RSPGame.Models
         private readonly RoomStatus _roomStatus;
 
         private readonly List<GamerInfo> _gamers;
+
+        private readonly object _locker = new();
 
         public Room(RoomStatus roomStatus)
         {
@@ -31,33 +37,33 @@ namespace RSPGame.Models
             }
         }
 
-        private Task StartGame()
+        private async Task StartGame()
         {
-            //HttpClient client = new HttpClient();
+            using var client = new HttpClient()
+            {
+                BaseAddress = new Uri("http://localhost:5000")
+            };
 
-            //foreach (var gamer in _gamers)
-            //{
-            //    HttpResponseMessage response = await client.PostAsync(
-            //        $"api/game/{gamer.UserId}", GetId());
-            //    response.EnsureSuccessStatusCode();
-            //}
-            
-            //solution
+            var json = JsonSerializer.Serialize(
+                _gamers.Select(x => x.UserName).ToArray()
+                );
 
-            //мы делаем запросы со всей интересующей нас
-            //инфой /api/game/{id_игрока}
-            //{ номер комнаты и противника }
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            return Task.CompletedTask;
+            await client.PostAsync($"/api/game/{_id}", content);
+
         }
 
         public Task AddGamer(GamerInfo gamer)
         {
-            if (gamer == null) 
-                throw new ArgumentNullException(nameof(gamer));
+            lock (_locker)
+            {
+                if (gamer == null)
+                    throw new ArgumentNullException(nameof(gamer));
 
-            _gamers.Add(gamer);
-            return Task.CompletedTask;
+                _gamers.Add(gamer);
+                return Task.CompletedTask;
+            }
         }
 
         public int GetId() => _id;

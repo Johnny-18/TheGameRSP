@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using RSPGame.Models;
 using RSPGame.Services;
 
@@ -15,12 +16,14 @@ namespace RSPGame.Storage
     public class RoomService : IRoomService
     {
         private readonly RoomStorage _roomStorage;
+        private readonly ILogger<Startup> _logger;
 
         private static readonly object Locker = new();
 
-        public RoomService(RoomStorage roomStorage)
+        public RoomService(RoomStorage roomStorage, ILogger<Startup> logger)
         {
             _roomStorage = roomStorage;
+            _logger = logger;
         }
 
         public async Task CreateRoom(GamerInfo gamer, RoomStatus roomStatus)
@@ -29,6 +32,9 @@ namespace RSPGame.Storage
                 throw new ArgumentNullException(nameof(gamer));
 
             var room = new Room(roomStatus);
+
+            _logger.LogInformation($"Create room with Id {room.GetId()}");
+
             await room.AddGamer(gamer);
 
             //Console.WriteLine("room`s id:\t" + room.GetId());
@@ -65,6 +71,9 @@ namespace RSPGame.Storage
                     if (room == null)
                     {
                         room = new Room(RoomStatus.Public);
+
+                        _logger.LogInformation($"Create room with Id {room.GetId()}");
+
                         await room.AddGamer(gamer);
 
                         _roomStorage.ListRooms.Add(room);
@@ -74,7 +83,7 @@ namespace RSPGame.Storage
                 else
                 {
                     room = _roomStorage.ListRooms
-                        .FirstOrDefault(x => x.GetId() == id && x.IsPublic());
+                        .FirstOrDefault(x => x.GetId() == id && !x.IsPublic());
 
                     if (room == null)
                     {

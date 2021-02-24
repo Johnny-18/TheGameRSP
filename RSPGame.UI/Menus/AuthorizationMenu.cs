@@ -1,9 +1,22 @@
 ﻿using System;
+using System.Net.Http;
+using RSPGame.Models;
 
 namespace RSPGame.UI.Menus
 {
     public static class AuthorizationMenu
     {
+        private static readonly HttpClient _client;
+        private static GamerInfo _gamer;
+
+        static AuthorizationMenu()
+        {
+            _client = new HttpClient()
+            {
+                BaseAddress = new Uri("http://localhost:5000")
+            };
+        }
+
         public static void Start()
         {
             while (true)
@@ -25,10 +38,10 @@ namespace RSPGame.UI.Menus
                 switch (num)
                 {
                     case 1:
-                        SessionMenu.Start();
+                        SessionMenu.Start(_client, _gamer);
                         break;
                     case 2:
-                        SessionMenu.Start();
+                        SessionMenu.Start(_client, _gamer);
                         break;
                     case 3:
                         //
