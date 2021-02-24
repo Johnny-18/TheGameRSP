@@ -17,7 +17,7 @@ namespace RSPGame.Services.Statistics
         
         public async Task<IEnumerable<GamerInfo>> GetStat()
         {
-            var users = (await _storage.GetUsers()).Where(x => x.GamerInfo.Games > 10).Take(10).ToList();
+            var users = (await _storage.GetUsers()).Where(x => x.GamerInfo.Games > 10).OrderByDescending(x => x.GamerInfo.Games).Take(10).ToList();
             var result = new List<GamerInfo>();
             
             foreach (var user in users)
