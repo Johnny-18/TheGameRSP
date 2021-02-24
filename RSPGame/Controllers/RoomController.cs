@@ -40,7 +40,7 @@ namespace RSPGame.Controllers
         }
 
         [HttpPost("join")]
-        public async Task<IActionResult> JoinPrivateGame([FromBody] GamerInfo gamer, [FromHeader] int id)
+        public async Task<IActionResult> JoinPrivateGame([FromBody] GamerInfo gamer, [FromQuery] int id)
         {
             if (gamer == null)
                 return BadRequest();

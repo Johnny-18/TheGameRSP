@@ -41,7 +41,7 @@ namespace RSPGame.Models
             //        $"api/game/{gamer.UserId}", GetId());
             //    response.EnsureSuccessStatusCode();
             //}
-           
+            
             //solution
 
             //мы делаем запросы со всей интересующей нас
