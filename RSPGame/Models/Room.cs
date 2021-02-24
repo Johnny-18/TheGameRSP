@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace RSPGame.Models
 {
     public class Room
     {
-        private readonly int _id = new Random().Next(0, 1000);
+        private readonly int _id = new Random().Next(1, 1001);
+
+        private readonly RoomStatus _roomStatus;
 
         private readonly List<GamerInfo> _gamers;
 
-        public Room()
+        public Room(RoomStatus roomStatus)
         {
+            _roomStatus = roomStatus;
             _gamers = new List<GamerInfo>();
             Task.Run(GamersCheck);
         }
@@ -31,9 +33,21 @@ namespace RSPGame.Models
 
         private Task StartGame()
         {
-            Console.WriteLine("Rock > scissors; scissors > paper; paper > rock.");
+            //HttpClient client = new HttpClient();
+
+            //foreach (var gamer in _gamers)
+            //{
+            //    HttpResponseMessage response = await client.PostAsync(
+            //        $"api/game/{gamer.UserId}", GetId());
+            //    response.EnsureSuccessStatusCode();
+            //}
+           
             //solution
-            
+
+            //мы делаем запросы со всей интересующей нас
+            //инфой /api/game/{id_игрока}
+            //{ номер комнаты и противника }
+
             return Task.CompletedTask;
         }
 
@@ -47,5 +61,7 @@ namespace RSPGame.Models
         }
 
         public int GetId() => _id;
+
+        public bool IsPublic() => _roomStatus == RoomStatus.Public;
     }
 }

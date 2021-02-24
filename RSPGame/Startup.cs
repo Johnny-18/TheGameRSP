@@ -24,7 +24,7 @@ namespace RSPGame
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            
+
             var key = Configuration.GetSection("AuthKey:SecretKey").Value;
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -40,21 +40,24 @@ namespace RSPGame
                         ValidateAudience = false
                     };
                 });
-            
+
             services.AddSingleton<IJwtAuthenticationManager>(new JwtAuthenticationManager(key));
             services.AddSingleton<IFileWorker, FileWorker>();
             services.AddSingleton<RspRepository>();
 
             services.AddTransient<IRspService, RspService>();
             services.AddTransient<PasswordHashGenerator>();
-            
+
             services.AddScoped<IAuthService, AuthService>();
+
+            services.AddSingleton<RoomStorage>();
+            services.AddSingleton<IRoomService, RoomService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseSerilogRequestLogging();
-            
+
             app.UseRouting();
 
             app.UseAuthentication();
