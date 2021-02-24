@@ -34,9 +34,9 @@ namespace RSPGame.Controllers
             if (gamer == null)
                 return BadRequest();
 
-            await _roomService.CreateRoom(gamer, RoomStatus.Private);
+            var result = await _roomService.CreateRoom(gamer, RoomStatus.Private);
 
-            return Ok();
+            return Ok(result);
         }
 
         [HttpPost("join")]

@@ -35,7 +35,7 @@ namespace RSPGame.UI.PlayRequests
             return Task.CompletedTask;
         }
 
-        public static Task CreateRoom(HttpClient client, GamerInfo gamer)
+        public static Task<string> CreateRoom(HttpClient client, GamerInfo gamer)
         {
             if (client == null)
                 throw new ArgumentNullException(nameof(client));
@@ -46,19 +46,21 @@ namespace RSPGame.UI.PlayRequests
 
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
+            Task<HttpResponseMessage> task;
+
             try
             {
-                var task = Task.Run(() => client.PostAsync($"/api/rooms/create", content));
+                task = Task.Run(() => client.PostAsync($"/api/rooms/create", content));
                 task.Wait();
             }
             catch (AggregateException e)
             {
                 Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
-                return Task.FromException(e);
+                return (Task<string>)Task.FromException(e);
             }
 
-            Console.WriteLine("\nWaiting for opponent\n\n");
-            return Task.CompletedTask;
+            var result = task.Result.Content.ReadAsStringAsync();
+            return result;
         }
 
         public static Task JoinRoom(HttpClient client, GamerInfo gamer, int id)

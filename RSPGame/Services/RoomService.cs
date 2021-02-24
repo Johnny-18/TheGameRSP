@@ -26,7 +26,7 @@ namespace RSPGame.Storage
             _logger = logger;
         }
 
-        public async Task CreateRoom(GamerInfo gamer, RoomStatus roomStatus)
+        public async Task<int> CreateRoom(GamerInfo gamer, RoomStatus roomStatus)
         {
             if (gamer == null)
                 throw new ArgumentNullException(nameof(gamer));
@@ -48,8 +48,9 @@ namespace RSPGame.Storage
             finally
             {
                 if (acquiredLock) Monitor.Exit(Locker);
+                
             }
-
+            return room.GetId();
         }
 
         public async Task JoinRoom(GamerInfo gamer, int id = 0)

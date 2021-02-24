@@ -8,7 +8,7 @@ namespace RSPGame.UI.Menus
 {
     public static class PlayMenu
     {
-        public static void Start(HttpClient client, GamerInfo gamer)
+        public static async void Start(HttpClient client, GamerInfo gamer)
         {
             while (true)
             {
@@ -29,7 +29,7 @@ namespace RSPGame.UI.Menus
                 switch (num)
                 {
                     case 1:
-                        RoomRequests.QuickSearch(client, gamer);
+                        await RoomRequests.QuickSearch(client, gamer);
                         break;
                     case 2:
                         PrivateRoomMenu.Start(client, gamer);

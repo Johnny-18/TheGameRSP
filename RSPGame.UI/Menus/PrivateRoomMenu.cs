@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using Newtonsoft.Json;
 using RSPGame.Models;
 using RSPGame.UI.PlayRequests;
 
@@ -7,7 +8,7 @@ namespace RSPGame.UI.Menus
 {
     public static class PrivateRoomMenu
     {
-        public static void Start(HttpClient client, GamerInfo gamer)
+        public static async void Start(HttpClient client, GamerInfo gamer)
         {
             while (true)
             {
@@ -27,10 +28,17 @@ namespace RSPGame.UI.Menus
                 switch (num)
                 {
                     case 1:
-                        RoomRequests.CreateRoom(client, gamer);
+                        var json = await RoomRequests.CreateRoom(client, gamer);
+                        var id = JsonConvert.DeserializeObject<int>(json);
+
+                        Console.WriteLine($"\nRoom with id {id} has been created!");
+                        Console.WriteLine("\nWaiting for opponent\n\n");
+
                         break;
+
                     case 2:
                         Console.Write("Enter the id of the desired room: ");
+
                         if (!int.TryParse(Console.ReadLine(), out var i))
                         {
                             Console.WriteLine("\nERROR:\tThe only numbers can be entered. Try again\n\n");
@@ -41,8 +49,10 @@ namespace RSPGame.UI.Menus
                             Console.WriteLine("\nERROR:\tIncorrect number. Try again\n\n");
                             break;
                         }
-                        RoomRequests.JoinRoom(client, gamer, i);
+
+                        await RoomRequests.JoinRoom(client, gamer, i);
                         break;
+
                     case 3:
                         return;
                 }
