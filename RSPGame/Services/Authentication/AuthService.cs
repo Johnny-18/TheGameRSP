@@ -1,19 +1,18 @@
 using System;
 using System.Threading.Tasks;
 using RSPGame.Models;
-using RSPGame.Storage;
 
 namespace RSPGame.Services.Authentication
 {
     public class AuthService : IAuthService
     {
-        private readonly RspStorage _storage;
+        private readonly IRspStorage _storage;
 
         private readonly IJwtTokenGenerator _tokenGenerator;
 
         private readonly PasswordHashGenerator _hashGenerator;
 
-        public AuthService(IJwtTokenGenerator manager, RspStorage storage, PasswordHashGenerator hashGenerator)
+        public AuthService(IJwtTokenGenerator manager, IRspStorage storage, PasswordHashGenerator hashGenerator)
         {
             _hashGenerator = hashGenerator;
             _tokenGenerator = manager;
