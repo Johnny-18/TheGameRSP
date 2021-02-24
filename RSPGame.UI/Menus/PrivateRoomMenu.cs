@@ -29,6 +29,7 @@ namespace RSPGame.UI.Menus
                 {
                     case 1:
                         var json = await RoomRequests.CreateRoom(client, gamer);
+                        if (json == null) break;
                         var id = JsonConvert.DeserializeObject<int>(json);
 
                         Console.WriteLine($"\nRoom with id {id} has been created!");

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using RSPGame.Models;
 using RSPGame.UI.PlayRequests;
 
@@ -29,7 +30,10 @@ namespace RSPGame.UI.Menus
                 switch (num)
                 {
                     case 1:
-                        await RoomRequests.QuickSearch(client, gamer);
+                        var json = await RoomRequests.QuickSearch(client, gamer);
+                        if (json == null) break;
+                        var id = JsonConvert.DeserializeObject<int>(json);
+
                         break;
                     case 2:
                         PrivateRoomMenu.Start(client, gamer);

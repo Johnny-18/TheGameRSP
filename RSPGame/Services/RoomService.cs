@@ -37,8 +37,6 @@ namespace RSPGame.Storage
 
             await room.AddGamer(gamer);
 
-            //Console.WriteLine("room`s id:\t" + room.GetId());
-
             var acquiredLock = false;
             try
             {
@@ -53,7 +51,7 @@ namespace RSPGame.Storage
             return room.GetId();
         }
 
-        public async Task JoinRoom(GamerInfo gamer, int id = 0)
+        public async Task<int> JoinRoom(GamerInfo gamer, int id = 0)
         {
             if (gamer == null)
                 throw new ArgumentNullException(nameof(gamer));
@@ -78,7 +76,7 @@ namespace RSPGame.Storage
                         await room.AddGamer(gamer);
 
                         _roomStorage.ListRooms.Add(room);
-                        return;
+                        return room.GetId();
                     }
                 }
                 else
@@ -95,6 +93,8 @@ namespace RSPGame.Storage
                 await room.AddGamer(gamer);
 
                 _roomStorage.ListRooms.Remove(room);
+
+                return room.GetId();
 
             }
             finally

@@ -23,9 +23,9 @@ namespace RSPGame.Controllers
             if (gamer == null)
                 return BadRequest();
 
-            await _roomService.JoinRoom(gamer);
+            var result = await _roomService.JoinRoom(gamer);
 
-            return Ok();
+            return Ok(result);
         }
 
         [HttpPost("create")]
