@@ -2,20 +2,22 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using RSPGame.Models.OptionsModel;
 
 namespace RSPGame.Services.Authentication
 {
-    public class JwtAuthenticationManager : IJwtAuthenticationManager
+    public class JwtTokenGenerator : IJwtTokenGenerator
     {
         private readonly string _key;
 
-        public JwtAuthenticationManager(string key)
+        public JwtTokenGenerator(IOptions<AuthKeyOptions> authKeyOptions)
         {
-            _key = key;
+            _key = authKeyOptions.Value.SecretKey;
         }
         
-        public string Authenticate(string userName, string password)
+        public string GenerateToken(string userName, string password)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
 

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RSPGame.Models;
@@ -17,12 +18,12 @@ namespace RSPGame.Controllers
         }
         
         [HttpPost("login")]
-        public IActionResult Login([FromBody] RequestUser user)
+        public async Task<IActionResult> Login([FromBody] RequestUser user)
         {
             if (user == null)
                 return BadRequest();
 
-            var session = _authService.Login(user);
+            var session = await _authService.Login(user);
             if (session == null)
                 return NotFound();
             
@@ -30,12 +31,12 @@ namespace RSPGame.Controllers
         }
         
         [HttpPost("register")]
-        public IActionResult Register([FromBody] RequestUser user)
+        public async Task<IActionResult> Register([FromBody] RequestUser user)
         {
             if (user == null)
                 return BadRequest();
 
-            var session = _authService.Register(user);
+            var session = await _authService.Register(user);
             if (session == null)
                 return NotFound();
             
