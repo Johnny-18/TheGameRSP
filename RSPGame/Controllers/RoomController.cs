@@ -18,7 +18,7 @@ namespace RSPGame.Controllers
         }
 
         [HttpPost("find")]
-        public async Task<IActionResult> FindPublicGame([FromBody] GamerInfo gamer)
+        public async Task<IActionResult> FindPublicRoom([FromBody] GamerInfo gamer)
         {
             if (gamer == null)
                 return BadRequest();
@@ -29,7 +29,7 @@ namespace RSPGame.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> CreatePrivateGame([FromBody] GamerInfo gamer)
+        public async Task<IActionResult> CreatePrivateRoom([FromBody] GamerInfo gamer)
         {
             if (gamer == null)
                 return BadRequest();
@@ -40,7 +40,7 @@ namespace RSPGame.Controllers
         }
 
         [HttpPost("join")]
-        public async Task<IActionResult> JoinPrivateGame([FromBody] GamerInfo gamer, [FromQuery] int id)
+        public async Task<IActionResult> JoinPrivateRoom([FromBody] GamerInfo gamer, [FromQuery] int id)
         {
             if (gamer == null)
                 return BadRequest();

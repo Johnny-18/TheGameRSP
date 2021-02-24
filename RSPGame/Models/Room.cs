@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Security.Policy;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -37,7 +38,10 @@ namespace RSPGame.Models
 
         private async Task StartGame()
         {
-            using var client = new HttpClient();
+            using var client = new HttpClient()
+            {
+                BaseAddress = new Uri("http://localhost:5000")
+            };
             {
                 await PostGameResponse(client, _gamers[0], _gamers[1]);
                 await PostGameResponse(client, _gamers[1], _gamers[0]);
@@ -58,9 +62,11 @@ namespace RSPGame.Models
                     .Serialize(new GameResponse(gamer2.UserName, _id))
             );
 
-            await client.PostAsync(
+            var request = await client.PostAsync(
                 $"api/game/{gamer1.UserName}",
                 content);
+
+            var response = await client.GetAsync($"api/game/{gamer1.UserName}");
         }
 
         public Task AddGamer(GamerInfo gamer)

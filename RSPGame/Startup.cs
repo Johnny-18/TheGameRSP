@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using RSPGame.Models.OptionsModel;
 using RSPGame.Services;
@@ -25,6 +26,7 @@ namespace RSPGame
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddSwaggerGen();
 
             services.Configure<FilesOptions>(Configuration.GetSection(FilesOptions.Files));
             services.Configure<AuthKeyOptions>(Configuration.GetSection(AuthKeyOptions.AuthKey));
@@ -54,12 +56,19 @@ namespace RSPGame
             services.AddScoped<IAuthService, AuthService>();
 
             services.AddSingleton<RoomStorage>();
+            services.AddSingleton<GameStorage>();
             services.AddSingleton<IRoomService, RoomService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseSerilogRequestLogging();
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
 
             app.UseRouting();
 
