@@ -25,17 +25,14 @@ namespace RSPGame.Services.Authentication
             if (userForRegister == null)
                 throw new ArgumentNullException(nameof(userForRegister));
 
-            var id = Guid.NewGuid();
-
             //generate password hash
             var passwordHash = await _hashGenerator.GenerateHash(userForRegister.Password);
             
             //create user
             var user = new User
             {
-                Id = id,
                 UserName = userForRegister.UserName,
-                GamerInfo = new GamerInfo(id),
+                GamerInfo = new GamerInfo(userForRegister.UserName),
                 PasswordHash = passwordHash
             };
 
@@ -49,7 +46,7 @@ namespace RSPGame.Services.Authentication
             //return new session with token
             return new Session
             {
-                Id = user.Id,
+                UserName = user.UserName,
                 GamerInfo = user.GamerInfo,
                 Token = token
             };
@@ -73,7 +70,7 @@ namespace RSPGame.Services.Authentication
             //create session
             return new Session
             {
-                Id = userFromStorage.Id,
+                UserName = userFromStorage.UserName,
                 GamerInfo = userFromStorage.GamerInfo,
                 Token = token
             };

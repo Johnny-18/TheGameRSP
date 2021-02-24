@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace RSPGame.Models
@@ -9,13 +10,13 @@ namespace RSPGame.Models
         {
         }
         
-        public GamerInfo(Guid id)
+        public GamerInfo(string userName)
         {
-            UserId = id;
+            UserName = userName;
         }
         
-        [JsonPropertyName("userId")]
-        public Guid UserId { get; set; }
+        [JsonPropertyName("userName")]
+        public string UserName { get; set; }
         
         [JsonPropertyName("countScissors")]
         public int CountScissors { get; set; }
@@ -45,6 +46,36 @@ namespace RSPGame.Models
             {
                 return CountLoses + CountDraws + CountWins;
             }
+        }
+
+        public override string ToString()
+        {
+            var stringBuilder = new StringBuilder();
+
+            stringBuilder.Append($"\nUser: {UserName}\n");
+            stringBuilder.Append($"Games: {Games}\n");
+            stringBuilder.Append($"Wins: {CountWins}, loses: {CountLoses}, draws: {CountDraws}\n");
+            stringBuilder.Append($"Scissors: {CountScissors}, papers: {CountPapers}, rocks: {CountRocks}\n");
+            
+            stringBuilder.Append($"Online time: ");
+            if (OnlineTime.Days != 0)
+            {
+                stringBuilder.Append(OnlineTime.Days.ToString());
+            }
+
+            if (OnlineTime.Hours != 0)
+            {
+                stringBuilder.Append(OnlineTime.Hours.ToString());
+            }
+
+            if (OnlineTime.Minutes != 0)
+            {
+                stringBuilder.Append(OnlineTime.Minutes.ToString());
+            }
+            
+            stringBuilder.AppendLine();
+            
+            return stringBuilder.ToString();
         }
     }
 }

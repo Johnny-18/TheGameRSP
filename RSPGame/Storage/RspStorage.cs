@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
@@ -32,15 +33,6 @@ namespace RSPGame.Storage
             return user;
         }
 
-        public async Task<User> GetUserById(Guid id)
-        {
-            await CheckCollection();
-
-            var user = _users.FirstOrDefault(x => x.Value.Id == id).Value;
-
-            return user;
-        }
-
         public async Task<bool> TryAddUser(User user)
         {
             await CheckCollection();
@@ -58,6 +50,13 @@ namespace RSPGame.Storage
 
             await SaveToFile();
             return true;
+        }
+
+        public async Task<IEnumerable<User>> GetUsers()
+        {
+            await CheckCollection();
+            
+            return _users as IEnumerable<User>;
         }
 
         private async Task CheckCollection()
