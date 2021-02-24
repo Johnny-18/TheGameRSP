@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
-using System.Security.Policy;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 
 namespace RSPGame.Models
 {
@@ -40,25 +39,18 @@ namespace RSPGame.Models
 
         private async Task StartGame()
         {
-            using var client = new HttpClient();
-
-            using var message = new HttpRequestMessage(HttpMethod.Post, new Uri($"http://localhost:5000/api/game/{_id}"));
+            using var client = new HttpClient()
+            {
+                BaseAddress = new Uri("http://localhost:5000")
+            };
 
             var json = JsonSerializer.Serialize(
-                new Game(new[] { _gamers[0].UserName, _gamers[1].UserName }, _id)
+                _gamers.Select(x => x.UserName).ToArray()
                 );
 
-            message.Content = new StringContent(json, Encoding.UTF8, "application/json");
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            await client.SendAsync(message);
-
-            //var response = await client.GetAsync($"http://localhost:5000/api/game/{_id}");
-
-            //solution
-
-            //мы делаем запросы со всей интересующей нас
-            //инфой /api/game/{id_игрока}
-            //{ номер комнаты и противника }
+            await client.PostAsync($"/api/game/{_id}", content);
 
         }
 

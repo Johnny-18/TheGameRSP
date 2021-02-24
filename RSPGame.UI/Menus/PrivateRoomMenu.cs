@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Net.Http;
+using RSPGame.Models;
 
 namespace RSPGame.UI.Menus
 {
     public static class PrivateRoomMenu
     {
-        public static void Start()
+        public static void Start(HttpClient client, GamerInfo gamer)
         {
             while (true)
             {

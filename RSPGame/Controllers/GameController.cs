@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RSPGame.Models;
 using RSPGame.Storage;
 using System.Linq;
 
@@ -16,15 +15,15 @@ namespace RSPGame.Controllers
             _gameStorage = gameStorage;
         }
 
-        [HttpPost]
-        public IActionResult PostGame([FromBody] Game game)
+        [HttpPost("{roomId}")]
+        public IActionResult PostGame([FromBody] string[] usersName, [FromRoute] int roomId)
         {
-            if (game.RoomId == 0 || game.UsersName.Any(string.IsNullOrWhiteSpace))
+            if (roomId == 0 || usersName.Any(string.IsNullOrWhiteSpace))
                 return BadRequest();
 
-            if (!ModelState.IsValid) return BadRequest(game.RoomId);
+            if (!ModelState.IsValid) return BadRequest(roomId);
 
-            var result = _gameStorage.DictionaryGame.TryAdd(game.RoomId, game.UsersName);
+            var result = _gameStorage.DictionaryGame.TryAdd(roomId, usersName);
 
             if (result) return Ok();
             return Conflict();
