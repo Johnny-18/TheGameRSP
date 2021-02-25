@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RSPGame.Storage;
 using System.Linq;
+using RSPGame.Models;
+using RSPGame.Services;
 
 namespace RSPGame.Controllers
 {
@@ -10,9 +12,12 @@ namespace RSPGame.Controllers
     {
         private readonly GameStorage _gameStorage;
 
-        public GameController(GameStorage gameStorage)
+        private readonly SinglePlayerService _bot;
+
+        public GameController(GameStorage gameStorage, SinglePlayerService bot)
         {
             _gameStorage = gameStorage;
+            _bot = bot;
         }
 
         [HttpPost("{roomId}")]
@@ -21,18 +26,34 @@ namespace RSPGame.Controllers
             if (roomId == 0 || usersName.Any(string.IsNullOrWhiteSpace))
                 return BadRequest();
 
-            if (!ModelState.IsValid) return BadRequest(roomId);
-
-            var result = _gameStorage.DictionaryGame.TryAdd(roomId, usersName);
-
-            if (result) return Ok();
+            if (!ModelState.IsValid)
+                return BadRequest(roomId);
+            
+            if (_gameStorage.DictionaryGame.TryAdd(roomId, usersName)) 
+                return Ok();
+            
             return Conflict();
         }
 
         [HttpGet("{roomId}")]
         public IActionResult GetGame()
         {
-            return Ok(_gameStorage.DictionaryGame.First());
+            var game = _gameStorage.DictionaryGame.FirstOrDefault();
+            if (game.Value == null)
+                return NoContent();
+            
+            return Ok();
+        }
+
+        [HttpGet("bot")]
+        public IActionResult GameWithBot([FromBody] GameActions gamerAction)
+        {
+            if (gamerAction == GameActions.None)
+                return BadRequest();
+
+            var result = _bot.PlayWithBot(gamerAction);
+
+            return Ok(result);
         }
     }
 }
