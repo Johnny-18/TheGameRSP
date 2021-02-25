@@ -10,7 +10,7 @@ namespace RSPGame.UI
     public static class Program
     {
         private static HttpClient _client;
-        
+
         private static Session _session;
         
         private static string _path = "baseUrl.json";
@@ -18,7 +18,6 @@ namespace RSPGame.UI
         public static async Task Main()
         {
             var fileWorker = new FileWorker();
-            
             var baseAddress = await fileWorker.DeserializeAsync<BaseAddress>(_path);
             if (baseAddress == null || string.IsNullOrEmpty(baseAddress.BaseUrl))
             {

@@ -19,8 +19,8 @@ namespace RSPGame.UI.Menus
             _client = client;
             _currentSession = currentSession;
         }
-        
-        public async Task Start()
+
+        public Task Start()
         {
             while (true)
             {
@@ -64,8 +64,7 @@ namespace RSPGame.UI.Menus
                             Console.WriteLine("\nERROR:\tIncorrect number. Try again\n\n");
                             break;
                         }
-
-
+                        
                         if (RoomRequests.JoinRoom(_client, _currentSession.GamerInfo, id2) == null) break;
 
                         var result2 = GameRequests.GetGame(_client, id2)?.ToArray();
@@ -75,7 +74,7 @@ namespace RSPGame.UI.Menus
                         break;
 
                     case 3:
-                        return;
+                        return Task.CompletedTask;
                 }
             }
         }

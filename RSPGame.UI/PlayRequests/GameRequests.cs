@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
+using RSPGame.Models;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace RSPGame.UI.PlayRequests
 {
@@ -49,6 +53,29 @@ namespace RSPGame.UI.PlayRequests
             
             var json = response.Content.ReadAsStringAsync().Result;
             return JsonConvert.DeserializeObject<string[]>(json);
+        }
+
+        public static Task PostAction(HttpClient client, GameActionsUi action, int roomId, int roundId)
+        {
+            if (client == null)
+                throw new ArgumentNullException(nameof(client));
+
+            var json = JsonSerializer.Serialize(action);
+
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            try
+            {
+                var message = client.PostAsync($"/api/round/{roomId}/{roundId}", content).Result;
+            }
+            catch (AggregateException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                return null;
+            }
+
+            Console.WriteLine("\nRequest has been sent!\n\n");
+            return Task.CompletedTask;
         }
 
     }
