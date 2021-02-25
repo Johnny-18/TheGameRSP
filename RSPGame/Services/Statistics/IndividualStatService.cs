@@ -6,7 +6,7 @@ namespace RSPGame.Services.Statistics
 {
     public class IndividualStatService : IIndividualStatService
     {
-        public Task ChangeGamerInfoAfterRound(GamerInfo gamerInfo, GameActions action, RoundResult status)
+        public async Task ChangeGamerInfoAfterRound(GamerInfo gamerInfo, GameActions action, RoundResult status)
         {
             if (gamerInfo == null)
                 throw new ArgumentNullException(nameof(gamerInfo));
@@ -15,7 +15,7 @@ namespace RSPGame.Services.Statistics
             if (status == RoundResult.None)
                 throw new ArgumentException("Invalid game status!");
 
-            return Task.Run(() =>
+            await Task.Run(() =>
             {
                 ChangeCountAction(gamerInfo, action);
                 ChangeCountStatus(gamerInfo, status);

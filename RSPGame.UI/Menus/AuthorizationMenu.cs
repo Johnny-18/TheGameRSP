@@ -50,7 +50,7 @@ namespace RSPGame.UI.Menus
                     _currentSession.CountLoginFailed = 0;
                     _stopwatch.Stop();
                 }
-
+              
                 switch (num)
                 {
                     case 1:

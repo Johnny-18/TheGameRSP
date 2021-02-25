@@ -18,7 +18,6 @@ namespace RSPGame.UI
         public static async Task Main()
         {
             var fileWorker = new FileWorker();
-
             var baseAddress = await fileWorker.DeserializeAsync<BaseAddress>(_path);
             if (baseAddress == null || string.IsNullOrEmpty(baseAddress.BaseUrl))
             {
