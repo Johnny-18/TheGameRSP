@@ -1,6 +1,7 @@
 ﻿using System.IO;
-using System.Text.Json;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace RSPGame.Services
 {
@@ -8,18 +9,16 @@ namespace RSPGame.Services
     {
         public async Task SaveToFileAsync<T>(string path, T obj)
         {
-            await using var fileStream = new FileStream(path, FileMode.Truncate, FileAccess.Write);
-            
-            await JsonSerializer.SerializeAsync(fileStream, obj);
+            var json = JsonConvert.SerializeObject(obj);
+
+            await File.WriteAllTextAsync(path, json);
         }
 
         public async Task<T> DeserializeAsync<T>(string path)
         {
-            await using var fileStream = new FileStream(path, FileMode.Open);
+            var json = await File.ReadAllTextAsync(path);
 
-            var objects = await JsonSerializer.DeserializeAsync<T>(fileStream);
-
-            return objects;
+            return JsonConvert.DeserializeObject<T>(json);
         }
     }
 }
