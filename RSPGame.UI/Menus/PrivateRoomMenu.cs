@@ -1,15 +1,26 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RSPGame.Models;
 using RSPGame.UI.PlayRequests;
 
 namespace RSPGame.UI.Menus
 {
-    public static class PrivateRoomMenu
+    public class PrivateRoomMenu
     {
-        public static void Start(HttpClient client, GamerInfo gamer)
+        private Session _currentSession;
+
+        private readonly HttpClient _client;
+
+        public PrivateRoomMenu(HttpClient client, Session currentSession)
+        {
+            _client = client;
+            _currentSession = currentSession;
+        }
+
+        public Task Start()
         {
             while (true)
             {
@@ -29,14 +40,14 @@ namespace RSPGame.UI.Menus
                 switch (num)
                 {
                     case 1:
-                        var json = RoomRequests.CreateRoom(client, gamer)?.Result;
+                        var json = RoomRequests.CreateRoom(_client, _currentSession.GamerInfo)?.Result;
                         if (json == null) break;
                         var id1 = JsonConvert.DeserializeObject<int>(json);
 
                         Console.WriteLine($"\nRoom with id {id1} has been created!");
                         Console.WriteLine("\nWaiting for opponent\n\n");
 
-                        var result1 = GameRequests.GetGame(client, id1)?.ToArray();
+                        var result1 = GameRequests.GetGame(_client, id1)?.ToArray();
 
                         break;
 
@@ -53,18 +64,17 @@ namespace RSPGame.UI.Menus
                             Console.WriteLine("\nERROR:\tIncorrect number. Try again\n\n");
                             break;
                         }
+                        
+                        if (RoomRequests.JoinRoom(_client, _currentSession.GamerInfo, id2) == null) break;
 
+                        var result2 = GameRequests.GetGame(_client, id2)?.ToArray();
 
-                        if (RoomRequests.JoinRoom(client, gamer, id2) == null) break;
-
-                        var result2 = GameRequests.GetGame(client, id2)?.ToArray();
-
-                        //new GameLogic().StartGame(client, result2, id2);
+                        new GameLogic().StartGame(_client, result2, id2);
 
                         break;
 
                     case 3:
-                        return;
+                        return Task.CompletedTask;
                 }
             }
         }
