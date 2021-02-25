@@ -1,15 +1,26 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RSPGame.Models;
 using RSPGame.UI.PlayRequests;
 
 namespace RSPGame.UI.Menus
 {
-    public static class PlayMenu
+    public class PlayMenu
     {
-        public static void Start(HttpClient client, GamerInfo gamer)
+        private Session _currentSession;
+
+        private readonly HttpClient _client;
+
+        public PlayMenu(HttpClient client, Session currentSession)
+        {
+            _client = client;
+            _currentSession = currentSession;
+        }
+
+        public async Task Start()
         {
             while (true)
             {
@@ -30,15 +41,15 @@ namespace RSPGame.UI.Menus
                 switch (num)
                 {
                     case 1:
-                        var json = RoomRequests.QuickSearch(client, gamer)?.Result;
+                        var json = RoomRequests.QuickSearch(_client, _currentSession.GamerInfo)?.Result;
                         if (json == null) break;
                         var id = JsonConvert.DeserializeObject<int>(json);
 
-                        var result = GameRequests.GetGame(client, id)?.ToArray();
+                        var result = GameRequests.GetGame(_client, id)?.ToArray();
 
                         break;
                     case 2:
-                        PrivateRoomMenu.Start(client, gamer);
+                        await new PrivateRoomMenu(_client, _currentSession).Start();
                         break;
                     case 3:
                         //

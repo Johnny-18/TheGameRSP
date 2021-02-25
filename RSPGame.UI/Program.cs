@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net.Http;
+using System.Threading.Tasks;
 using RSPGame.Models;
+using RSPGame.Services;
 using RSPGame.UI.Menus;
 
 namespace RSPGame.UI
@@ -8,26 +10,37 @@ namespace RSPGame.UI
     public static class Program
     {
         private static HttpClient _client;
-        private static GamerInfo _gamer;
+        
+        private static Session _session;
+        
+        private static string _path = "urls.json";
 
-        static void Main()
+        public static async Task Main()
         {
+            var fileWorker = new FileWorker();
+            
+            var baseAddress = await fileWorker.DeserializeAsync<BaseAddress>(_path);
+            if (baseAddress == null || string.IsNullOrEmpty(baseAddress.BaseUrl))
+            {
+                Console.WriteLine("Something going wrong with file!");
+                return;
+            }
+
             _client = new HttpClient()
             {
-                BaseAddress = new Uri("http://localhost:5000")
+                BaseAddress = new Uri(baseAddress.BaseUrl)
             };
-            _gamer = new GamerInfo();
-            _gamer.UserName = "alabai123";
+
+            _session = new Session();
 
             try
             {
-                AuthorizationMenu.Start(_client, _gamer);
+                await new AuthorizationMenu(_client, _session).Start();
             }
             catch (HttpRequestException)
             {
-                Console.WriteLine("ERROR:\tCheck your internet connection");
+                Console.WriteLine("ERROR:\tCheck your internet connection and run game again!");
             }
-            
         }
     }
 }

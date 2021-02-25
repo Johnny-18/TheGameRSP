@@ -90,7 +90,7 @@ namespace RSPGame.UI.Menus
 
                 _currentSession = JsonSerializer.Deserialize<Session>(jsonFromApi);
                 
-                PlayMenu.Start(_client, new GamerInfo());
+                await new SessionMenu(_client, _currentSession).Start();
                 return;
             }
 
@@ -110,7 +110,7 @@ namespace RSPGame.UI.Menus
 
                 _currentSession = JsonSerializer.Deserialize<Session>(jsonFromApi);
                 
-                PlayMenu.Start(_client, new GamerInfo());
+                await new SessionMenu(_client, _currentSession).Start();
                 return;
             }
             
