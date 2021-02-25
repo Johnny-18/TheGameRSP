@@ -1,7 +1,8 @@
-﻿using RSPGame.Models;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using RSPGame.Models;
+using RSPGame.Models.RoomModel;
 
-namespace RSPGame.Services
+namespace RSPGame.Services.Room
 {
     public interface IRoomService
     {

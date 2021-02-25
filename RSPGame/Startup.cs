@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using RSPGame.Models.OptionsModel;
 using RSPGame.Services;
 using RSPGame.Services.Authentication;
+using RSPGame.Services.Room;
 using RSPGame.Storage;
 using Serilog;
 
