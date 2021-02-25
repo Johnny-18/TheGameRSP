@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RSPGame.Models;
 using RSPGame.UI.PlayRequests;
@@ -36,30 +32,36 @@ namespace RSPGame.UI.Menus
                     case 1:
                         var json = RoomRequests.CreateRoom(client, gamer)?.Result;
                         if (json == null) break;
-                        var id = JsonConvert.DeserializeObject<int>(json);
+                        var id1 = JsonConvert.DeserializeObject<int>(json);
 
-                        Console.WriteLine($"\nRoom with id {id} has been created!");
+                        Console.WriteLine($"\nRoom with id {id1} has been created!");
                         Console.WriteLine("\nWaiting for opponent\n\n");
 
-                        var result = GameRequests.GetGame(client, id)?.ToArray();
+                        var result1 = GameRequests.GetGame(client, id1)?.ToArray();
 
                         break;
 
                     case 2:
                         Console.Write("Enter the id of the desired room: ");
 
-                        if (!int.TryParse(Console.ReadLine(), out var i))
+                        if (!int.TryParse(Console.ReadLine(), out var id2))
                         {
                             Console.WriteLine("\nERROR:\tThe only numbers can be entered. Try again\n\n");
                             break;
                         }
-                        else if (i < 1 || i > 1000)
+                        else if (id2 < 1 || id2 > 1000)
                         {
                             Console.WriteLine("\nERROR:\tIncorrect number. Try again\n\n");
                             break;
                         }
 
-                        RoomRequests.JoinRoom(client, gamer, i);
+
+                        if (RoomRequests.JoinRoom(client, gamer, id2) == null) break;
+
+                        var result2 = GameRequests.GetGame(client, id2)?.ToArray();
+
+                        new GameLogic().StartGame(client, result2, id2);
+
                         break;
 
                     case 3:
