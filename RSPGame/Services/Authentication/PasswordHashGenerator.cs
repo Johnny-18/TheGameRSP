@@ -2,7 +2,7 @@ using System;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
-namespace RSPGame.Services
+namespace RSPGame.Services.Authentication
 {
     public class PasswordHashGenerator
     {
