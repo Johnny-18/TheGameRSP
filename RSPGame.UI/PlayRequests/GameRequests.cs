@@ -6,17 +6,16 @@ namespace RSPGame.UI.PlayRequests
 {
     public static class GameRequests
     {
-        public static async Task<string> GetGame(HttpClient client, int roomId)
+        public static HttpResponseMessage GetGame(HttpClient client, int roomId)
         {
             if (client == null)
                 throw new ArgumentNullException(nameof(client));
 
-            string result;
+            HttpResponseMessage response;
 
             try
             {
-                var response = await client.GetAsync($"api/game/{roomId}");
-                result = await response.Content.ReadAsStringAsync();
+                response = client.GetAsync($"api/game/{roomId}").Result;
             }
             catch (HttpRequestException)
             {
@@ -24,7 +23,7 @@ namespace RSPGame.UI.PlayRequests
                 return null;
             }
 
-            return result;
+            return response;
         }
     }
 }

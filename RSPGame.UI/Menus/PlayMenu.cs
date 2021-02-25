@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace RSPGame.UI.Menus
 {
     public static class PlayMenu
     {
-        public static async void Start(HttpClient client, GamerInfo gamer)
+        public static void Start(HttpClient client, GamerInfo gamer)
         {
             while (true)
             {
@@ -33,25 +34,36 @@ namespace RSPGame.UI.Menus
                 switch (num)
                 {
                     case 1:
-                        var json = await RoomRequests.QuickSearch(client, gamer);
+                        var json = RoomRequests.QuickSearch(client, gamer).Result;
                         if (json == null) break;
                         var id = JsonConvert.DeserializeObject<int>(json);
 
+                        var counter = 0;
+                        HttpResponseMessage response;
                         var stopwatch = new Stopwatch();
-                        Queue<Task> tasks = new Queue<Task>();
                         stopwatch.Start();
 
                         while (true)
                         {
-                            Thread.Sleep(1500);
-                            tasks.Enqueue(Task.Run(() => GameRequests.GetGame(client, id)));
-                            if (stopwatch.ElapsedMilliseconds < 30000) continue;
+                            if (stopwatch.ElapsedMilliseconds < 2500) continue;
+                            response = GameRequests.GetGame(client, id);
+                            if (response.StatusCode == HttpStatusCode.OK) break;
+
+                            counter++;
+                            stopwatch.Restart();
+                            if (counter == 12) break;
+                        }
+
+                        if (response.StatusCode == HttpStatusCode.NotFound)
+                        { 
                             Console.WriteLine("\nThe game could not be found. Please try again.\n\n");
-                            stopwatch.Stop();
                             break;
                         }
 
-                        await Task.WhenAll(tasks);
+                        json = response.Content.ReadAsStringAsync().Result;
+                        var result = JsonConvert.DeserializeObject<string[]>(json);
+
+                        Console.WriteLine("\nDone!\n\n");
 
                         break;
                     case 2:
