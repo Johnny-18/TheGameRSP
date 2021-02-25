@@ -47,7 +47,7 @@ namespace RSPGame.UI.Menus
                         //
                         break;
                     case 4:
-                        return;
+                        return Task.CompletedTask;
                 }
             }
         }

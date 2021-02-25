@@ -31,10 +31,7 @@ namespace RSPGame.UI
                 BaseAddress = new Uri(baseAddress.BaseUrl)
             };
 
-            _session = new Session()
-            {
-                UserName = "alabai123"
-            };
+            _session = new Session();
 
             try
             {
