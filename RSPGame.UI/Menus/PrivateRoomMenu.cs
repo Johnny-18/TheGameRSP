@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -40,32 +41,7 @@ namespace RSPGame.UI.Menus
                         Console.WriteLine($"\nRoom with id {id} has been created!");
                         Console.WriteLine("\nWaiting for opponent\n\n");
 
-                        var counter = 0;
-                        HttpResponseMessage response;
-                        var stopwatch = new Stopwatch();
-                        stopwatch.Start();
-
-                        while (true)
-                        {
-                            if (stopwatch.ElapsedMilliseconds < 2500) continue;
-                            response = GameRequests.GetGame(client, id);
-                            if (response.StatusCode == HttpStatusCode.OK) break;
-
-                            counter++;
-                            stopwatch.Restart();
-                            if (counter == 12) break;
-                        }
-
-                        if (response.StatusCode == HttpStatusCode.NotFound)
-                        {
-                            Console.WriteLine("\nThe game could not be found. Please try again.\n\n");
-                            break;
-                        }
-
-                        json = response.Content.ReadAsStringAsync().Result;
-                        var result = JsonConvert.DeserializeObject<string[]>(json);
-
-                        Console.WriteLine("\nDone!\n\n");
+                        var result = GameRequests.GetGame(client, id)?.ToArray();
 
                         break;
 
