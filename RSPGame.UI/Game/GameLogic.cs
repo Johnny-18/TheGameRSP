@@ -9,6 +9,8 @@ namespace RSPGame.UI.Game
         public void StartRound(HttpClient client, string[] usersName, int roomId)
         {
             var roundId = 0;
+            var firstGamer = usersName[0];
+            var secondGamer = usersName[1];
 
             roundId++;
             Console.Clear();
@@ -49,8 +51,8 @@ namespace RSPGame.UI.Game
                     return;
             }
 
-            if (GameRequests.PostAction(client, action, roomId, roundId) == null) 
-                return;
+            //if (GameRequests.PostAction(client, action, roomId, roundId) == null) 
+            //    return;
 
         }
     }
