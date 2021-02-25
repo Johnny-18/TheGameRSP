@@ -14,7 +14,12 @@ namespace RSPGame.UI.Menus
         public SessionMenu(HttpClient client, Session currentSession)
         {
             _client = client;
-            _currentSession = currentSession;
+            //_currentSession = currentSession;
+            _currentSession = new Session()
+            {
+                UserName = "alabai123",
+                GamerInfo = new GamerInfo("alabai123")
+            };
         }
 
         public Task Start()

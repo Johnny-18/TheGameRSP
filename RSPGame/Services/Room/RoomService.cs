@@ -66,7 +66,7 @@ namespace RSPGame.Services.Room
                 if (id == 0)
                 {
                     room = _roomStorage.ListRooms
-                        .FirstOrDefault(x => x.IsPublic());
+                        .FirstOrDefault(x => x.IsPublic() /*&& x.GetGamer().UserName != gamer.UserName*/);
 
                     if (room == null)
                     {
@@ -83,7 +83,7 @@ namespace RSPGame.Services.Room
                 else
                 {
                     room = _roomStorage.ListRooms
-                        .FirstOrDefault(x => x.GetId() == id && !x.IsPublic());
+                        .FirstOrDefault(x => x.GetId() == id && !x.IsPublic() /*&& x.GetGamer().UserName != gamer.UserName*/);
 
                     if (room == null)
                     {

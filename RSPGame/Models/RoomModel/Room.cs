@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -14,14 +15,14 @@ namespace RSPGame.Models.RoomModel
 
         private readonly RoomStatus _roomStatus;
 
-        private readonly List<GamerInfo> _gamers;
+        private readonly BlockingCollection<GamerInfo> _gamers;
 
         private readonly object _locker = new();
 
         public Room(RoomStatus roomStatus)
         {
             _roomStatus = roomStatus;
-            _gamers = new List<GamerInfo>();
+            _gamers = new BlockingCollection<GamerInfo>(2);
             Task.Run(GamersCheck);
             //var timer = new Timer(GamersCheck, null, 0, 100);
         }
@@ -67,6 +68,8 @@ namespace RSPGame.Models.RoomModel
         }
 
         public int GetId() => _id;
+
+        public GamerInfo GetGamer() => _gamers.FirstOrDefault();
 
         public bool IsPublic() => _roomStatus == RoomStatus.Public;
     }
