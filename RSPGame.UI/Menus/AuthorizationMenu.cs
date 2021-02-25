@@ -6,18 +6,8 @@ namespace RSPGame.UI.Menus
 {
     public static class AuthorizationMenu
     {
-        private static readonly HttpClient _client;
-        private static GamerInfo _gamer;
 
-        static AuthorizationMenu()
-        {
-            _client = new HttpClient()
-            {
-                BaseAddress = new Uri("http://localhost:5000")
-            };
-        }
-
-        public static void Start()
+        public static void Start(HttpClient client, GamerInfo gamer)
         {
             while (true)
             {
@@ -38,10 +28,10 @@ namespace RSPGame.UI.Menus
                 switch (num)
                 {
                     case 1:
-                        SessionMenu.Start(_client, _gamer);
+                        SessionMenu.Start(client, gamer);
                         break;
                     case 2:
-                        SessionMenu.Start(_client, _gamer);
+                        SessionMenu.Start(client, gamer);
                         break;
                     case 3:
                         //
