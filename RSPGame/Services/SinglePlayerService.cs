@@ -16,18 +16,7 @@ namespace RSPGame.Services
         {
             var botAction = BotDecision();
 
-            var result = _service.GetWinner(action, botAction);
-            switch (result)
-            {
-                case -1:
-                    return RoundResult.Lose;
-                case 0:
-                    return RoundResult.Draw;
-                case 1:
-                    return RoundResult.Win;
-                default:
-                    return RoundResult.None;
-            }
+            return _service.GetWinner(action, botAction);
         }
 
         private GameActions BotDecision()
