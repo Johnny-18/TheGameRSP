@@ -10,7 +10,7 @@ namespace RSPGame.UI.PlayRequests
 {
     public static class RoomRequests
     {
-        public static async Task<string> QuickSearch(HttpClient client, GamerInfo gamer)
+        public static Task<string> QuickSearch(HttpClient client, GamerInfo gamer)
         {
             if (client == null)
                 throw new ArgumentNullException(nameof(client));
@@ -21,13 +21,12 @@ namespace RSPGame.UI.PlayRequests
 
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            string result;
+            Task<string> result;
 
             try
             {
-                var task = Task.Run(() => client.PostAsync($"/api/rooms/find", content));
-                task.Wait();
-                result = await task.Result.Content.ReadAsStringAsync();
+                var message = client.PostAsync($"/api/rooms/find", content).Result;
+                result = message.Content.ReadAsStringAsync();
             }
             catch (AggregateException)
             {
@@ -38,7 +37,7 @@ namespace RSPGame.UI.PlayRequests
             return result;
         }
 
-        public static async Task<string> CreateRoom(HttpClient client, GamerInfo gamer)
+        public static Task<string> CreateRoom(HttpClient client, GamerInfo gamer)
         {
             if (client == null)
                 throw new ArgumentNullException(nameof(client));
@@ -49,13 +48,12 @@ namespace RSPGame.UI.PlayRequests
 
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            string result;
+            Task<string> result;
 
             try
             {
-                var task = Task.Run(() => client.PostAsync($"/api/rooms/create", content));
-                task.Wait();
-                result = await task.Result.Content.ReadAsStringAsync();
+                var message = client.PostAsync($"/api/rooms/create", content).Result;
+                result = message.Content.ReadAsStringAsync();
             }
             catch (AggregateException)
             {
@@ -77,12 +75,11 @@ namespace RSPGame.UI.PlayRequests
 
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            Task<HttpResponseMessage> task;
+            HttpResponseMessage message;
 
             try
             {
-                task = Task.Run(() => client.PostAsync($"/api/rooms/join?id={id}", content));
-                task.Wait();
+                message = client.PostAsync($"/api/rooms/join?id={id}", content).Result;
             }
             catch (AggregateException)
             {
@@ -90,7 +87,7 @@ namespace RSPGame.UI.PlayRequests
                 return Task.CompletedTask;
             }
 
-            if (task.Result.StatusCode == HttpStatusCode.NotFound)
+            if (message.StatusCode == HttpStatusCode.NotFound)
             {
                 Console.WriteLine("\nThe room was not found. Check the number again.\n\n");
                 return Task.CompletedTask;

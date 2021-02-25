@@ -51,6 +51,7 @@ namespace RSPGame
 
             services.AddTransient<IRspService, RspService>();
             services.AddTransient<PasswordHashGenerator>();
+            services.AddTransient<SinglePlayerService>();
 
             services.AddScoped<IAuthService, AuthService>();
 

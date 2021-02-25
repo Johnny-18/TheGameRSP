@@ -4,9 +4,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using RSPGame.Models;
-using RSPGame.Services;
+using RSPGame.Storage;
 
-namespace RSPGame.Storage
+namespace RSPGame.Services
 {
     //todo: game logic
     //todo: statistics 
@@ -16,11 +16,11 @@ namespace RSPGame.Storage
     public class RoomService : IRoomService
     {
         private readonly RoomStorage _roomStorage;
-        private readonly ILogger<Startup> _logger;
+        private readonly ILogger<RoomService> _logger;
 
         private static readonly object Locker = new();
 
-        public RoomService(RoomStorage roomStorage, ILogger<Startup> logger)
+        public RoomService(RoomStorage roomStorage, ILogger<RoomService> logger)
         {
             _roomStorage = roomStorage;
             _logger = logger;
