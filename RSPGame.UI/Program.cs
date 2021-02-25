@@ -12,8 +12,8 @@ namespace RSPGame.UI
         private static HttpClient _client;
 
         private static Session _session;
-
-        private static string _path = "urls.json";
+        
+        private static string _path = "baseUrl.json";
 
         public static async Task Main()
         {

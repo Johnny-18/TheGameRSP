@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Net;
 using System.Net.Http;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 using RSPGame.Models;
+using RSPGame.UI.PlayRequests;
 
 namespace RSPGame.UI.Menus
 {
@@ -54,21 +51,20 @@ namespace RSPGame.UI.Menus
                 switch (num)
                 {
                     case 1:
-                        await Register();
+                        await AuthRequests.Register(_client, _currentSession);
                         break;
                     case 2:
                         if (_currentSession.CountLoginFailed < 3)
                         {
-                            await Login();
+                            await AuthRequests.Login(_client, _currentSession, _stopwatch);
                         }
                         else
                         {
                             Console.WriteLine("You were temporarily blocked due to incorrect authorization!");
                         }
-
                         break;
                     case 3:
-                        await GetGeneralStat();
+                        await StatRequests.GetGeneralStat(_client);
                         break;
                     case 4:
                         Console.WriteLine("Goodbye!");
