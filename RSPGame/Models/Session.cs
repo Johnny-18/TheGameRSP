@@ -6,6 +6,8 @@ namespace RSPGame.Models
         
         public string Token { get; set; }
         
+        public int CountLoginFailed { get; set; }
+        
         public GamerInfo GamerInfo { get; set; }
     }
 }

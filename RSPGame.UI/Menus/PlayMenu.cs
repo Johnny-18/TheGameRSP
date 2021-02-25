@@ -35,7 +35,7 @@ namespace RSPGame.UI.Menus
                 switch (num)
                 {
                     case 1:
-                        var json = RoomRequests.QuickSearch(client, gamer).Result;
+                        var json = RoomRequests.QuickSearch(client, gamer)?.Result;
                         if (json == null) break;
                         var id = JsonConvert.DeserializeObject<int>(json);
 

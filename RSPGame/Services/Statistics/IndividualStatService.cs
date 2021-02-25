@@ -1,11 +1,12 @@
 using System;
+using System.Threading.Tasks;
 using RSPGame.Models;
 
 namespace RSPGame.Services.Statistics
 {
     public class IndividualStatService : IIndividualStatService
     {
-        public void ChangeGamerInfoAfterRound(GamerInfo gamerInfo, GameActions action, RoundResult status)
+        public Task ChangeGamerInfoAfterRound(GamerInfo gamerInfo, GameActions action, RoundResult status)
         {
             if (gamerInfo == null)
                 throw new ArgumentNullException(nameof(gamerInfo));
@@ -13,7 +14,16 @@ namespace RSPGame.Services.Statistics
                 throw new ArgumentException("Invalid action!");
             if (status == RoundResult.None)
                 throw new ArgumentException("Invalid game status!");
-            
+
+            return Task.Run(() =>
+            {
+                ChangeCountAction(gamerInfo, action);
+                ChangeCountStatus(gamerInfo, status);
+            });
+        }
+
+        private void ChangeCountAction(GamerInfo gamerInfo, GameActions action)
+        {
             switch (action)
             {
                 case GameActions.Paper:
@@ -26,7 +36,10 @@ namespace RSPGame.Services.Statistics
                     gamerInfo.CountScissors++;
                     break;
             }
+        }
 
+        private void ChangeCountStatus(GamerInfo gamerInfo, RoundResult status)
+        {
             switch (status)
             {
                 case RoundResult.Draw:

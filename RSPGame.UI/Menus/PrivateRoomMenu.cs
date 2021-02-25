@@ -34,7 +34,7 @@ namespace RSPGame.UI.Menus
                 switch (num)
                 {
                     case 1:
-                        var json = RoomRequests.CreateRoom(client, gamer).Result;
+                        var json = RoomRequests.CreateRoom(client, gamer)?.Result;
                         if (json == null) break;
                         var id = JsonConvert.DeserializeObject<int>(json);
 
