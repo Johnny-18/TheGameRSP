@@ -84,13 +84,13 @@ namespace RSPGame.UI.PlayRequests
             catch (AggregateException)
             {
                 Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
-                return Task.CompletedTask;
+                return null;
             }
 
             if (message.StatusCode == HttpStatusCode.NotFound)
             {
                 Console.WriteLine("\nThe room was not found. Check the number again.\n\n");
-                return Task.CompletedTask;
+                return null;
             }
 
             Console.WriteLine("\nDone!\n\n");
