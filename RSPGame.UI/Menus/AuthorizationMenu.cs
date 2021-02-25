@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
@@ -44,6 +45,12 @@ namespace RSPGame.UI.Menus
                     continue;
                 }
                 
+                if (_stopwatch.ElapsedMilliseconds > 30000)
+                {
+                    _currentSession.CountLoginFailed = 0;
+                    _stopwatch.Stop();
+                }
+                
                 switch (num)
                 {
                     case 1:
@@ -61,7 +68,7 @@ namespace RSPGame.UI.Menus
 
                         break;
                     case 3:
-                        //todo statmenu
+                        await GetGeneralStat();
                         break;
                     case 4:
                         Console.WriteLine("Goodbye!");
@@ -70,13 +77,37 @@ namespace RSPGame.UI.Menus
                         Console.WriteLine("Incorrect number. Try again");
                         break;
                 }
-                
-                if (_stopwatch.ElapsedMilliseconds > 30000)
+
+                if (_currentSession.CountLoginFailed == 3)
                 {
-                    _currentSession.CountLoginFailed = 0;
-                    _stopwatch.Stop();
+                    Task.Run(() =>
+                    {
+                        Task.Delay(30000);
+                        _currentSession.CountLoginFailed = 0;
+                    });
                 }
             }
+        }
+
+        private async Task GetGeneralStat()
+        {
+            Console.WriteLine("General statistics");
+
+            var response = await GetResponse("api/stat/general");
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                var jsonFromApi = await response.Content.ReadAsStringAsync();
+                
+                var gamerInfos = JsonSerializer.Deserialize<List<GamerInfo>>(jsonFromApi);
+                foreach (var gamerInfo in gamerInfos)
+                {
+                    Console.WriteLine(gamerInfo.ToString());
+                }
+                
+                return;
+            }
+
+            Console.WriteLine("Not enough information for general statistics!");
         }
 
         private async Task Register()
