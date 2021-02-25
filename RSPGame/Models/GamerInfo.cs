@@ -1,6 +1,7 @@
 using System;
 using System.Text;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
+using RSPGame.Models.JsonConverter;
 
 namespace RSPGame.Models
 {
@@ -15,38 +16,33 @@ namespace RSPGame.Models
             UserName = userName;
         }
         
-        [JsonPropertyName("userName")]
+        [JsonProperty("userName")]
         public string UserName { get; set; }
         
-        [JsonPropertyName("countScissors")]
+        [JsonProperty("countScissors")]
         public int CountScissors { get; set; }
         
-        [JsonPropertyName("countPapers")]
+        [JsonProperty("countPapers")]
         public int CountPapers { get; set; }
         
-        [JsonPropertyName("countRocks")]
+        [JsonProperty("countRocks")]
         public int CountRocks { get; set; }
         
-        [JsonPropertyName("countWins")]
+        [JsonProperty("countWins")]
         public int CountWins { get; set; }
         
-        [JsonPropertyName("countLoses")]
+        [JsonProperty("countLoses")]
         public int CountLoses { get; set; }
         
-        [JsonPropertyName("countDraws")]
+        [JsonProperty("countDraws")]
         public int CountDraws { get; set; }
         
-        [JsonPropertyName("onlineTime")]
+        [JsonProperty("onlineTime")]
+        [JsonConverter(typeof(TimespanConverter))]
         public TimeSpan OnlineTime { get; set; }
 
-        [JsonIgnore]
-        public int Games
-        {
-            get
-            {
-                return CountLoses + CountDraws + CountWins;
-            }
-        }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public int Games => CountLoses + CountDraws + CountWins;
 
         public override string ToString()
         {
