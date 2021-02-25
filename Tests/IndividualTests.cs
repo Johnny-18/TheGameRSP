@@ -17,54 +17,54 @@ namespace Tests
 
         [Theory]
         [MemberData(nameof(GamerInfoGameActionsRoundResultForWin))]
-        public void ChangeGamerInfoAfterRound_If_GamerIs_Win_MustChanger_GamerInfo(GamerInfo gamerInfo, GameActions action, RoundResult status)
+        public async void ChangeGamerInfoAfterRound_If_GamerIs_Win_MustChanger_GamerInfo(GamerInfo gamerInfo, GameActions action, RoundResult status)
         {
-            _service.ChangeGamerInfoAfterRound(gamerInfo, action, status);
+            await _service.ChangeGamerInfoAfterRound(gamerInfo, action, status);
             
             Assert.Equal(1, gamerInfo.CountWins);
         }
         
         [Theory]
         [MemberData(nameof(GamerInfoGameActionsRoundResultForLose))]
-        public void ChangeGamerInfoAfterRound_If_GamerIs_Lose_MustChanger_GamerInfo(GamerInfo gamerInfo, GameActions action, RoundResult status)
+        public async void ChangeGamerInfoAfterRound_If_GamerIs_Lose_MustChanger_GamerInfo(GamerInfo gamerInfo, GameActions action, RoundResult status)
         {
-            _service.ChangeGamerInfoAfterRound(gamerInfo, action, status);
+            await _service.ChangeGamerInfoAfterRound(gamerInfo, action, status);
             
             Assert.Equal(1, gamerInfo.CountLoses);
         }
         
         [Theory]
         [MemberData(nameof(GamerInfoGameActionsRoundResultForDraw))]
-        public void ChangeGamerInfoAfterRound_If_GamerIs_Draw_MustChanger_GamerInfo(GamerInfo gamerInfo, GameActions action, RoundResult status)
+        public async void ChangeGamerInfoAfterRound_If_GamerIs_Draw_MustChanger_GamerInfo(GamerInfo gamerInfo, GameActions action, RoundResult status)
         {
-            _service.ChangeGamerInfoAfterRound(gamerInfo, action, status);
+            await _service.ChangeGamerInfoAfterRound(gamerInfo, action, status);
             
             Assert.Equal(1, gamerInfo.CountDraws);
         }
 
         [Theory]
         [MemberData(nameof(GamerInfoGameActionsRoundResultForScissor))]
-        public void ChangeGamerInfoAfterRound_ChangeCounterScissors(GamerInfo gamerInfo, GameActions action, RoundResult status)
+        public async void ChangeGamerInfoAfterRound_ChangeCounterScissors(GamerInfo gamerInfo, GameActions action, RoundResult status)
         {
-            _service.ChangeGamerInfoAfterRound(gamerInfo, action, status);
+            await _service.ChangeGamerInfoAfterRound(gamerInfo, action, status);
             
             Assert.Equal(1, gamerInfo.CountScissors);
         }
         
         [Theory]
         [MemberData(nameof(GamerInfoGameActionsRoundResultForPaper))]
-        public void ChangeGamerInfoAfterRound_ChangeCounterPapers(GamerInfo gamerInfo, GameActions action, RoundResult status)
+        public async void ChangeGamerInfoAfterRound_ChangeCounterPapers(GamerInfo gamerInfo, GameActions action, RoundResult status)
         {
-            _service.ChangeGamerInfoAfterRound(gamerInfo, action, status);
+            await _service.ChangeGamerInfoAfterRound(gamerInfo, action, status);
             
             Assert.Equal(1, gamerInfo.CountPapers);
         }
         
         [Theory]
         [MemberData(nameof(GamerInfoGameActionsRoundResultForRock))]
-        public void ChangeGamerInfoAfterRound_ChangeCounterRocks(GamerInfo gamerInfo, GameActions action, RoundResult status)
+        public async void ChangeGamerInfoAfterRound_ChangeCounterRocks(GamerInfo gamerInfo, GameActions action, RoundResult status)
         {
-            _service.ChangeGamerInfoAfterRound(gamerInfo, action, status);
+            await _service.ChangeGamerInfoAfterRound(gamerInfo, action, status);
             
             Assert.Equal(1, gamerInfo.CountRocks);
         }
@@ -74,27 +74,27 @@ namespace Tests
         [InlineData(GameActions.Paper, RoundResult.Win)]
         [InlineData(GameActions.Scissors, RoundResult.Lose)]
         [InlineData(GameActions.Rock, RoundResult.Draw)]
-        public void ChangeGamerInfoAfterRound_ThrowArgumentNullException_WhenGamerInfo_IsNull(GameActions action, RoundResult result)
+        public async System.Threading.Tasks.Task ChangeGamerInfoAfterRound_ThrowArgumentNullException_WhenGamerInfo_IsNull(GameActions action, RoundResult result)
         {
-            Assert.Throws<ArgumentNullException>(() => _service.ChangeGamerInfoAfterRound(null, action, result));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _service.ChangeGamerInfoAfterRound(null, action, result));
         }
         
         [Theory]
         [InlineData(RoundResult.Win)]
         [InlineData(RoundResult.Lose)]
         [InlineData(RoundResult.Draw)]
-        public void ChangeGamerInfoAfterRound_ThrowArgumentException_WhenGameActions_IsNone(RoundResult result)
+        public async System.Threading.Tasks.Task ChangeGamerInfoAfterRound_ThrowArgumentException_WhenGameActions_IsNone(RoundResult result)
         {
-            Assert.Throws<ArgumentException>(() => _service.ChangeGamerInfoAfterRound(new GamerInfo(), GameActions.None, result));
+            await Assert.ThrowsAsync<ArgumentException>(() => _service.ChangeGamerInfoAfterRound(new GamerInfo(), GameActions.None, result));
         }
         
         [Theory]
         [InlineData(GameActions.Paper)]
         [InlineData(GameActions.Scissors)]
         [InlineData(GameActions.Rock)]
-        public void ChangeGamerInfoAfterRound_ThrowArgumentException_WhenRoundResult_IsNone(GameActions action)
+        public async System.Threading.Tasks.Task ChangeGamerInfoAfterRound_ThrowArgumentException_WhenRoundResult_IsNone(GameActions action)
         {
-            Assert.Throws<ArgumentException>(() => _service.ChangeGamerInfoAfterRound(new GamerInfo(), action, RoundResult.None));
+            await Assert.ThrowsAsync<ArgumentException>(() => _service.ChangeGamerInfoAfterRound(new GamerInfo(), action, RoundResult.None));
         }
 
         [Fact]
