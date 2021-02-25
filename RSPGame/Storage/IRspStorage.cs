@@ -11,5 +11,7 @@ namespace RSPGame.Storage
         Task<bool> TryAddUserAsync(User user);
 
         Task<User> GetUserByUserNameAsync(string userName);
+
+        Task SaveToFile();
     }
 }
