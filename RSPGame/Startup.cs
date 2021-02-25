@@ -57,6 +57,7 @@ namespace RSPGame
 
             services.AddSingleton<RoomStorage>();
             services.AddSingleton<GameStorage>();
+            services.AddSingleton<RoundStorage>();
             services.AddSingleton<IRoomService, RoomService>();
         }
 

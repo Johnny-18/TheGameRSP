@@ -20,7 +20,7 @@ namespace RSPGame.UI.Menus
             _currentSession = currentSession;
         }
 
-        public async Task Start()
+        public Task Start()
         {
             while (true)
             {
@@ -49,13 +49,13 @@ namespace RSPGame.UI.Menus
 
                         break;
                     case 2:
-                        await new PrivateRoomMenu(_client, _currentSession).Start();
+                        new PrivateRoomMenu(_client, _currentSession).Start();
                         break;
                     case 3:
                         //
                         break;
                     case 4:
-                        return;
+                        return Task.CompletedTask;
                 }
             }
         }

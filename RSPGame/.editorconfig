@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# CS0436: Тип конфликтует с импортированным типом
+dotnet_diagnostic.CS0436.severity = none

@@ -28,7 +28,7 @@ namespace RSPGame.UI.Menus
         public async Task Start()
         {
             Console.Clear();
-            
+
             while (true)
             {
                 Console.WriteLine();
@@ -37,20 +37,20 @@ namespace RSPGame.UI.Menus
                 Console.WriteLine("2.\tLogin");
                 Console.WriteLine("3.\tStatistics");
                 Console.WriteLine("4.\tExit");
-                
+
                 Console.Write("Enter the number: ");
                 if (!int.TryParse(Console.ReadLine(), out var num))
                 {
                     Console.WriteLine("The only numbers can be entered. Try again");
                     continue;
                 }
-                
+
                 if (_stopwatch.ElapsedMilliseconds > 30000)
                 {
                     _currentSession.CountLoginFailed = 0;
                     _stopwatch.Stop();
                 }
-                
+              
                 switch (num)
                 {
                     case 1:
@@ -80,7 +80,7 @@ namespace RSPGame.UI.Menus
 
                 if (_currentSession.CountLoginFailed == 3)
                 {
-                    Task.Run(() =>
+                    await Task.Run(() =>
                     {
                         Task.Delay(30000);
                         _currentSession.CountLoginFailed = 0;
@@ -97,13 +97,13 @@ namespace RSPGame.UI.Menus
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 var jsonFromApi = await response.Content.ReadAsStringAsync();
-                
+
                 var gamerInfos = JsonSerializer.Deserialize<List<GamerInfo>>(jsonFromApi);
                 foreach (var gamerInfo in gamerInfos)
                 {
                     Console.WriteLine(gamerInfo.ToString());
                 }
-                
+
                 return;
             }
 
@@ -120,7 +120,7 @@ namespace RSPGame.UI.Menus
                 var jsonFromApi = await response.Content.ReadAsStringAsync();
 
                 _currentSession = JsonSerializer.Deserialize<Session>(jsonFromApi);
-                
+
                 await new SessionMenu(_client, _currentSession).Start();
                 return;
             }
@@ -140,11 +140,13 @@ namespace RSPGame.UI.Menus
                 var jsonFromApi = await response.Content.ReadAsStringAsync();
 
                 _currentSession = JsonSerializer.Deserialize<Session>(jsonFromApi);
-                
+
+                _currentSession.GamerInfo = new GamerInfo("alabai123");
+
                 await new SessionMenu(_client, _currentSession).Start();
                 return;
             }
-            
+
             _currentSession.CountLoginFailed++;
 
             Console.WriteLine(response.StatusCode == HttpStatusCode.BadRequest
@@ -161,7 +163,7 @@ namespace RSPGame.UI.Menus
         {
             var userName = GetStringFromUser("Enter your user name:");
             var password = GetStringFromUser("Enter your password:");
-                
+
             var uri = _client.BaseAddress + url;
 
             var user = new RequestUser

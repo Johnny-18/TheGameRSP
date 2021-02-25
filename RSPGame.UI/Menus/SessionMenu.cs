@@ -16,8 +16,8 @@ namespace RSPGame.UI.Menus
             _client = client;
             _currentSession = currentSession;
         }
-        
-        public async Task Start()
+
+        public Task Start()
         {
             while (true)
             {
@@ -38,7 +38,7 @@ namespace RSPGame.UI.Menus
                 switch (num)
                 {
                     case 1:
-                        await new PlayMenu(_client, _currentSession).Start();
+                        new PlayMenu(_client, _currentSession).Start();
                         break;
                     case 2:
                         //
@@ -47,7 +47,7 @@ namespace RSPGame.UI.Menus
                         //
                         break;
                     case 4:
-                        return;
+                        return Task.CompletedTask;
                 }
             }
         }
