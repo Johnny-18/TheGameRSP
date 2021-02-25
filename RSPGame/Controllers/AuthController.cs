@@ -25,7 +25,7 @@ namespace RSPGame.Controllers
 
             var session = await _authService.LoginAsync(user);
             if (session == null)
-                return NotFound();
+                return Forbid();
             
             return Ok(session);
         }
@@ -38,7 +38,7 @@ namespace RSPGame.Controllers
 
             var session = await _authService.RegisterAsync(user);
             if (session == null)
-                return NotFound();
+                return Forbid();
             
             return Ok(session);
         }

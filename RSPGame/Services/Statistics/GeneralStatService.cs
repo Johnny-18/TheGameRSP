@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using RSPGame.Models;
-using RSPGame.Storage;
 
 namespace RSPGame.Services.Statistics
 {
