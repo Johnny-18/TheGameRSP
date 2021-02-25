@@ -13,4 +13,11 @@
       <None Remove="settings.json" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="urls.json" />
+      <Content Include="urls.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
 </Project>
