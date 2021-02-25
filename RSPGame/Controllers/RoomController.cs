@@ -2,7 +2,9 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RSPGame.Models;
+using RSPGame.Models.RoomModel;
 using RSPGame.Services;
+using RSPGame.Services.Room;
 
 namespace RSPGame.Controllers
 {

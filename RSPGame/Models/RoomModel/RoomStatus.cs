@@ -1,4 +1,4 @@
-﻿namespace RSPGame.Models
+﻿namespace RSPGame.Models.RoomModel
 {
     public enum RoomStatus
     {

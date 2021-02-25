@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RSPGame.Models;
+using RSPGame.UI.Game;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace RSPGame.UI.PlayRequests
@@ -22,7 +23,7 @@ namespace RSPGame.UI.PlayRequests
             HttpResponseMessage response;
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            
+
             while (true)
             {
                 if (stopwatch.ElapsedMilliseconds < 2500) continue;
@@ -50,12 +51,12 @@ namespace RSPGame.UI.PlayRequests
             }
 
             Console.WriteLine("\nDone!\n\n");
-            
+
             var json = response.Content.ReadAsStringAsync().Result;
             return JsonConvert.DeserializeObject<string[]>(json);
         }
 
-        public static Task PostAction(HttpClient client, GameActionsUi action, int roomId, int roundId)
+        public static Task<string> PostAction(HttpClient client, GameActionsUi action, int roomId, int roundId)
         {
             if (client == null)
                 throw new ArgumentNullException(nameof(client));
@@ -64,9 +65,13 @@ namespace RSPGame.UI.PlayRequests
 
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
+            Task<string> result = null;
+
             try
             {
                 var message = client.PostAsync($"/api/round/{roomId}/{roundId}", content).Result;
+                if (message.StatusCode == HttpStatusCode.OK)
+                    result = message.Content.ReadAsStringAsync();
             }
             catch (AggregateException)
             {
@@ -75,7 +80,7 @@ namespace RSPGame.UI.PlayRequests
             }
 
             Console.WriteLine("\nRequest has been sent!\n\n");
-            return Task.CompletedTask;
+            return result;
         }
 
     }

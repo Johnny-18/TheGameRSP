@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace RSPGame.Models
+namespace RSPGame.Models.RoomModel
 {
     public class Room
     {

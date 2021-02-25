@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RSPGame.Models;
+using RSPGame.UI.Game;
 using RSPGame.UI.PlayRequests;
 
 namespace RSPGame.UI.Menus
@@ -69,7 +70,7 @@ namespace RSPGame.UI.Menus
 
                         var result2 = GameRequests.GetGame(_client, id2)?.ToArray();
 
-                        new GameLogic().StartGame(_client, result2, id2);
+                        new GameLogic().StartRound(_client, result2, id2);
 
                         break;
 
