@@ -40,13 +40,7 @@ namespace RSPGame.Models
         public TimeSpan OnlineTime { get; set; }
 
         [JsonIgnore]
-        public int Games
-        {
-            get
-            {
-                return CountLoses + CountDraws + CountWins;
-            }
-        }
+        public int Games => CountLoses + CountDraws + CountWins;
 
         public override string ToString()
         {
