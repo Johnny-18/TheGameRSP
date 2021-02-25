@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RSPGame.Models;
@@ -33,6 +36,22 @@ namespace RSPGame.UI.Menus
                         var json = await RoomRequests.QuickSearch(client, gamer);
                         if (json == null) break;
                         var id = JsonConvert.DeserializeObject<int>(json);
+
+                        var stopwatch = new Stopwatch();
+                        Queue<Task> tasks = new Queue<Task>();
+                        stopwatch.Start();
+
+                        while (true)
+                        {
+                            Thread.Sleep(1500);
+                            tasks.Enqueue(Task.Run(() => GameRequests.GetGame(client, id)));
+                            if (stopwatch.ElapsedMilliseconds < 30000) continue;
+                            Console.WriteLine("\nThe game could not be found. Please try again.\n\n");
+                            stopwatch.Stop();
+                            break;
+                        }
+
+                        await Task.WhenAll(tasks);
 
                         break;
                     case 2:

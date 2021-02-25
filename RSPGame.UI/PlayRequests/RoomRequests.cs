@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -20,16 +21,15 @@ namespace RSPGame.UI.PlayRequests
 
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            Task<HttpResponseMessage> task;
             string result;
 
             try
             {
-                task = Task.Run(() => client.PostAsync($"/api/rooms/find", content));
+                var task = Task.Run(() => client.PostAsync($"/api/rooms/find", content));
                 task.Wait();
                 result = await task.Result.Content.ReadAsStringAsync();
             }
-            catch (AggregateException e)
+            catch (AggregateException)
             {
                 Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
                 return null;
@@ -49,16 +49,15 @@ namespace RSPGame.UI.PlayRequests
 
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            Task<HttpResponseMessage> task;
             string result;
 
             try
             {
-                task = Task.Run(() => client.PostAsync($"/api/rooms/create", content));
+                var task = Task.Run(() => client.PostAsync($"/api/rooms/create", content));
                 task.Wait();
                 result = await task.Result.Content.ReadAsStringAsync();
             }
-            catch (AggregateException e)
+            catch (AggregateException)
             {
                 Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
                 return null;
@@ -78,14 +77,22 @@ namespace RSPGame.UI.PlayRequests
 
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
+            Task<HttpResponseMessage> task;
+
             try
             {
-                var task = Task.Run(() => client.PostAsync($"/api/rooms/join?id={id}", content));
+                task = Task.Run(() => client.PostAsync($"/api/rooms/join?id={id}", content));
                 task.Wait();
             }
-            catch (AggregateException e)
+            catch (AggregateException)
             {
                 Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                return Task.CompletedTask;
+            }
+
+            if (task.Result.StatusCode == HttpStatusCode.NotFound)
+            {
+                Console.WriteLine("\nThe room was not found. Check the number again.\n\n");
                 return Task.CompletedTask;
             }
 

@@ -21,8 +21,6 @@ namespace RSPGame.Controllers
             if (roomId == 0 || usersName.Any(string.IsNullOrWhiteSpace))
                 return BadRequest();
 
-            if (!ModelState.IsValid) return BadRequest(roomId);
-
             var result = _gameStorage.DictionaryGame.TryAdd(roomId, usersName);
 
             if (result) return Ok();
@@ -30,9 +28,13 @@ namespace RSPGame.Controllers
         }
 
         [HttpGet("{roomId}")]
-        public IActionResult GetGame()
+        public IActionResult GetGame([FromRoute] int roomId)
         {
-            return Ok(_gameStorage.DictionaryGame.First());
+            if (roomId == 0 || roomId > 1000)
+                return BadRequest(roomId);
+            if (!_gameStorage.DictionaryGame.ContainsKey(roomId))
+                return NotFound();
+            return Ok(_gameStorage.DictionaryGame[roomId]);
         }
     }
 }

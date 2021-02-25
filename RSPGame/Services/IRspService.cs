@@ -4,6 +4,6 @@ namespace RSPGame.Services
 {
     public interface IRspService
     {
-        int GetWinner(GameActions gamer1, GameActions gamer2);
+        RoundResult GetWinner(GameActions gamer1, GameActions gamer2);
     }
 }
