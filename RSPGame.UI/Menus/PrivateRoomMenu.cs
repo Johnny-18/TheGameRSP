@@ -1,12 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 using RSPGame.Models;
+using RSPGame.UI.PlayRequests;
 
 namespace RSPGame.UI.Menus
 {
     public static class PrivateRoomMenu
     {
-        public static void Start(HttpClient client, GamerInfo gamer)
+        public static async void Start(HttpClient client, GamerInfo gamer)
         {
             while (true)
             {
@@ -26,11 +32,49 @@ namespace RSPGame.UI.Menus
                 switch (num)
                 {
                     case 1:
-                        //
+                        var json = await RoomRequests.CreateRoom(client, gamer);
+                        if (json == null) break;
+                        var id = JsonConvert.DeserializeObject<int>(json);
+
+                        Console.WriteLine($"\nRoom with id {id} has been created!");
+                        Console.WriteLine("\nWaiting for opponent\n\n");
+
+                        var stopwatch = new Stopwatch();
+                        Queue<Task> tasks = new Queue<Task>();
+                        stopwatch.Start();
+
+                        while (true)
+                        {
+                            Thread.Sleep(1500);
+                            var id1 = id;
+                            tasks.Enqueue(Task.Run(() => GameRequests.GetGame(client, id1)));
+                            if (stopwatch.ElapsedMilliseconds < 60000) continue;
+                            Console.WriteLine("\nYou cannot wait so long alone. Please try again.\n\n");
+                            stopwatch.Stop();
+                            break;
+                        }
+
+                        await Task.WhenAll(tasks);
+
                         break;
+
                     case 2:
-                        //
+                        Console.Write("Enter the id of the desired room: ");
+
+                        if (!int.TryParse(Console.ReadLine(), out var i))
+                        {
+                            Console.WriteLine("\nERROR:\tThe only numbers can be entered. Try again\n\n");
+                            break;
+                        }
+                        else if (i < 1 || i > 1000)
+                        {
+                            Console.WriteLine("\nERROR:\tIncorrect number. Try again\n\n");
+                            break;
+                        }
+
+                        await RoomRequests.JoinRoom(client, gamer, i);
                         break;
+
                     case 3:
                         return;
                 }

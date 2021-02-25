@@ -23,18 +23,18 @@ namespace RSPGame.Models
             _roomStatus = roomStatus;
             _gamers = new List<GamerInfo>();
             Task.Run(GamersCheck);
+            //var timer = new Timer(GamersCheck, null, 0, 100);
         }
 
         private async void GamersCheck()
         {
             while (true)
             {
-                if (_gamers.Count == 2)
-                {
-                    await StartGame();
-                    break;
-                }
+                if (_gamers.Count != 2) continue;
+                await StartGame();
+                break;
             }
+
         }
 
         private async Task StartGame()
