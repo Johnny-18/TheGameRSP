@@ -6,20 +6,11 @@ namespace RSPGame.Services.Authentication
 {
     public class PasswordHashGenerator
     {
-        private static readonly byte[] Salt;
-
-        static PasswordHashGenerator()
-        {
-            Salt = new byte[128 / 8];
-            using var rng = RandomNumberGenerator.Create();
-            rng.GetBytes(Salt);
-        }
-        
         public string GenerateHash(string password)
         {
             string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
                 password: password,
-                salt: Salt,
+                salt: new byte[128 / 8],
                 prf: KeyDerivationPrf.HMACSHA1,
                 iterationCount: 10000,
                 numBytesRequested: 256 / 8));

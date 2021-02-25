@@ -8,13 +8,9 @@
     <ItemGroup>
       <ProjectReference Include="..\RSPGame\RSPGame.csproj" />
     </ItemGroup>
+    
 
     <ItemGroup>
-      <None Remove="settings.json" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Remove="urls.json" />
       <Content Include="baseUrl.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
