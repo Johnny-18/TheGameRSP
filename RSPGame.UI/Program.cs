@@ -17,6 +17,7 @@ namespace RSPGame.UI
                 BaseAddress = new Uri("http://localhost:5000")
             };
             _gamer = new GamerInfo();
+            _gamer.UserName = "alabai123";
 
             try
             {

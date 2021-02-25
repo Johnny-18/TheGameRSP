@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace RSPGame.UI.Menus
 {
     public static class PrivateRoomMenu
     {
-        public static async void Start(HttpClient client, GamerInfo gamer)
+        public static void Start(HttpClient client, GamerInfo gamer)
         {
             while (true)
             {
@@ -32,29 +33,39 @@ namespace RSPGame.UI.Menus
                 switch (num)
                 {
                     case 1:
-                        var json = await RoomRequests.CreateRoom(client, gamer);
+                        var json = RoomRequests.CreateRoom(client, gamer).Result;
                         if (json == null) break;
                         var id = JsonConvert.DeserializeObject<int>(json);
 
                         Console.WriteLine($"\nRoom with id {id} has been created!");
                         Console.WriteLine("\nWaiting for opponent\n\n");
 
+                        var counter = 0;
+                        HttpResponseMessage response;
                         var stopwatch = new Stopwatch();
-                        Queue<Task> tasks = new Queue<Task>();
                         stopwatch.Start();
 
                         while (true)
                         {
-                            Thread.Sleep(1500);
-                            var id1 = id;
-                            tasks.Enqueue(Task.Run(() => GameRequests.GetGame(client, id1)));
-                            if (stopwatch.ElapsedMilliseconds < 60000) continue;
-                            Console.WriteLine("\nYou cannot wait so long alone. Please try again.\n\n");
-                            stopwatch.Stop();
+                            if (stopwatch.ElapsedMilliseconds < 2500) continue;
+                            response = GameRequests.GetGame(client, id);
+                            if (response.StatusCode == HttpStatusCode.OK) break;
+
+                            counter++;
+                            stopwatch.Restart();
+                            if (counter == 12) break;
+                        }
+
+                        if (response.StatusCode == HttpStatusCode.NotFound)
+                        {
+                            Console.WriteLine("\nThe game could not be found. Please try again.\n\n");
                             break;
                         }
 
-                        await Task.WhenAll(tasks);
+                        json = response.Content.ReadAsStringAsync().Result;
+                        var result = JsonConvert.DeserializeObject<string[]>(json);
+
+                        Console.WriteLine("\nDone!\n\n");
 
                         break;
 
@@ -72,7 +83,7 @@ namespace RSPGame.UI.Menus
                             break;
                         }
 
-                        await RoomRequests.JoinRoom(client, gamer, i);
+                        RoomRequests.JoinRoom(client, gamer, i);
                         break;
 
                     case 3:
