@@ -15,7 +15,7 @@ namespace RSPGame.UI.PlayRequests
     {
         public static async Task Register(HttpClient client, Session currentSession)
         {
-            Console.WriteLine("Registration");
+            Console.WriteLine("\nRegistration");
 
             var response = await GetResponse(client, "api/auth/register");
             if (response.StatusCode == HttpStatusCode.OK)
@@ -35,7 +35,7 @@ namespace RSPGame.UI.PlayRequests
         
         public static async Task Login(HttpClient client, Session currentSession, Stopwatch stopwatch)
         {
-            Console.WriteLine("Login");
+            Console.WriteLine("\nLogin");
 
             var response = await GetResponse(client, "api/auth/login");
             if (response.StatusCode == HttpStatusCode.OK)
@@ -64,7 +64,7 @@ namespace RSPGame.UI.PlayRequests
         {
             while (true)
             {
-                Console.WriteLine(message);
+                Console.Write(message);
                 var input = Console.ReadLine();
 
                 if (string.IsNullOrEmpty(input) || input.Length < 6)
@@ -79,8 +79,8 @@ namespace RSPGame.UI.PlayRequests
         
         public static async Task<HttpResponseMessage> GetResponse(HttpClient client, string url)
         {
-            var userName = GetStringFromUser("Enter your user name:");
-            var password = GetStringFromUser("Enter your password:");
+            var userName = GetStringFromUser("Enter your user name: ");
+            var password = GetStringFromUser("Enter your password: ");
                 
             var uri = client.BaseAddress + url;
 

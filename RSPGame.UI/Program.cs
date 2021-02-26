@@ -38,7 +38,7 @@ namespace RSPGame.UI
             }
             catch (HttpRequestException)
             {
-                Console.WriteLine("ERROR:\tCheck your internet connection and run game again!");
+                Console.WriteLine("\n\nERROR:\tCheck your internet connection and run game again!\n");
             }
         }
     }

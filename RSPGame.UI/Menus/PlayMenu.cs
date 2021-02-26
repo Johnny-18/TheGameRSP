@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RSPGame.Models;
+using RSPGame.UI.Game;
 using RSPGame.UI.PlayRequests;
 
 namespace RSPGame.UI.Menus
@@ -52,7 +53,7 @@ namespace RSPGame.UI.Menus
                         new PrivateRoomMenu(_client, _currentSession).Start();
                         break;
                     case 3:
-                        //
+                        new GameLogic().PlayWithBotAsync(_client);
                         break;
                     case 4:
                         return Task.CompletedTask;

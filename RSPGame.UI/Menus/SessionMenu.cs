@@ -22,7 +22,7 @@ namespace RSPGame.UI.Menus
             while (true)
             {
                 int num;
-                Console.WriteLine("1.\tPlay");
+                Console.WriteLine("\n1.\tPlay");
                 Console.WriteLine("2.\tStatistics");
                 Console.WriteLine("3.\tMy statistics");
                 Console.WriteLine("4.\tLogout");
