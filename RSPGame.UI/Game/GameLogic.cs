@@ -5,6 +5,7 @@ using RSPGame.Models;
 using RSPGame.UI.PlayRequests;
 using System.Runtime.InteropServices;
 using RSPGame.Models.Game;
+using RSPGame.UI.Models;
 
 namespace RSPGame.UI.Game
 {

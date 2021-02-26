@@ -1,4 +1,4 @@
-namespace RSPGame.UI.Game
+namespace RSPGame.UI.Models
 {
     public enum GameActionsUi
     {

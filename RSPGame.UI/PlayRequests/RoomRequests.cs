@@ -9,6 +9,7 @@ using RSPGame.Models;
 using RSPGame.Models.Game;
 using RSPGame.Models.RoomModel;
 using RSPGame.UI.Game;
+using RSPGame.UI.Models;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace RSPGame.UI.PlayRequests
