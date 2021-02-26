@@ -52,8 +52,13 @@ namespace RSPGame.UI.Menus
                         if (result1 == null) break;
 
                         var opponent1 = result1
-                            .Where(x => !x.Equals(_currentSession.GamerInfo.UserName))?
-                            .First();
+                            .FirstOrDefault(x => !x.Equals(_currentSession.GamerInfo.UserName));
+
+                        if (opponent1 == null)
+                        {
+                            Console.WriteLine("Error: You can`t play with yourself!\n\n");
+                            break;
+                        }
 
                         new GameLogic().StartGame(_client, _currentSession.GamerInfo.UserName, opponent1, id1);
                         break;
@@ -75,9 +80,16 @@ namespace RSPGame.UI.Menus
                         if (RoomRequests.JoinRoom(_client, _currentSession.GamerInfo, id2) == null) break;
 
                         var result2 = GameRequests.GetGame(_client, id2)?.ToArray();
+                        if (result2 == null) break;
+
                         var opponent2 = result2
-                            .Where(x => !x.Equals(_currentSession.GamerInfo.UserName))?
-                            .First();
+                            .FirstOrDefault(x => !x.Equals(_currentSession.GamerInfo.UserName));
+
+                        if (opponent2 == null)
+                        {
+                            Console.WriteLine("Error: You can`t play with yourself!\n\n");
+                            break;
+                        }
 
                         new GameLogic().StartGame(_client, _currentSession.GamerInfo.UserName, opponent2, id2);
 

@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using RSPGame.Models;
+using RSPGame.Models.GameModel;
 
 namespace RSPGame.UI.PlayRequests
 {

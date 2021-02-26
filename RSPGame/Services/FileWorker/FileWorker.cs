@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace RSPGame.Services
+namespace RSPGame.Services.FileWorker
 {
     public class FileWorker : IFileWorker
     {

@@ -1,7 +1,8 @@
 using System;
 using RSPGame.Models;
+using RSPGame.Models.GameModel;
 
-namespace RSPGame.Services
+namespace RSPGame.Services.Rsp
 {
     public class RspService : IRspService
     {
@@ -29,6 +30,21 @@ namespace RSPGame.Services
             }
             
             return RoundResult.Lose;
+        }
+
+        public RoundResult InverseResult(RoundResult result)
+        {
+            switch (result)
+            {
+                case RoundResult.Win:
+                    result = RoundResult.Lose;
+                    break;
+                case RoundResult.Lose:
+                    result = RoundResult.Win;
+                    break;
+            }
+
+            return result;
         }
     }
 }

@@ -1,5 +1,6 @@
 using RSPGame.Models;
-using RSPGame.Services;
+using RSPGame.Models.GameModel;
+using RSPGame.Services.Rsp;
 using Xunit;
 
 namespace Tests

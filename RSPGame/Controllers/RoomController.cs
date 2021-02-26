@@ -1,11 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using RSPGame.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using RSPGame.Models.RoomModel;
 using RSPGame.Services.Room;
-using RSPGame.Storage;
+using System;
+using System.Threading.Tasks;
+using RSPGame.Models.GameModel;
 
 namespace RSPGame.Controllers
 {

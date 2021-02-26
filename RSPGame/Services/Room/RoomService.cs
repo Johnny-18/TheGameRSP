@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using RSPGame.Models;
+using RSPGame.Models.GameModel;
 using RSPGame.Models.RoomModel;
 using RSPGame.Storage;
 
@@ -16,21 +16,21 @@ namespace RSPGame.Services.Room
     //todo: get match result by gamers 
     public class RoomService : IRoomService
     {
-        private readonly RoomStorage RoomStorage;
+        private readonly RoomStorage _roomStorage;
         private readonly ILogger<RoomService> _logger;
 
         private static readonly object Locker = new();
 
         public RoomService(RoomStorage roomStorage, ILogger<RoomService> logger)
         {
-            RoomStorage = roomStorage;
+            _roomStorage = roomStorage;
             _logger = logger;
         }
 
         public async Task<int> CreateRoom(GamerInfo gamer, RoomStatus roomStatus)
         {
             if (gamer == null)
-                throw new ArgumentNullException(nameof(gamer));
+                return -1;
 
             var room = new Models.RoomModel.Room(roomStatus);
 
@@ -42,7 +42,7 @@ namespace RSPGame.Services.Room
             try
             {
                 Monitor.Enter(Locker, ref acquiredLock);
-                RoomStorage.ListRooms.Add(room);
+                _roomStorage.ListRooms.Add(room);
             }
             finally
             {
@@ -55,7 +55,7 @@ namespace RSPGame.Services.Room
         public async Task<int> JoinRoom(GamerInfo gamer, int id = 0)
         {
             if (gamer == null)
-                throw new ArgumentNullException(nameof(gamer));
+                return -1;
 
             var acquiredLock = false;
             try
@@ -65,7 +65,7 @@ namespace RSPGame.Services.Room
                 Models.RoomModel.Room room;
                 if (id == 0)
                 {
-                    room = RoomStorage.ListRooms
+                    room = _roomStorage.ListRooms
                         .FirstOrDefault(x => x.IsPublic() /*&& x.GetGamer().UserName != gamer.UserName*/);
 
                     if (room == null)
@@ -76,13 +76,13 @@ namespace RSPGame.Services.Room
 
                         await room.AddGamer(gamer);
 
-                        RoomStorage.ListRooms.Add(room);
+                        _roomStorage.ListRooms.Add(room);
                         return room.GetId();
                     }
                 }
                 else
                 {
-                    room = RoomStorage.ListRooms
+                    room = _roomStorage.ListRooms
                         .FirstOrDefault(x => x.GetId() == id && !x.IsPublic() /*&& x.GetGamer().UserName != gamer.UserName*/);
 
                     if (room == null)
@@ -93,7 +93,7 @@ namespace RSPGame.Services.Room
 
                 await room.AddGamer(gamer);
 
-                RoomStorage.ListRooms.Remove(room);
+                _roomStorage.ListRooms.Remove(room);
 
                 return room.GetId();
 
@@ -107,8 +107,8 @@ namespace RSPGame.Services.Room
 
         public Task DeleteRoom(int id)
         {
-            var room =RoomStorage.ListRooms.FirstOrDefault(x => x.GetId() == id);
-            RoomStorage.ListRooms.Remove(room);
+            var room =_roomStorage.ListRooms.FirstOrDefault(x => x.GetId() == id);
+            _roomStorage.ListRooms.Remove(room);
 
             return Task.CompletedTask;
         }

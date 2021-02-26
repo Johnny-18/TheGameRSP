@@ -13,11 +13,9 @@ namespace RSPGame.UI.PlayRequests
 {
     public static class GameRequests
     {
-        public static IEnumerable<string> GetGame(HttpClient client, int roomId)
+        public static HttpResponseMessage RequestWithTimer(HttpClient client, string path, int seconds)
         {
-            if (client == null)
-                throw new ArgumentNullException(nameof(client));
-
+            var ticks = (int)Math.Ceiling((decimal)seconds * 1000 / 2500);
             var counter = 0;
             HttpResponseMessage response;
             var stopwatch = new Stopwatch();
@@ -26,10 +24,9 @@ namespace RSPGame.UI.PlayRequests
             while (true)
             {
                 if (stopwatch.ElapsedMilliseconds < 2500) continue;
-
                 try
                 {
-                    response = client.GetAsync($"api/game/{roomId}").Result;
+                    response = client.GetAsync(path).Result;
                 }
                 catch (HttpRequestException)
                 {
@@ -40,8 +37,20 @@ namespace RSPGame.UI.PlayRequests
 
                 counter++;
                 stopwatch.Restart();
-                if (counter == 12) break;
+                if (counter == ticks) break;
             }
+
+            return response;
+        }
+
+        public static IEnumerable<string> GetGame(HttpClient client, int roomId)
+        {
+            if (client == null)
+                throw new ArgumentNullException(nameof(client));
+
+            var response = RequestWithTimer(client, $"api/game/{roomId}", 30);
+            if (response == null) 
+                return null;
 
             if (response.StatusCode == HttpStatusCode.NotFound)
             {

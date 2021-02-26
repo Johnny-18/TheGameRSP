@@ -5,10 +5,13 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using RSPGame.Models.JsonConverter;
 using RSPGame.Models.OptionsModel;
 using RSPGame.Services;
 using RSPGame.Services.Authentication;
+using RSPGame.Services.FileWorker;
 using RSPGame.Services.Room;
+using RSPGame.Services.Rsp;
 using RSPGame.Storage;
 using Serilog;
 
@@ -25,7 +28,11 @@ namespace RSPGame
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.Converters.Add(new TimespanConverter());
+            });
+
             services.AddSwaggerGen();
 
             services.Configure<FilesOptions>(Configuration.GetSection(FilesOptions.Files));

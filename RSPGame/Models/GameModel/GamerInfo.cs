@@ -3,7 +3,7 @@ using System.Text;
 using Newtonsoft.Json;
 using RSPGame.Models.JsonConverter;
 
-namespace RSPGame.Models
+namespace RSPGame.Models.GameModel
 {
     public class GamerInfo
     {

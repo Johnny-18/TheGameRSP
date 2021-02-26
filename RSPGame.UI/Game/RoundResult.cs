@@ -1,4 +1,4 @@
-namespace RSPGame.UI
+namespace RSPGame.UI.Game
 {
     public enum RoundResult
     {

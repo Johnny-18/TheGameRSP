@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using RSPGame.Models.GameModel;
 
 namespace RSPGame.Models
 {

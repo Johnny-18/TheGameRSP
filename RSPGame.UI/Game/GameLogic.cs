@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using RSPGame.UI.PlayRequests;
 
 namespace RSPGame.UI.Game
 {
@@ -24,6 +25,7 @@ namespace RSPGame.UI.Game
 
         public void StartRound(HttpClient client, string userName, int roomId)
         {
+            //userName = userName.Trim();
             int num;
             GameActionsUi action = GameActionsUi.None;
 
@@ -56,17 +58,52 @@ namespace RSPGame.UI.Game
                     return;
             }
 
-            //var json = JsonConvert.SerializeObject(action);
+            string json;
+            HttpResponseMessage response;
 
-            //var content = new StringContent(json, Encoding.UTF8, "application/json");
+            try
+            {
+                json = JsonConvert.SerializeObject(action);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                response = client.PostAsync($"/api/round/{roomId}/{userName}", content).Result;
+            }
+            catch (HttpRequestException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                return;
+            }
 
-            //await client.PostAsync($"/api/round/{roomId}/{userName}", content);
+            response = GameRequests.RequestWithTimer(client, $"/api/round/{roomId}/{userName}", 20);
+            if (response == null)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                return;
+            }
 
-            //var response = await client.GetAsync($"/api/round/{roomId}/{userName}");
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                Console.WriteLine("\nERROR:\tServer problems.\n\n");
+                return;
+            }
 
-            //json = await response.Content.ReadAsStringAsync();
+            json = response.Content.ReadAsStringAsync().Result;
+            var result = JsonConvert.DeserializeObject<RoundResult>(json);
 
-            //var result = JsonConvert.DeserializeObject<GameActionsUi>(json);
+            switch (result)
+            {
+                case RoundResult.None:
+                    Console.WriteLine("\nResult:\tNone\n\n\n\n");
+                    break;
+                case RoundResult.Draw:
+                    Console.WriteLine("\nResult:\tDraw\n\n\n\n");
+                    break;
+                case RoundResult.Win:
+                    Console.WriteLine("\nResult:\tWin\n\n\n\n");
+                    break;
+                case RoundResult.Lose:
+                    Console.WriteLine("\nResult:\tLose\n\n\n\n");
+                    break;
+            }
 
             //Console.WriteLine($"Result:\t{result}");
 
@@ -79,6 +116,7 @@ namespace RSPGame.UI.Game
 
         public Task PlayWithBotAsync(HttpClient client)
         {
+            Console.Clear();
             int num;
             GameActionsUi action = GameActionsUi.None;
 
