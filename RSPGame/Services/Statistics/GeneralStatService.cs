@@ -12,7 +12,7 @@ namespace RSPGame.Services.Statistics
         public async Task<IEnumerable<GamerInfo>> GetStatAsync(IRspStorage storage)
         {
             if (storage == null)
-                throw new ArgumentNullException(nameof(storage));
+                return null;
             
             var usersFromStorage = (await storage.GetUsersAsync()).Where(x => x.GamerInfo.Games > 10);
             var users = usersFromStorage.OrderByDescending(x => x.GamerInfo.Games).Take(10).ToList();

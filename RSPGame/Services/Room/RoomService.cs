@@ -30,7 +30,7 @@ namespace RSPGame.Services.Room
         public async Task<int> CreateRoom(GamerInfo gamer, RoomStatus roomStatus)
         {
             if (gamer == null)
-                throw new ArgumentNullException(nameof(gamer));
+                return -1;
 
             var room = new Models.RoomModel.Room(roomStatus);
 
@@ -70,8 +70,9 @@ namespace RSPGame.Services.Room
 
                     if (room == null)
                     {
-                        room = new Models.RoomModel.Room(RoomStatus.Public);
 
+                        room = new Models.RoomModel.Room(RoomStatus.Public);
+                        
                         _logger.LogInformation($"Create room with Id {room.GetId()}");
 
                         await room.AddGamer(gamer);
