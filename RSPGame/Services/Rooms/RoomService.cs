@@ -87,18 +87,18 @@ namespace RSPGame.Services.Rooms
                     }
                     else
                     {
-                        RemoveRoomFromStorage(roomRep, gamer);
+                        roomRep.AddGamer(gamer);
                     }
                 }
                 else
                 {
-                    roomRep = _roomStorage.Rooms.FirstOrDefault(x => x.GetId() == id && x.IsPrivate());
+                    roomRep = _roomStorage.Rooms.FirstOrDefault(x => x.GetId() == id && x.IsPrivate() && x.IsFree());
                     if (roomRep == null)
                     {
                         throw new ArgumentNullException(nameof(roomRep), "No rooms with this id found!");
                     }
 
-                    RemoveRoomFromStorage(roomRep, gamer);
+                    roomRep.AddGamer(gamer);
                 }
             }
             finally
@@ -108,13 +108,6 @@ namespace RSPGame.Services.Rooms
             }
             
             return roomRep.GetId();
-        }
-
-        private void RemoveRoomFromStorage(RoomRepository roomRep, GamerInfo gamer)
-        {
-            roomRep.AddGamer(gamer);
-
-            _roomStorage.Rooms.Remove(roomRep);
         }
 
         public bool RemoveRoom(int id)

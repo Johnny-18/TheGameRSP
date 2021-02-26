@@ -31,7 +31,7 @@ namespace RSPGame.UI.PlayRequests
 
                 try
                 {
-                    response = await client.GetAsync($"api/rooms/{roomId}/gamers");
+                    response = await client.GetAsync($"api/rooms/gamers/{roomId}");
                     
                     if (response.StatusCode == HttpStatusCode.OK) 
                         break;
@@ -48,16 +48,15 @@ namespace RSPGame.UI.PlayRequests
                 }
             }
 
-            if (response.StatusCode == HttpStatusCode.NotFound)
+            if (response.StatusCode == HttpStatusCode.NotFound || response.StatusCode == HttpStatusCode.BadRequest)
             {
                 Console.WriteLine("\nThe game could not be found. Please try again.\n\n");
                 return null;
             }
 
-            Console.WriteLine("\nDone!\n\n");
-
             var json = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<GamerInfo[]>(json);
+            var gamers = JsonConvert.DeserializeObject<GamerInfo[]>(json);
+            return gamers;
         }
 
         public static async Task<string> PostAction(HttpClient client, GamerInfo gamerInfo, GameActionsUi action)

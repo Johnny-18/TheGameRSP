@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using RSPGame.Models;
 using RSPGame.Models.Game;
 using RSPGame.Services.Rooms;
@@ -40,8 +42,10 @@ namespace RSPGame.Controllers
             {
                 return NotFound();
             }
+
+            var json = JsonConvert.SerializeObject(roomRep);
             
-            return Ok(roomRep);
+            return Ok(json);
         }
 
         [HttpDelete("{roomId}")]
@@ -67,6 +71,21 @@ namespace RSPGame.Controllers
             var result = await _roomService.CreateRoomAsync(gamer, true);
 
             return Ok(result);
+        }
+
+        [HttpGet("gamers/{roomId}")]
+        public IActionResult GetGamersFromRoom([FromQuery] int id)
+        {
+            if (id < 0)
+                return BadRequest();
+
+            var roomRep = _roomService.GetRoomRepById(id);
+            if (roomRep == null)
+                return NotFound();
+
+            var gamers = JsonConvert.SerializeObject(roomRep.GetGamers().ToArray());
+
+            return Ok(gamers);
         }
 
         [HttpPost("join")]
@@ -135,7 +154,9 @@ namespace RSPGame.Controllers
             if (round == null)
                 return NoContent();
 
-            return Ok();
+            var json = JsonConvert.SerializeObject(round);
+
+            return Ok(json);
         }
     }
 }

@@ -25,13 +25,14 @@ namespace RSPGame.UI.Game
 
             Round round = null;
             
-            Task task = StartRound(client, gamers, roomId);
+            await StartRound(client, gamers, roomId);
 
-            await Task.Delay(20000).ContinueWith(async _ =>
+            Task waitingTask = Task.Delay(20000).ContinueWith(async _ =>
             {
-                // IntPtr stdin = GetStdHandle(StdHandle.Stdin);
-                // CloseHandle(stdin);
-                task.Dispose();
+                IntPtr stdin = GetStdHandle(StdHandle.Stdin);
+                CloseHandle(stdin);
+                Console.WriteLine("----------------------------------------------");
+                //task.Dispose();
                 
                 round = await RoomRequests.GetLastRound(client, roomId);
                 if (round != null)
@@ -51,7 +52,10 @@ namespace RSPGame.UI.Game
                 }
             });
 
+            await Task.WhenAll(waitingTask);
+
             var roomRep = await RoomRequests.GetRoomById(client, roomId);
+            
             roomRep.SeriesRepository.AddRound(round);
         }
 
