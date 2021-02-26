@@ -63,23 +63,31 @@ namespace RSPGame.Services.Rooms
             return roomRep.GetId();
         }
 
-        public async Task<int> JoinRoomAsync(GamerInfo gamer, int id = 0)
+        public int JoinRoomAsync(GamerInfo gamer, int id = 0)
         {
             if (gamer == null)
                 throw new ArgumentNullException(nameof(gamer));
 
             var acquiredLock = false;
+            RoomRepository roomRep;
             try
             {
                 Monitor.Enter(Locker, ref acquiredLock);
 
-                RoomRepository roomRep;
                 if (id == 0)
                 {
                     roomRep = _roomStorage.Rooms.FirstOrDefault(x => !x.IsPrivate() && x.IsFree());
                     if (roomRep == null)
                     {
-                        return await CreateRoomAsync(gamer, false);
+                        roomRep = new RoomRepository(new Room(false), new SeriesRepository(), _roundService);
+
+                        roomRep.AddGamer(gamer);
+
+                        _roomStorage.Rooms.Add(roomRep);
+                    }
+                    else
+                    {
+                        RemoveRoomFromStorage(roomRep, gamer);
                     }
                 }
                 else
@@ -89,19 +97,24 @@ namespace RSPGame.Services.Rooms
                     {
                         throw new ArgumentNullException(nameof(roomRep), "No rooms with this id found!");
                     }
+
+                    RemoveRoomFromStorage(roomRep, gamer);
                 }
-                
-                await Task.Run(() => roomRep.AddGamer(gamer));
-
-                _roomStorage.Rooms.Remove(roomRep);
-
-                return roomRep.GetId();
             }
             finally
             {
                 if (acquiredLock) 
                     Monitor.Exit(Locker);
             }
+            
+            return roomRep.GetId();
+        }
+
+        private void RemoveRoomFromStorage(RoomRepository roomRep, GamerInfo gamer)
+        {
+            roomRep.AddGamer(gamer);
+
+            _roomStorage.Rooms.Remove(roomRep);
         }
 
         public bool RemoveRoom(int id)

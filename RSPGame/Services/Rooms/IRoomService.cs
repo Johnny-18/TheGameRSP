@@ -8,8 +8,7 @@ namespace RSPGame.Services.Rooms
     {
         RoomRepository GetRoomRepById(int id);
         Task<int> CreateRoomAsync(GamerInfo gamer, bool isPrivate);
-        Task<int> JoinRoomAsync(GamerInfo gamer, int id = 0);
-
+        int JoinRoomAsync(GamerInfo gamer, int id = 0);
         bool RemoveRoom(int id);
     }
 }

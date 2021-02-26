@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RSPGame.Models;
@@ -20,12 +19,12 @@ namespace RSPGame.Controllers
         }
 
         [HttpPost("find")]
-        public async Task<IActionResult> FindPublicRoom([FromBody] GamerInfo gamer)
+        public IActionResult FindPublicRoom([FromBody] GamerInfo gamer)
         {
             if (gamer == null)
                 return BadRequest();
 
-            var roomId = await _roomService.JoinRoomAsync(gamer);
+            var roomId = _roomService.JoinRoomAsync(gamer);
 
             return Ok(roomId);
         }
@@ -71,14 +70,14 @@ namespace RSPGame.Controllers
         }
 
         [HttpPost("join")]
-        public async Task<IActionResult> JoinPrivateRoom([FromBody] GamerInfo gamer, [FromQuery] int id)
+        public IActionResult JoinPrivateRoom([FromBody] GamerInfo gamer, [FromQuery] int id)
         {
             if (gamer == null)
                 return BadRequest();
 
             try
             {
-                await _roomService.JoinRoomAsync(gamer, id);
+                _roomService.JoinRoomAsync(gamer, id);
             }
             catch (ArgumentNullException)
             {

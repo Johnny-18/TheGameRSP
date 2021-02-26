@@ -31,7 +31,7 @@ namespace RSPGame.UI.PlayRequests
 
                 try
                 {
-                    response = await client.GetAsync($"api/game/{roomId}");
+                    response = await client.GetAsync($"api/rooms/{roomId}/gamers");
                     
                     if (response.StatusCode == HttpStatusCode.OK) 
                         break;

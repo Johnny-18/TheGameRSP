@@ -47,13 +47,17 @@ namespace RSPGame.UI.Menus
                 {
                     case 1:
                         var json = await RoomRequests.QuickSearch(_client, _currentSession.GamerInfo);
-                        if (json == null) 
+                        if (string.IsNullOrEmpty(json)) 
                             break;
                         
                         var roomId = JsonConvert.DeserializeObject<int>(json);
                         Console.WriteLine($"You will play in room {roomId}!");
 
                         var gamers = await GameRequests.GetGame(_client, roomId);
+                        if (gamers == null || gamers.Length != 2)
+                        {
+                            break;
+                        }
                         
                         await new GameLogic().StartGame(_client, gamers, roomId);
                         break;
