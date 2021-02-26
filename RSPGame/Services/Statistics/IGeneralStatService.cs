@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using RSPGame.Models;
 using RSPGame.Models.GameModel;
 using RSPGame.Storage;
 

@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RSPGame.Models;
-using RSPGame.Services;
 using RSPGame.Storage;
 using System.Linq;
 using RSPGame.Models.GameModel;

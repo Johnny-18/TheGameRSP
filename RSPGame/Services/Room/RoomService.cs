@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using RSPGame.Models;
 using RSPGame.Models.GameModel;
 using RSPGame.Models.RoomModel;
 using RSPGame.Storage;
