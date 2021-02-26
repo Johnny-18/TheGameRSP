@@ -2,11 +2,11 @@ using System;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RSPGame.Models;
 using RSPGame.UI.Menus;
+using RSPGame.UI.Models;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace RSPGame.UI.PlayRequests
@@ -17,10 +17,10 @@ namespace RSPGame.UI.PlayRequests
         {
             Console.WriteLine("Registration");
 
-            var response = await GetResponse(client, "api/auth/register");
-            if (response.StatusCode == HttpStatusCode.OK)
+            var response = GetResponse(client, "api/auth/register");
+            if (response.StatusCode == (int)HttpStatusCode.OK)
             {
-                var jsonFromApi = await response.Content.ReadAsStringAsync();
+                var jsonFromApi = response.Content;
 
                 currentSession = JsonSerializer.Deserialize<Session>(jsonFromApi);
                 
@@ -28,7 +28,7 @@ namespace RSPGame.UI.PlayRequests
                 return;
             }
 
-            Console.WriteLine(response.StatusCode == HttpStatusCode.BadRequest
+            Console.WriteLine(response.StatusCode == (int)HttpStatusCode.BadRequest
                 ? "Invalid register values!"
                 : "Account do not created!");
         }
@@ -37,20 +37,19 @@ namespace RSPGame.UI.PlayRequests
         {
             Console.WriteLine("Login");
 
-            var response = await GetResponse(client, "api/auth/login");
-            if (response.StatusCode == HttpStatusCode.OK)
+            var response = GetResponse(client, "api/auth/login");
+            if (response.StatusCode == (int)HttpStatusCode.OK)
             {
-                var jsonFromApi = await response.Content.ReadAsStringAsync();
+                var jsonFromApi = response.Content;
 
                 currentSession = JsonConvert.DeserializeObject<Session>(jsonFromApi);
                 
                 await new SessionMenu(client, currentSession).Start();
                 return;
             }
-            
             currentSession.CountLoginFailed++;
 
-            Console.WriteLine(response.StatusCode == HttpStatusCode.BadRequest
+            Console.WriteLine(response.StatusCode == (int)HttpStatusCode.BadRequest
                 ? "Invalid login values!"
                 : "Account do not found!");
 
@@ -76,25 +75,32 @@ namespace RSPGame.UI.PlayRequests
                 return input;
             }
         }
-        
-        public static async Task<HttpResponseMessage> GetResponse(HttpClient client, string url)
+
+        public static Response GetResponse(HttpClient client, string url)
+        {
+            var user = UserDataFromConsole();
+            var userJsonForBody = JsonSerializer.Serialize(user);
+
+            var requestOptions = new RequestOptions
+            {   
+                Method = RequestMethod.Post,
+                Address = client.BaseAddress + url,
+                Body = userJsonForBody
+            };
+
+            return RequestHandler.HandleRequest(client, requestOptions);
+        }
+
+        private static RequestUser UserDataFromConsole()
         {
             var userName = GetStringFromUser("Enter your user name:");
             var password = GetStringFromUser("Enter your password:");
-                
-            var uri = client.BaseAddress + url;
-
-            var user = new RequestUser
+            
+            return new RequestUser
             {
                 UserName = userName,
                 Password = password
             };
-
-            var userJson = JsonSerializer.Serialize(user);
-
-            var content = new StringContent(userJson, Encoding.UTF8, "application/json");
-
-            return await client.PostAsync(uri, content);
         }
     }
 }

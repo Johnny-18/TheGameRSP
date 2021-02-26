@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RSPGame.Models;
 using RSPGame.Models.Game;
-using RSPGame.UI.Game;
 using RSPGame.UI.Models;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -15,13 +14,13 @@ namespace RSPGame.UI.PlayRequests
 {
     public static class GameRequests
     {
-        public static async Task<GamerInfo[]> GetGame(HttpClient client, int roomId)
+        public static GamerInfo[] GetGame(HttpClient client, int roomId)
         {
             if (client == null)
                 throw new ArgumentNullException(nameof(client));
 
             var counter = 0;
-            HttpResponseMessage response;
+            Response response;
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
@@ -32,15 +31,26 @@ namespace RSPGame.UI.PlayRequests
 
                 try
                 {
-                    response = await client.GetAsync($"api/rooms/gamers/{roomId}");
+                    response = RequestHandler.HandleRequest(client, new RequestOptions
+                    {
+                        Address = $"api/rooms/gamers/{roomId}",
+                        Body = "",
+                        Method = RequestMethod.Get
+                    });
                     
-                    if (response.StatusCode == HttpStatusCode.OK) 
+                    if (response.StatusCode == (int)HttpStatusCode.OK) 
                         break;
 
                     counter++;
                     stopwatch.Restart();
-                    if (counter == 12) 
-                        break;
+                    if (counter == 12)
+                    {
+                        if (response.StatusCode == (int)HttpStatusCode.NotFound || response.StatusCode == (int)HttpStatusCode.BadRequest)
+                        {
+                            Console.WriteLine("\nThe game could not be found. Please try again.\n\n");
+                            return null;
+                        }
+                    }
                 }
                 catch (HttpRequestException)
                 {
@@ -49,13 +59,7 @@ namespace RSPGame.UI.PlayRequests
                 }
             }
 
-            if (response.StatusCode == HttpStatusCode.NotFound || response.StatusCode == HttpStatusCode.BadRequest)
-            {
-                Console.WriteLine("\nThe game could not be found. Please try again.\n\n");
-                return null;
-            }
-
-            var json = await response.Content.ReadAsStringAsync();
+            var json = response.Content;
             var gamers = JsonConvert.DeserializeObject<GamerInfo[]>(json);
             return gamers;
         }

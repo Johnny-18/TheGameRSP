@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using RSPGame.Models;
 using RSPGame.Models.Game;
 using RSPGame.Services.Rooms;
@@ -20,17 +18,33 @@ namespace RSPGame.Controllers
             _roomService = roomService;
         }
 
-        [HttpPost("find")]
-        public IActionResult FindPublicRoom([FromBody] GamerInfo gamer)
+        // [HttpPost("find")]
+        // public IActionResult FindPublicRoom([FromBody] GamerInfo gamer)
+        // {
+        //     if (gamer == null)
+        //         return BadRequest();
+        //
+        //     var roomId = _roomService.JoinRoom(gamer);
+        //
+        //     return Ok(roomId);
+        // }
+
+        [HttpPost("join")]
+        public IActionResult JoinPrivateRoom([FromBody] GamerInfo gamer, [FromQuery] int id)
         {
             if (gamer == null)
                 return BadRequest();
 
-            var roomId = _roomService.JoinRoomAsync(gamer);
-
-            return Ok(roomId);
+            try
+            {
+                return Ok(_roomService.JoinRoom(gamer, id));
+            }
+            catch (ArgumentNullException)
+            {
+                return NotFound();
+            }
         }
-        
+
         [HttpGet("{roomId}")]
         public IActionResult GetRoomById([FromRoute] int roomId)
         {
@@ -43,9 +57,7 @@ namespace RSPGame.Controllers
                 return NotFound();
             }
 
-            var json = JsonConvert.SerializeObject(roomRep);
-            
-            return Ok(json);
+            return Ok(roomRep);
         }
 
         [HttpDelete("{roomId}")]
@@ -73,39 +85,6 @@ namespace RSPGame.Controllers
             return Ok(result);
         }
 
-        [HttpGet("gamers/{roomId}")]
-        public IActionResult GetGamersFromRoom([FromQuery] int id)
-        {
-            if (id < 0)
-                return BadRequest();
-
-            var roomRep = _roomService.GetRoomRepById(id);
-            if (roomRep == null)
-                return NotFound();
-
-            var gamers = JsonConvert.SerializeObject(roomRep.GetGamers().ToArray());
-
-            return Ok(gamers);
-        }
-
-        [HttpPost("join")]
-        public IActionResult JoinPrivateRoom([FromBody] GamerInfo gamer, [FromQuery] int id)
-        {
-            if (gamer == null)
-                return BadRequest();
-
-            try
-            {
-                _roomService.JoinRoomAsync(gamer, id);
-            }
-            catch (ArgumentNullException)
-            {
-                return NotFound();
-            }
-
-            return Ok();
-        }
-
         [HttpPost("{roomId}/action")]
         public IActionResult GamerAction([FromRoute] int roomId, [FromBody] GameRequest gameRequest)
         {
@@ -117,25 +96,6 @@ namespace RSPGame.Controllers
                 return NotFound();
             
             roomRep.RoundService.AddGamerAction(gameRequest.GamerInfo, gameRequest.Action);
-
-            return Ok();
-        }
-
-        [HttpPost("{roomId}/gamers")]
-        public async Task<IActionResult> AddGamers([FromRoute] int roomId, [FromBody] GamerInfo[] gamers)
-        {
-            if (roomId < 0 || gamers == null)
-                return BadRequest();
-
-            var roomRep = _roomService.GetRoomRepById(roomId);
-            if (roomRep == null)
-                return NotFound();
-
-            await Task.Run(() =>
-            {
-                roomRep.AddGamer(gamers[0]);
-                roomRep.AddGamer(gamers[1]);
-            });
 
             return Ok();
         }
@@ -154,9 +114,7 @@ namespace RSPGame.Controllers
             if (round == null)
                 return NoContent();
 
-            var json = JsonConvert.SerializeObject(round);
-
-            return Ok(json);
+            return Ok(round);
         }
     }
 }

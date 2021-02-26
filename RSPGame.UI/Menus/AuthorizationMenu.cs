@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Net;
 using System.Net.Http;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 using RSPGame.Models;
 using RSPGame.UI.PlayRequests;
@@ -68,7 +64,7 @@ namespace RSPGame.UI.Menus
                         }
                         break;
                     case 3:
-                        await StatRequests.GetGeneralStat(_client);
+                        StatRequests.GetGeneralStat(_client);
                         break;
                     case 4:
                         Console.WriteLine("Goodbye!");

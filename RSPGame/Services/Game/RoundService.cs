@@ -1,4 +1,3 @@
-using System;
 using RSPGame.Models;
 using RSPGame.Models.Game;
 
@@ -10,9 +9,9 @@ namespace RSPGame.Services.Game
 
         private Round _round;
 
-        public RoundService(IRspService rspService)
+        public RoundService()
         {
-            _rspService = rspService;
+            _rspService = new RspService();
             _round = new Round();
         }
 
@@ -29,14 +28,14 @@ namespace RSPGame.Services.Game
         public void AddGamerAction(GamerInfo gamer, GameActions action)
         {
             if (gamer == null)
-                throw new ArgumentNullException(nameof(gamer));
+                return;
 
-            if (_round.Gamer1 != null)
+            if (_round.Gamer1 == null)
             {
                 _round.Gamer1 = gamer;
                 _round.UserAction1 = action;
             }
-            else if(_round.Gamer2 != null)
+            else if(_round.Gamer2 == null)
             {
                 _round.Gamer2 = gamer;
                 _round.UserAction2 = action;

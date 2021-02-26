@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using RSPGame.Models;
 using RSPGame.UI.PlayRequests;
 using System.Runtime.InteropServices;
+using Newtonsoft.Json;
 using RSPGame.Models.Game;
 using RSPGame.UI.Models;
 
@@ -19,14 +21,11 @@ namespace RSPGame.UI.Game
         [DllImport("kernel32.dll")]
         private static extern bool CloseHandle(IntPtr hdl);
         
-        public async Task StartGame(HttpClient client, GamerInfo[] gamers, int roomId)
+        public async void StartGame(HttpClient client, GamerInfo[] gamers, int roomId)
         {
-            // var firstGamer = gamers[0];
-            // var secondGamer = gamers[1];
-
             Round round = null;
             
-            await StartRound(client, gamers, roomId);
+            StartRound(client, gamers, roomId);
 
             Task waitingTask = Task.Delay(20000).ContinueWith(async _ =>
             {
@@ -74,7 +73,7 @@ namespace RSPGame.UI.Game
             }
         }
 
-        private async Task StartRound(HttpClient client, GamerInfo[] gamers, int roomId)
+        private void StartRound(HttpClient client, GamerInfo[] gamers, int roomId)
         {
             var firstGamer = gamers[0];
             var secondGamer = gamers[1];
@@ -84,14 +83,17 @@ namespace RSPGame.UI.Game
             Console.WriteLine($"Match:\t{string.Join(firstGamer.UserName," vs ", secondGamer.UserName)}");
             Console.WriteLine("Rules:\tRock > scissors; scissors > paper; paper > rock.\n\n");
 
-            int num;
-            var action = GameActionsUi.None;
+            var action = GetAction();
 
+            RoomRequests.GameAction(client, firstGamer, action, roomId);
+        }
+
+        private GameActionsUi GetAction()
+        {
             Console.WriteLine("1.\tRock");
             Console.WriteLine("2.\tScissors");
             Console.WriteLine("3.\tPaper");
             Console.WriteLine("4.\tExit");
-
 
             var number = GetNumberFromUser("Enter the number: ");
 
@@ -99,19 +101,49 @@ namespace RSPGame.UI.Game
             switch (number)
             {
                 case 1:
-                    action = GameActionsUi.Rock;
-                    break;
+                    return GameActionsUi.Rock;
                 case 2:
-                    action = GameActionsUi.Scissors;
-                    break;
+                    return GameActionsUi.Scissors;
                 case 3:
-                    action = GameActionsUi.Paper;
-                    break;
-                case 4:
-                    return;
+                    return GameActionsUi.Paper;
+                default:
+                    Console.WriteLine("Goodbye!");
+                    return GameActionsUi.None;
+            }
+        }
+        
+        public void PlayWithBotAsync(HttpClient client)
+        {
+            var action = GetAction();
+
+            var json = JsonConvert.SerializeObject(action);
+            var requestOptions = new RequestOptions
+            {
+                Address = client.BaseAddress + "api/game/bot",
+                Method = RequestMethod.Post,
+                Body = json
+            };
+            
+            var response = RequestHandler.HandleRequest(client, requestOptions);
+            if (response.StatusCode == (int) HttpStatusCode.OK)
+            {
+                json = response.Content;
             }
 
-            await RoomRequests.GameAction(client, firstGamer, action, roomId);
+            var roundResult = JsonConvert.DeserializeObject<RoundResult>(json);
+
+            switch (roundResult)
+            {
+                case RoundResult.Win:
+                    Console.WriteLine("\nCongratulation! You win!\n\n");
+                    break;
+                case RoundResult.Lose:
+                    Console.WriteLine("\nUnfortunately, you lose!\n\n");
+                    break;
+                case RoundResult.Draw:
+                    Console.WriteLine("\nDraw!\n\n");
+                    break;
+            }
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using RSPGame.Models;
-using RSPGame.Models.RoomModel;
 
 namespace RSPGame.Services.Rooms
 {
@@ -8,7 +7,7 @@ namespace RSPGame.Services.Rooms
     {
         RoomRepository GetRoomRepById(int id);
         Task<int> CreateRoomAsync(GamerInfo gamer, bool isPrivate);
-        int JoinRoomAsync(GamerInfo gamer, int id = 0);
+        int JoinRoom(GamerInfo gamer, int id = 0);
         bool RemoveRoom(int id);
     }
 }

@@ -10,15 +10,18 @@ namespace RSPGame.Services.Game
 
         private readonly IRspStorage _storage;
 
-        public SeriesService(IIndividualStatService individualStatService, IRspStorage storage)
+        public SeriesRepository SeriesRepository { get; set; }
+
+        public SeriesService(IRspStorage storage)
         {
-            _individualStatService = individualStatService;
+            SeriesRepository = new SeriesRepository();
+            _individualStatService = new IndividualStatService();
             _storage = storage;
         }
         
-        public async Task SaveWork(SeriesRepository seriesRepository)
+        public async Task SaveWork()
         {
-            foreach (var round in seriesRepository.GetRounds())
+            foreach (var round in SeriesRepository.GetRounds())
             {
                 await _individualStatService.ChangeGamerInfoAfterRound(round.Gamer1, round.UserAction1,
                     round.RoundResultForGamer1);

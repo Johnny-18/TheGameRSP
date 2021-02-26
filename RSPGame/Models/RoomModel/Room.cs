@@ -8,7 +8,7 @@ namespace RSPGame.Models.RoomModel
 
         static Room()
         {
-            _id = 0;
+            _id = 1;
         }
 
         public Room()

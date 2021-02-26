@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Net.Http;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RSPGame.Models;
 using RSPGame.UI.Game;
+using RSPGame.UI.Models;
 using RSPGame.UI.PlayRequests;
 
 namespace RSPGame.UI.Menus
@@ -21,7 +21,7 @@ namespace RSPGame.UI.Menus
             _currentSession = currentSession;
         }
 
-        public async Task Start()
+        public void Start()
         {
             while (true)
             {
@@ -44,16 +44,23 @@ namespace RSPGame.UI.Menus
                 switch (num)
                 {
                     case 1:
-                        var json = await RoomRequests.CreateRoom(_client, _currentSession.GamerInfo);
-                        if (string.IsNullOrEmpty(json)) 
-                            break;
-                        
-                        var roomId = JsonConvert.DeserializeObject<int>(json);
+                        //
+                        var json = JsonConvert.SerializeObject(_currentSession.GamerInfo);
+                        var requestOptions = new RequestOptions
+                        {
+                            Address = "api/rooms/create",
+                            Body = json,
+                            Method = RequestMethod.Post
+                        };
+
+                        var content = RoomRequests.Post(_client, requestOptions);
+
+                        var roomId = JsonConvert.DeserializeObject<int>(content);
 
                         Console.WriteLine($"\nRoom with id {roomId} has been created!");
                         Console.WriteLine("\nWaiting for opponent\n\n");
 
-                        int counter = 0;
+                        var counter = 0;
                         var period = new Stopwatch();
                         
                         period.Start();
@@ -62,10 +69,10 @@ namespace RSPGame.UI.Menus
                         {
                             if (period.ElapsedMilliseconds > 1000)
                             {
-                                var gamerInfos = await RoomRequests.GetGamers(_client, roomId);
+                                var gamerInfos = RoomRequests.GetGamers(_client, roomId);
                                 if (gamerInfos != null && gamerInfos.Length == 2)
                                 {
-                                    await new GameLogic().StartGame(_client, gamerInfos, roomId);
+                                    new GameLogic().StartGame(_client, gamerInfos, roomId);
                                 }
                                 else
                                 {
@@ -75,7 +82,7 @@ namespace RSPGame.UI.Menus
                             }
                             else if(counter == 30)
                             {
-                                await RoomRequests.DeleteRoom(_client, roomId);
+                                RoomRequests.DeleteRoom(_client, roomId);
                                 Console.WriteLine("Opponent do not found!");
                                 break;
                             }
@@ -95,12 +102,12 @@ namespace RSPGame.UI.Menus
                             break;
                         }
                         
-                        if (await RoomRequests.JoinRoom(_client, _currentSession.GamerInfo, id2)) 
+                        if (RoomRequests.JoinRoom(_client, _currentSession.GamerInfo, id2)) 
                             break;
 
-                        var gamers = await GameRequests.GetGame(_client, id2);
+                        var gamers = GameRequests.GetGame(_client, id2);
                         
-                        await new GameLogic().StartGame(_client, gamers, id2);
+                        new GameLogic().StartGame(_client, gamers, id2);
                         break;
                     case 3:
                         return;

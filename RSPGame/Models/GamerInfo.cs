@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 using Newtonsoft.Json;
-using RSPGame.Models.JsonConverter;
+using RSPGame.Services.JsonConverter;
 
 namespace RSPGame.Models
 {

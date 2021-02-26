@@ -1,6 +1,7 @@
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using RSPGame.UI.Models;
 
@@ -8,7 +9,7 @@ namespace RSPGame.UI
 {
     public static class RequestHandler
     {
-        public static Response HandleRequestAsync(HttpClient client, RequestOptions requestOptions)
+        public static Response HandleRequest(HttpClient client, RequestOptions requestOptions)
         {
             if (requestOptions == null)
                 throw new ArgumentNullException(nameof(requestOptions));
@@ -25,7 +26,7 @@ namespace RSPGame.UI
 
             if (!string.IsNullOrEmpty(requestOptions.Body))
             {
-                requestMessage.Content = new StringContent(requestOptions.Body);
+                requestMessage.Content = new StringContent(requestOptions.Body, Encoding.UTF8, "application/json");
             }
 
             if (!string.IsNullOrEmpty(requestOptions.Token))

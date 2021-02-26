@@ -1,17 +1,18 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using RSPGame.Models;
+using RSPGame.Models.RoomModel;
 using RSPGame.Services.Game;
 
-namespace RSPGame.Models.RoomModel
+namespace RSPGame.Services.Rooms
 {
     public class RoomRepository
     {
-        public RoomRepository(Room room, SeriesRepository seriesRepository, RoundService roundService)
+        public RoomRepository(Room room)
         {
             _room = room;
-            SeriesRepository = seriesRepository;
-            RoundService = roundService;
+            SeriesRepository = new SeriesRepository();
+            RoundService = new RoundService();
         }
 
         public readonly SeriesRepository SeriesRepository;

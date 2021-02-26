@@ -15,16 +15,13 @@ namespace RSPGame.Services.Rooms
         //rooms with 1 free slot
         private readonly RoomStorage _roomStorage;
 
-        private readonly RoundService _roundService;
-
         private readonly ILogger<RoomService> _logger;
 
         private static readonly object Locker = new();
 
-        public RoomService(RoomStorage roomStorage, ILogger<RoomService> logger, RoundService roundService)
+        public RoomService(RoomStorage roomStorage, ILogger<RoomService> logger)
         {
             _logger = logger;
-            _roundService = roundService;
             _roomStorage = roomStorage;
         }
 
@@ -42,7 +39,7 @@ namespace RSPGame.Services.Rooms
                 throw new ArgumentNullException(nameof(gamer));
             
             //create private room
-            var roomRep = new RoomRepository(new Room(isPrivate), new SeriesRepository(), _roundService);
+            var roomRep = new RoomRepository(new Room(isPrivate));
             
             _logger.Log(LogLevel.Information, $"Create room with Id {roomRep.GetId()}");
 
@@ -63,7 +60,7 @@ namespace RSPGame.Services.Rooms
             return roomRep.GetId();
         }
 
-        public int JoinRoomAsync(GamerInfo gamer, int id = 0)
+        public int JoinRoom(GamerInfo gamer, int id = 0)
         {
             if (gamer == null)
                 throw new ArgumentNullException(nameof(gamer));
@@ -79,7 +76,8 @@ namespace RSPGame.Services.Rooms
                     roomRep = _roomStorage.Rooms.FirstOrDefault(x => !x.IsPrivate() && x.IsFree());
                     if (roomRep == null)
                     {
-                        roomRep = new RoomRepository(new Room(false), new SeriesRepository(), _roundService);
+                        //create public room
+                        roomRep = new RoomRepository(new Room(false));
 
                         roomRep.AddGamer(gamer);
 

@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace RSPGame.Models.JsonConverter
+namespace RSPGame.Services.JsonConverter
 {
     public class TimespanConverter : JsonConverter<TimeSpan>
     {

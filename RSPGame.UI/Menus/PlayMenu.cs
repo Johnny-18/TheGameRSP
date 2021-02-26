@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RSPGame.Models;
 using RSPGame.UI.Game;
+using RSPGame.UI.Models;
 using RSPGame.UI.PlayRequests;
 
 namespace RSPGame.UI.Menus
@@ -20,7 +21,7 @@ namespace RSPGame.UI.Menus
             _currentSession = currentSession;
         }
 
-        public async Task Start()
+        public void Start()
         {
             while (true)
             {
@@ -45,26 +46,34 @@ namespace RSPGame.UI.Menus
                 switch (num)
                 {
                     case 1:
-                        var json = await RoomRequests.QuickSearch(_client, _currentSession.GamerInfo);
-                        if (string.IsNullOrEmpty(json)) 
+                        var json = JsonConvert.SerializeObject(_currentSession.GamerInfo);
+                        var requestOptions = new RequestOptions
+                        {
+                            Body = json,
+                            Address = "api/rooms/join",
+                            Method = RequestMethod.Post
+                        };
+                        
+                        var content = RoomRequests.Post(_client, requestOptions);
+                        if (string.IsNullOrEmpty(content)) 
                             break;
                         
-                        var roomId = JsonConvert.DeserializeObject<int>(json);
+                        var roomId = JsonConvert.DeserializeObject<int>(content);
                         Console.WriteLine($"You will play in room {roomId}!");
 
-                        var gamers = await GameRequests.GetGame(_client, roomId);
+                        var gamers = GameRequests.GetGame(_client, roomId);
                         if (gamers == null || gamers.Length != 2)
                         {
                             break;
                         }
                         
-                        await new GameLogic().StartGame(_client, gamers, roomId);
+                        new GameLogic().StartGame(_client, gamers, roomId);
                         break;
                     case 2:
-                        await new PrivateRoomMenu(_client, _currentSession).Start();
+                        new PrivateRoomMenu(_client, _currentSession).Start();
                         break;
                     case 3:
-                        //
+                        new GameLogic().PlayWithBotAsync(_client);
                         break;
                     case 4:
                         return;

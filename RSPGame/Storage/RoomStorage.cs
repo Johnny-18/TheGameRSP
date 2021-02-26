@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using RSPGame.Models.RoomModel;
+using RSPGame.Services.Rooms;
 
 namespace RSPGame.Storage
 {

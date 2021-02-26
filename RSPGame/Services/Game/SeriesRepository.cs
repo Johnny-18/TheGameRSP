@@ -1,38 +1,35 @@
-using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using RSPGame.Models.Game;
 
 namespace RSPGame.Services.Game
 {
     public class SeriesRepository 
     {
-        private readonly Stack<Round> _rounds;
+        private readonly ConcurrentStack<Round> _rounds;
 
         public SeriesRepository()
         {
-            _rounds = new Stack<Round>();
+            _rounds = new ConcurrentStack<Round>();
         }
 
         public void AddRound(Round round)
         {
-            if (round == null)
-                throw new ArgumentNullException(nameof(round));
-            if (round.Gamer1 == null)
-                throw new ArgumentException(nameof(round.Gamer1));
-            if (round.Gamer2 == null)
-                throw new ArgumentException(nameof(round.Gamer2));
+            if (round == null || round.Gamer1 == null || round.Gamer2 == null) 
+                return;
 
             _rounds.Push(round);
         }
 
         public Round GetLastRound()
         {
-            return _rounds.Peek();
+            _rounds.TryPeek(out var round);
+
+            return round;
         }
 
-        public Stack<Round> GetRounds()
+        public ConcurrentStack<Round> GetRounds()
         {
-            return _rounds ?? new Stack<Round>();
+            return _rounds ?? new ConcurrentStack<Round>();
         }
     }
 }
