@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using RSPGame.Models;
 
@@ -22,7 +21,7 @@ namespace RSPGame.Services.Authentication
         public async Task<Session> RegisterAsync(RequestUser userForRegister)
          {
             if (userForRegister == null)
-                throw new ArgumentNullException(nameof(userForRegister));
+                return null;
 
             //generate password hash
             var passwordHash = _hashGenerator.GenerateHash(userForRegister.Password);
@@ -54,7 +53,7 @@ namespace RSPGame.Services.Authentication
         public async Task<Session> LoginAsync(RequestUser user)
         {
             if (user == null)
-                throw new ArgumentNullException(nameof(user));
+                return null;
 
             var userFromStorage = await _storage.GetUserByUserNameAsync(user.UserName);
             if (userFromStorage == null)
@@ -78,7 +77,7 @@ namespace RSPGame.Services.Authentication
         public void Logout(Session user)
         {
             if (user == null)
-                throw new ArgumentNullException(nameof(user));
+                return;
             
             //clear token
             user.Token = null;

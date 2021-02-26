@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using RSPGame.Models;
 using RSPGame.Storage;
 
-namespace RSPGame.Services
+namespace RSPGame.Services.Room
 {
     //todo: game logic
     //todo: statistics 
@@ -29,9 +29,9 @@ namespace RSPGame.Services
         public async Task<int> CreateRoom(GamerInfo gamer, RoomStatus roomStatus)
         {
             if (gamer == null)
-                throw new ArgumentNullException(nameof(gamer));
+                return -1;
 
-            var room = new Room(roomStatus);
+            var room = new Models.Room(roomStatus);
 
             _logger.LogInformation($"Create room with Id {room.GetId()}");
 
@@ -61,7 +61,7 @@ namespace RSPGame.Services
             {
                 Monitor.Enter(Locker, ref acquiredLock);
 
-                Room room;
+                Models.Room room;
                 if (id == 0)
                 {
                     room = _roomStorage.ListRooms
@@ -69,7 +69,7 @@ namespace RSPGame.Services
 
                     if (room == null)
                     {
-                        room = new Room(RoomStatus.Public);
+                        room = new Models.Room(RoomStatus.Public);
 
                         _logger.LogInformation($"Create room with Id {room.GetId()}");
 
