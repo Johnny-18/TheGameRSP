@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.Http;
-using RSPGame.UI.PlayRequests;
 
 namespace RSPGame.UI.Game
 {

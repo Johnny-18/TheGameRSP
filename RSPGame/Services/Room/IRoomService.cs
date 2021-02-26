@@ -8,5 +8,6 @@ namespace RSPGame.Services.Room
     {
         public Task<int> CreateRoom(GamerInfo gamer, RoomStatus roomStatus);
         public Task<int> JoinRoom(GamerInfo gamer, int id = 0);
+        public Task DeleteRoom(int id);
     }
 }

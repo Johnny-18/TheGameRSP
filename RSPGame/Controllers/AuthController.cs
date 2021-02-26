@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using RSPGame.Models;
 using RSPGame.Services.Authentication;
 
@@ -26,8 +27,10 @@ namespace RSPGame.Controllers
             var session = await _authService.LoginAsync(user);
             if (session == null)
                 return Forbid();
-            
-            return Ok(session);
+
+            var json = JsonConvert.SerializeObject(session);
+
+            return Ok(json);
         }
         
         [HttpPost("register")]
@@ -39,8 +42,10 @@ namespace RSPGame.Controllers
             var session = await _authService.RegisterAsync(user);
             if (session == null)
                 return Forbid();
-            
-            return Ok(session);
+
+            var json = JsonConvert.SerializeObject(session);
+
+            return Ok(json);
         }
         
         [Authorize]

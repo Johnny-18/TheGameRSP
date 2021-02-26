@@ -19,4 +19,6 @@
       <_ContentIncludedByDefault Remove="TestProject\obj\TestProject.csproj.nuget.dgspec.json" />
     </ItemGroup>
 
+    <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
+
 </Project>

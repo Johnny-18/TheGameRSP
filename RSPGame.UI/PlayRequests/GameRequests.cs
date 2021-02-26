@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using RSPGame.Models;
 using RSPGame.UI.Game;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -47,6 +46,9 @@ namespace RSPGame.UI.PlayRequests
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
                 Console.WriteLine("\nThe game could not be found. Please try again.\n\n");
+                var json1 = JsonSerializer.Serialize(roomId);
+                var content = new StringContent(json1, Encoding.UTF8, "application/json");
+                response = client.PostAsync($"api/rooms/stop", content).Result;
                 return null;
             }
 
