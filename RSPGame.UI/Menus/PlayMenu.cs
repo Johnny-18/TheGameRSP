@@ -21,7 +21,7 @@ namespace RSPGame.UI.Menus
             _currentSession = currentSession;
         }
 
-        public Task Start()
+        public async Task Start()
         {
             while (true)
             {
@@ -42,32 +42,31 @@ namespace RSPGame.UI.Menus
                 switch (num)
                 {
                     case 1:
-                        var json = RoomRequests.QuickSearch(_client, _currentSession.GamerInfo)?.Result;
-                        if (json == null) break;
-                        var id = JsonConvert.DeserializeObject<int>(json);
-
-                        var result = GameRequests.GetGame(_client, id)?.ToArray();
-                        if (result == null) break;
-
-                        var opponent1 = result
-                            .FirstOrDefault(x => !x.Equals(_currentSession.GamerInfo.UserName));
-
-                        if (opponent1 == null)
+                        var json = await RoomRequests.PostAsync(_client, _currentSession.GamerInfo, "join");
+                        if (string.IsNullOrEmpty(json))
                         {
-                            Console.WriteLine("Error: You can`t play with yourself!\n\n");
+                            Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
                             break;
                         }
 
-                        new GameLogic().StartGame(_client, _currentSession.GamerInfo.UserName, opponent1, id);
+                        var id = JsonConvert.DeserializeObject<int>(json);
+
+                        var result = (await GameRequests.GetGame(_client, id))?.ToArray();
+                        if (result == null) break;
+
+                        var opponent = result
+                            .FirstOrDefault(x => !x.Equals(_currentSession.GamerInfo.UserName));
+
+                        new GameLogic().StartGame(_client, _currentSession.GamerInfo.UserName, opponent, id);
                         break;
                     case 2:
-                        new PrivateRoomMenu(_client, _currentSession).Start();
+                        await new PrivateRoomMenu(_client, _currentSession).Start();
                         break;
                     case 3:
-                        new GameLogic().PlayWithBotAsync(_client);
+                        await new GameLogic().PlayWithBotAsync(_client);
                         break;
                     case 4:
-                        return Task.CompletedTask;
+                        return;
                 }
             }
         }

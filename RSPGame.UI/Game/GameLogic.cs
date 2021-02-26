@@ -91,16 +91,16 @@ namespace RSPGame.UI.Game
             switch (result)
             {
                 case RoundResult.None:
-                    Console.WriteLine("\nResult:\tNone\n\n\n\n");
+                    Console.WriteLine("\nResult:\tNone\n\n");
                     break;
                 case RoundResult.Draw:
-                    Console.WriteLine("\nResult:\tDraw\n\n\n\n");
+                    Console.WriteLine("\nResult:\tDraw\n\n");
                     break;
                 case RoundResult.Win:
-                    Console.WriteLine("\nResult:\tWin\n\n\n\n");
+                    Console.WriteLine("\nResult:\tWin\n\n");
                     break;
                 case RoundResult.Lose:
-                    Console.WriteLine("\nResult:\tLose\n\n\n\n");
+                    Console.WriteLine("\nResult:\tLose\n\n");
                     break;
             }
 
@@ -116,6 +116,7 @@ namespace RSPGame.UI.Game
         public Task PlayWithBotAsync(HttpClient client)
         {
             Console.Clear();
+
             int num;
             GameActionsUi action = GameActionsUi.None;
 
@@ -145,7 +146,6 @@ namespace RSPGame.UI.Game
                     action = GameActionsUi.Paper;
                     break;
                 case 4:
-                    Console.WriteLine("Goodbye!\n");
                     return Task.CompletedTask;
             }
 

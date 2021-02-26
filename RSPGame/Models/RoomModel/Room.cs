@@ -75,7 +75,7 @@ namespace RSPGame.Models.RoomModel
 
         public int GetId() => _id;
 
-        //public GamerInfo GetGamer() => _gamers.FirstOrDefault();
+        public GamerInfo GetGamer() => _gamers.FirstOrDefault();
 
         public bool IsPublic() => _roomStatus == RoomStatus.Public;
     }

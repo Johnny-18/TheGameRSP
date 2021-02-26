@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using RSPGame.Models;
+using RSPGame.UI.PlayRequests;
 
 namespace RSPGame.UI.Menus
 {
@@ -17,7 +18,7 @@ namespace RSPGame.UI.Menus
             _currentSession = currentSession;
         }
 
-        public Task Start()
+        public async Task Start()
         {
             while (true)
             {
@@ -38,16 +39,16 @@ namespace RSPGame.UI.Menus
                 switch (num)
                 {
                     case 1:
-                        new PlayMenu(_client, _currentSession).Start();
+                        await new PlayMenu(_client, _currentSession).Start();
                         break;
                     case 2:
-                        //
+                        await StatRequests.GetGeneralStat(_client);
                         break;
                     case 3:
-                        //
+                        Console.WriteLine(_currentSession.GamerInfo.ToString());
                         break;
                     case 4:
-                        return Task.CompletedTask;
+                        return;
                 }
             }
         }

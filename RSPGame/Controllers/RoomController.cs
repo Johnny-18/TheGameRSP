@@ -18,17 +18,6 @@ namespace RSPGame.Controllers
             _roomService = roomService;
         }
 
-        [HttpPost("find")]
-        public async Task<IActionResult> FindPublicRoom([FromBody] GamerInfo gamer)
-        {
-            if (gamer == null)
-                return BadRequest();
-
-            var result = await _roomService.JoinRoom(gamer);
-
-            return Ok(result);
-        }
-
         [HttpPost("create")]
         public async Task<IActionResult> CreatePrivateRoom([FromBody] GamerInfo gamer)
         {
@@ -48,14 +37,12 @@ namespace RSPGame.Controllers
 
             try
             {
-                await _roomService.JoinRoom(gamer, id);
+                return Ok(await _roomService.JoinRoom(gamer, id));
             }
             catch (ArgumentNullException)
             {
                 return NotFound();
             }
-
-            return Ok();
         }
 
         [HttpPost("stop")]

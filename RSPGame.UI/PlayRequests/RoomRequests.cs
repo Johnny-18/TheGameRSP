@@ -2,76 +2,40 @@
 using System.Net;
 using System.Net.Http;
 using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using RSPGame.Models.GameModel;
 
 namespace RSPGame.UI.PlayRequests
 {
     public static class RoomRequests
     {
-        public static Task<string> QuickSearch(HttpClient client, GamerInfo gamer)
+        public static Task<string> PostAsync(HttpClient client, GamerInfo gamer, string path)
         {
-            if (client == null)
-                throw new ArgumentNullException(nameof(client));
-            if (gamer == null)
-                throw new ArgumentNullException(nameof(gamer));
+            if (client == null || gamer == null)
+                return null;
 
-            var json = JsonSerializer.Serialize(gamer);
+            var json = JsonConvert.SerializeObject(gamer);
 
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            Task<string> result;
-
             try
             {
-                var message = client.PostAsync($"/api/rooms/find", content).Result;
-                result = message.Content.ReadAsStringAsync();
+                var message = client.PostAsync($"/api/rooms/{path}", content).Result;
+                return message.Content.ReadAsStringAsync();
             }
             catch (AggregateException)
             {
-                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
                 return null;
             }
-
-            return result;
         }
 
-        public static Task<string> CreateRoom(HttpClient client, GamerInfo gamer)
+        public static Task JoinAsync(HttpClient client, GamerInfo gamer, int id)
         {
-            if (client == null)
-                throw new ArgumentNullException(nameof(client));
-            if (gamer == null)
-                throw new ArgumentNullException(nameof(gamer));
-
-            var json = JsonSerializer.Serialize(gamer);
-
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            Task<string> result;
-
-            try
-            {
-                var message = client.PostAsync($"/api/rooms/create", content).Result;
-                result = message.Content.ReadAsStringAsync();
-            }
-            catch (AggregateException)
-            {
-                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+            if (client == null || gamer == null)
                 return null;
-            }
 
-            return result;
-        }
-
-        public static Task JoinRoom(HttpClient client, GamerInfo gamer, int id)
-        {
-            if (client == null)
-                throw new ArgumentNullException(nameof(client));
-            if (gamer == null)
-                throw new ArgumentNullException(nameof(gamer));
-
-            var json = JsonSerializer.Serialize(gamer);
+            var json = JsonConvert.SerializeObject(gamer);
 
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -93,7 +57,6 @@ namespace RSPGame.UI.PlayRequests
                 return null;
             }
 
-            Console.WriteLine("\nDone!\n\n");
             return Task.CompletedTask;
         }
     }
