@@ -9,7 +9,7 @@ namespace RSPGame.UI.Menus
 {
     public class AuthorizationMenu
     {
-        private Session _currentSession;
+        private readonly Session _currentSession;
 
         private readonly HttpClient _client;
 

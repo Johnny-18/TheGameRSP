@@ -25,7 +25,6 @@ namespace RSPGame.UI.Game
 
         public void StartRound(HttpClient client, string userName, int roomId)
         {
-            //userName = userName.Trim();
             int num;
             GameActionsUi action = GameActionsUi.None;
 

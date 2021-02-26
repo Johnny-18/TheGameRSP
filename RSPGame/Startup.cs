@@ -12,6 +12,7 @@ using RSPGame.Services.Authentication;
 using RSPGame.Services.FileWorker;
 using RSPGame.Services.Room;
 using RSPGame.Services.Rsp;
+using RSPGame.Services.Statistics;
 using RSPGame.Storage;
 using Serilog;
 
@@ -60,6 +61,8 @@ namespace RSPGame
             services.AddTransient<IRspService, RspService>();
             services.AddTransient<PasswordHashGenerator>();
             services.AddTransient<SinglePlayerService>();
+            services.AddTransient<IIndividualStatService, IndividualStatService>();
+            services.AddTransient<IGeneralStatService, GeneralStatService>();
 
             services.AddScoped<IAuthService, AuthService>();
 

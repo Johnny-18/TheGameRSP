@@ -41,7 +41,7 @@ namespace RSPGame.Models.GameModel
         [JsonConverter(typeof(TimespanConverter))]
         public TimeSpan OnlineTime { get; set; }
 
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public int Games => CountLoses + CountDraws + CountWins;
 
         public override string ToString()

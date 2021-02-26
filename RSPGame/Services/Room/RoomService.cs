@@ -9,7 +9,6 @@ using RSPGame.Storage;
 
 namespace RSPGame.Services.Room
 {
-    //todo: game logic
     //todo: statistics 
     //todo: post step on server
     //todo: get round result by gamers 

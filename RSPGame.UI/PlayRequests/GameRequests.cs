@@ -55,7 +55,7 @@ namespace RSPGame.UI.PlayRequests
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
                 Console.WriteLine("\nThe game could not be found. Please try again.\n\n");
-                var json1 = JsonSerializer.Serialize(roomId);
+                var json1 = JsonConvert.SerializeObject(roomId);
                 var content = new StringContent(json1, Encoding.UTF8, "application/json");
                 response = client.PostAsync($"api/rooms/stop", content).Result;
                 return null;
@@ -72,7 +72,7 @@ namespace RSPGame.UI.PlayRequests
             if (client == null)
                 throw new ArgumentNullException(nameof(client));
 
-            var json = JsonSerializer.Serialize(action);
+            var json = JsonConvert.SerializeObject(action);
 
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 

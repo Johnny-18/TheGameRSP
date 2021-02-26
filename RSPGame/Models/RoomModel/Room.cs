@@ -56,8 +56,7 @@ namespace RSPGame.Models.RoomModel
             };
 
             var json = JsonSerializer.Serialize(
-                _gamers.Select(x => x.UserName).ToArray()
-                );
+                _gamers.Select(x => x.UserName).ToArray());
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             await client.PostAsync($"/api/game/{_id}", content);
         }
