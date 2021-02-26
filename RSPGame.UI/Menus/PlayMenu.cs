@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RSPGame.Models;
+using RSPGame.UI.Game;
 using RSPGame.UI.PlayRequests;
 
 namespace RSPGame.UI.Menus
@@ -46,13 +47,19 @@ namespace RSPGame.UI.Menus
                         var id = JsonConvert.DeserializeObject<int>(json);
 
                         var result = GameRequests.GetGame(_client, id)?.ToArray();
+                        if (result == null) break;
 
+                        var opponent1 = result
+                            .Where(x => !x.Equals(_currentSession.GamerInfo.UserName))?
+                            .First();
+
+                        new GameLogic().StartGame(_client, _currentSession.GamerInfo.UserName, opponent1, id);
                         break;
                     case 2:
                         new PrivateRoomMenu(_client, _currentSession).Start();
                         break;
                     case 3:
-                        //
+                        new GameLogic().PlayWithBotAsync(_client);
                         break;
                     case 4:
                         return Task.CompletedTask;

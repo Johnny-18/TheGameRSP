@@ -2,11 +2,9 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace RSPGame.Models.RoomModel
@@ -40,7 +38,7 @@ namespace RSPGame.Models.RoomModel
                 if (stopwatch.Elapsed.Seconds > 30)
                     break;
 
-                if (_gamers.Count != 2) 
+                if (_gamers.Count != 2)
                     continue;
 
                 await StartGame();
@@ -59,11 +57,8 @@ namespace RSPGame.Models.RoomModel
             var json = JsonSerializer.Serialize(
                 _gamers.Select(x => x.UserName).ToArray()
                 );
-
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-
             await client.PostAsync($"/api/game/{_id}", content);
-
         }
 
         public Task AddGamer(GamerInfo gamer)
@@ -74,13 +69,13 @@ namespace RSPGame.Models.RoomModel
                     throw new ArgumentNullException(nameof(gamer));
 
                 _gamers.Add(gamer);
-                return Task.CompletedTask;
             }
+            return Task.CompletedTask;
         }
 
         public int GetId() => _id;
 
-        public GamerInfo GetGamer() => _gamers.FirstOrDefault();
+        //public GamerInfo GetGamer() => _gamers.FirstOrDefault();
 
         public bool IsPublic() => _roomStatus == RoomStatus.Public;
     }

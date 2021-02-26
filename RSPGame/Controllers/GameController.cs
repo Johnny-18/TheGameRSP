@@ -42,7 +42,7 @@ namespace RSPGame.Controllers
             return Ok(_gameStorage.DictionaryGame[roomId]);
         }
 
-        [HttpGet("bot")]
+        [HttpPost("bot")]
         public IActionResult GameWithBot([FromBody] GameActions gamerAction)
         {
             if (gamerAction == GameActions.None)

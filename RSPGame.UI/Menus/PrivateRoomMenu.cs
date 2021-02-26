@@ -49,7 +49,13 @@ namespace RSPGame.UI.Menus
                         Console.WriteLine("\nWaiting for opponent\n\n");
 
                         var result1 = GameRequests.GetGame(_client, id1)?.ToArray();
+                        if (result1 == null) break;
 
+                        var opponent1 = result1
+                            .Where(x => !x.Equals(_currentSession.GamerInfo.UserName))?
+                            .First();
+
+                        new GameLogic().StartGame(_client, _currentSession.GamerInfo.UserName, opponent1, id1);
                         break;
 
                     case 2:
@@ -69,8 +75,11 @@ namespace RSPGame.UI.Menus
                         if (RoomRequests.JoinRoom(_client, _currentSession.GamerInfo, id2) == null) break;
 
                         var result2 = GameRequests.GetGame(_client, id2)?.ToArray();
+                        var opponent2 = result2
+                            .Where(x => !x.Equals(_currentSession.GamerInfo.UserName))?
+                            .First();
 
-                        new GameLogic().StartRound(_client, result2, id2);
+                        new GameLogic().StartGame(_client, _currentSession.GamerInfo.UserName, opponent2, id2);
 
                         break;
 

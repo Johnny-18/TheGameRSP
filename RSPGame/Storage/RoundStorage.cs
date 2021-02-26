@@ -5,6 +5,6 @@ namespace RSPGame.Storage
 {
     public class RoundStorage
     {
-        public ConcurrentDictionary<int, GameActions> DictionaryRound { get; set; } = new();
+        public ConcurrentDictionary<int, BlockingCollection<UserAction>> DictionaryRound { get; set; } = new();
     }
 }
