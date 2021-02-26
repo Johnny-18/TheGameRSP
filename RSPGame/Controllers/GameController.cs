@@ -2,6 +2,7 @@
 using RSPGame.Storage;
 using System.Linq;
 using RSPGame.Models;
+using RSPGame.Models.GameModel;
 using RSPGame.Services;
 
 namespace RSPGame.Controllers

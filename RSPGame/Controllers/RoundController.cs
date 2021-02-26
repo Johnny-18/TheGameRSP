@@ -1,8 +1,10 @@
-﻿using System.Linq;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using RSPGame.Models;
 using RSPGame.Services;
 using RSPGame.Storage;
+using System.Linq;
+using RSPGame.Models.GameModel;
+using RSPGame.Services.Rsp;
 
 namespace RSPGame.Controllers
 {
@@ -11,9 +13,9 @@ namespace RSPGame.Controllers
     public class RoundController : ControllerBase
     {
         private readonly RoundStorage _roundStorage;
-        private readonly RspService _rspService;
+        private readonly IRspService _rspService;
 
-        public RoundController(RoundStorage roundStorage, RspService rspService)
+        public RoundController(RoundStorage roundStorage, IRspService rspService)
         {
             _roundStorage = roundStorage;
             _rspService = rspService;
@@ -24,31 +26,44 @@ namespace RSPGame.Controllers
         {
             if (roomId < 1 || roomId > 1000)
                 return BadRequest(roomId);
-            _roundStorage.DictionaryRound[roomId].Add(new UserAction(userName, action));
+
+            var gamerReq = new GamerStep
+            {
+                UserName = userName,
+                UserAction = action
+            };
+
+            _roundStorage.AddGamer(roomId, gamerReq);
 
             return Ok();
         }
 
-        [HttpPost("{roomId}/{userName}")]
+        [HttpGet("{roomId}/{userName}")]
         public IActionResult GetGameRound([FromRoute] string userName, [FromRoute] int roomId)
         {
             if (roomId < 1 || roomId > 1000)
                 return BadRequest(roomId);
 
-            var gamer1 = _roundStorage.DictionaryRound[roomId]
-                .FirstOrDefault(x => x.UserName == userName);
+            if (!_roundStorage.ContainRoom(roomId))
+                return NotFound(roomId);
 
-            if (gamer1 == null)
-                return NotFound();
+            var gamers = _roundStorage.PeekGamers(roomId).ToArray();
 
-            var gamer2 = _roundStorage.DictionaryRound[roomId]
-                .FirstOrDefault(x => x.UserName != userName);
+            if (gamers.Count() < 2)
+                return NotFound(roomId);
 
-            if (gamer2 == null)
-                return NotFound();
+            if (gamers.Count() > 2)
+                return Conflict();
 
-            return Ok(_rspService.GetWinner(gamer1.Actions, gamer2.Actions));
+            var gamer1 = gamers.First();
+            var gamer2 = gamers.Last();
 
+            var result = _rspService.GetWinner(gamer1.UserAction, gamer2.UserAction);
+
+            if (gamer1.UserName == userName)
+                return Ok(result);
+
+            return Ok(_rspService.InverseResult(result));
         }
     }
 }

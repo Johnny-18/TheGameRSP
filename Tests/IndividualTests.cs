@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using RSPGame.Models;
+using RSPGame.Models.GameModel;
 using RSPGame.Services.Statistics;
 using Xunit;
 

@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using RSPGame.Models;
+using RSPGame.Models.GameModel;
 using RSPGame.Models.RoomModel;
 
 namespace RSPGame.Services.Room

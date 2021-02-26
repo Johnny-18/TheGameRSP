@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using RSPGame.Models;
 using RSPGame.Models.OptionsModel;
 using RSPGame.Services;
+using RSPGame.Services.FileWorker;
 
 namespace RSPGame.Storage
 {

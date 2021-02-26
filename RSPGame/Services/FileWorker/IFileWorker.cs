@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace RSPGame.Services
+namespace RSPGame.Services.FileWorker
 {
     public interface IFileWorker
     {

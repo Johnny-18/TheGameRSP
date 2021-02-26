@@ -1,3 +1,5 @@
+using RSPGame.Models.GameModel;
+
 namespace RSPGame.Models
 {
     public class Session

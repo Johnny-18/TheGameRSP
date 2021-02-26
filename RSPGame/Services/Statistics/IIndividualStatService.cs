@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using RSPGame.Models;
+using RSPGame.Models.GameModel;
 
 namespace RSPGame.Services.Statistics
 {

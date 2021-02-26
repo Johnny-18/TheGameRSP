@@ -11,7 +11,7 @@ namespace RSPGame.UI.Menus
 {
     public class PlayMenu
     {
-        private Session _currentSession;
+        private readonly Session _currentSession;
 
         private readonly HttpClient _client;
 
@@ -50,8 +50,13 @@ namespace RSPGame.UI.Menus
                         if (result == null) break;
 
                         var opponent1 = result
-                            .Where(x => !x.Equals(_currentSession.GamerInfo.UserName))?
-                            .First();
+                            .FirstOrDefault(x => !x.Equals(_currentSession.GamerInfo.UserName));
+
+                        if (opponent1 == null)
+                        {
+                            Console.WriteLine("Error: You can`t play with yourself!\n\n");
+                            break;
+                        }
 
                         new GameLogic().StartGame(_client, _currentSession.GamerInfo.UserName, opponent1, id);
                         break;
