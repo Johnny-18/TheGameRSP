@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using RSPGame.Models;
-using RSPGame.Services;
+using RSPGame.Models.RoomModel;
+using RSPGame.Services.Room;
+using RSPGame.Storage;
 
 namespace RSPGame.Controllers
 {
@@ -57,6 +60,11 @@ namespace RSPGame.Controllers
             return Ok();
         }
 
-
+        [HttpPost("stop")]
+        public IActionResult PostStopRoom([FromBody] int roomId)
+        {
+            _roomService.DeleteRoom(roomId);
+            return Ok();
+        }
     }
 }

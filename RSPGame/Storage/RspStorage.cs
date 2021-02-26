@@ -57,20 +57,20 @@ namespace RSPGame.Storage
             
             return _users as IEnumerable<User>;
         }
+        
+        public async Task SaveToFile()
+        {
+            if (_users != null && _users.Count > 0)
+            {
+                await _fileWorker.SaveToFileAsync(_path, _users);
+            }
+        }
 
         private async Task CheckCollection()
         {
             if (_users == null)
             {
                 await GetFromFile(_path);
-            }
-        }
-
-        private async Task SaveToFile()
-        {
-            if (_users != null && _users.Count > 0)
-            {
-                await _fileWorker.SaveToFileAsync(_path, _users);
             }
         }
 

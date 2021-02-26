@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Net.Http;
-using RSPGame.Models;
-using RSPGame.UI.PlayRequests;
 
-namespace RSPGame.UI
+namespace RSPGame.UI.Game
 {
     public class GameLogic
     {
-        public void StartGame(HttpClient client, string[] usersName, int roomId)
+        public void StartRound(HttpClient client, string[] usersName, int roomId)
         {
             var roundId = 0;
+            var firstGamer = usersName[0];
+            var secondGamer = usersName[1];
 
             roundId++;
             Console.Clear();
@@ -50,8 +50,8 @@ namespace RSPGame.UI
                     return;
             }
 
-            if (GameRequests.PostAction(client, action, roomId, roundId) == null) 
-                ;
+            //if (GameRequests.PostAction(client, action, roomId, roundId) == null) 
+            //    return;
 
         }
     }

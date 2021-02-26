@@ -1,9 +1,9 @@
-﻿using System;
+﻿using RSPGame.Models;
+using RSPGame.UI.PlayRequests;
+using System;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
-using RSPGame.Models;
-using RSPGame.UI.PlayRequests;
 
 namespace RSPGame.UI.Menus
 {

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using RSPGame.Models;
 
-namespace RSPGame.Services
+namespace RSPGame.Storage
 {
     public interface IRspStorage
     {
@@ -11,5 +11,7 @@ namespace RSPGame.Services
         Task<bool> TryAddUserAsync(User user);
 
         Task<User> GetUserByUserNameAsync(string userName);
+
+        Task SaveToFile();
     }
 }
