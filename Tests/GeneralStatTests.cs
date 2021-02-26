@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using RSPGame.Models;
-using RSPGame.Services;
 using RSPGame.Services.Statistics;
 using RSPGame.Storage;
 using Xunit;

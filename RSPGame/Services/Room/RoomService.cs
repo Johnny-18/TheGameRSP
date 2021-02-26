@@ -16,14 +16,14 @@ namespace RSPGame.Services.Room
     //todo: get match result by gamers 
     public class RoomService : IRoomService
     {
-        private readonly RoomStorage _roomStorage;
+        private readonly RoomStorage RoomStorage;
         private readonly ILogger<RoomService> _logger;
 
         private static readonly object Locker = new();
 
         public RoomService(RoomStorage roomStorage, ILogger<RoomService> logger)
         {
-            _roomStorage = roomStorage;
+            RoomStorage = roomStorage;
             _logger = logger;
         }
 
@@ -42,7 +42,7 @@ namespace RSPGame.Services.Room
             try
             {
                 Monitor.Enter(Locker, ref acquiredLock);
-                _roomStorage.ListRooms.Add(room);
+                RoomStorage.ListRooms.Add(room);
             }
             finally
             {
@@ -65,7 +65,7 @@ namespace RSPGame.Services.Room
                 Models.RoomModel.Room room;
                 if (id == 0)
                 {
-                    room = _roomStorage.ListRooms
+                    room = RoomStorage.ListRooms
                         .FirstOrDefault(x => x.IsPublic() /*&& x.GetGamer().UserName != gamer.UserName*/);
 
                     if (room == null)
@@ -76,13 +76,13 @@ namespace RSPGame.Services.Room
 
                         await room.AddGamer(gamer);
 
-                        _roomStorage.ListRooms.Add(room);
+                        RoomStorage.ListRooms.Add(room);
                         return room.GetId();
                     }
                 }
                 else
                 {
-                    room = _roomStorage.ListRooms
+                    room = RoomStorage.ListRooms
                         .FirstOrDefault(x => x.GetId() == id && !x.IsPublic() /*&& x.GetGamer().UserName != gamer.UserName*/);
 
                     if (room == null)
@@ -93,7 +93,7 @@ namespace RSPGame.Services.Room
 
                 await room.AddGamer(gamer);
 
-                _roomStorage.ListRooms.Remove(room);
+                RoomStorage.ListRooms.Remove(room);
 
                 return room.GetId();
 
@@ -103,6 +103,14 @@ namespace RSPGame.Services.Room
                 if (acquiredLock) Monitor.Exit(Locker);
             }
 
+        }
+
+        public Task DeleteRoom(int id)
+        {
+            var room =RoomStorage.ListRooms.FirstOrDefault(x => x.GetId() == id);
+            RoomStorage.ListRooms.Remove(room);
+
+            return Task.CompletedTask;
         }
     }
 }

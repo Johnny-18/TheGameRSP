@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace RSPGame.Models.RoomModel
@@ -29,9 +31,18 @@ namespace RSPGame.Models.RoomModel
 
         private async void GamersCheck()
         {
+            var stopwatch = new Stopwatch();
             while (true)
             {
-                if (_gamers.Count != 2) continue;
+                if (_gamers.Count == 1)
+                    stopwatch.Start();
+
+                if (stopwatch.Elapsed.Seconds > 30)
+                    break;
+
+                if (_gamers.Count != 2) 
+                    continue;
+
                 await StartGame();
                 break;
             }
