@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Linq;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -21,7 +21,7 @@ namespace RSPGame.UI.Menus
             _currentSession = currentSession;
         }
 
-        public Task Start()
+        public async Task Start()
         {
             while (true)
             {
@@ -33,25 +33,54 @@ namespace RSPGame.UI.Menus
                 while (true)
                 {
                     Console.Write("Enter the number: ");
-                    if (!int.TryParse(Console.ReadLine(), out num)) Console.WriteLine("The only numbers can be entered. Try again");
-                    else if (num < 1 || num > 3) Console.WriteLine("Incorrect number. Try again");
-                    else break;
+                    if (!int.TryParse(Console.ReadLine(), out num)) 
+                        Console.WriteLine("The only numbers can be entered. Try again");
+                    else if (num < 1 || num > 3) 
+                        Console.WriteLine("Incorrect number. Try again");
+                    else 
+                        break;
                 }
                 Console.WriteLine();
                 switch (num)
                 {
                     case 1:
-                        var json = RoomRequests.CreateRoom(_client, _currentSession.GamerInfo)?.Result;
-                        if (json == null) break;
-                        var id1 = JsonConvert.DeserializeObject<int>(json);
+                        var json = await RoomRequests.CreateRoom(_client, _currentSession.GamerInfo);
+                        if (string.IsNullOrEmpty(json)) 
+                            break;
+                        
+                        var roomId = JsonConvert.DeserializeObject<int>(json);
 
-                        Console.WriteLine($"\nRoom with id {id1} has been created!");
+                        Console.WriteLine($"\nRoom with id {roomId} has been created!");
                         Console.WriteLine("\nWaiting for opponent\n\n");
 
-                        var result1 = GameRequests.GetGame(_client, id1)?.ToArray();
-
+                        int counter = 0;
+                        var period = new Stopwatch();
+                        
+                        period.Start();
+                        
+                        while (true)
+                        {
+                            if (period.ElapsedMilliseconds > 1000)
+                            {
+                                var gamerInfos = await RoomRequests.GetGamers(_client, roomId);
+                                if (gamerInfos != null && gamerInfos.Length == 2)
+                                {
+                                    await new GameLogic().StartGame(_client, gamerInfos, roomId);
+                                }
+                                else
+                                {
+                                    period.Restart();
+                                    counter++;
+                                }
+                            }
+                            else if(counter == 30)
+                            {
+                                await RoomRequests.DeleteRoom(_client, roomId);
+                                Console.WriteLine("Opponent do not found!");
+                                break;
+                            }
+                        }
                         break;
-
                     case 2:
                         Console.Write("Enter the id of the desired room: ");
 
@@ -60,22 +89,21 @@ namespace RSPGame.UI.Menus
                             Console.WriteLine("\nERROR:\tThe only numbers can be entered. Try again\n\n");
                             break;
                         }
-                        else if (id2 < 1 || id2 > 1000)
+                        else if (id2 < 0)
                         {
                             Console.WriteLine("\nERROR:\tIncorrect number. Try again\n\n");
                             break;
                         }
                         
-                        if (RoomRequests.JoinRoom(_client, _currentSession.GamerInfo, id2) == null) break;
+                        if (await RoomRequests.JoinRoom(_client, _currentSession.GamerInfo, id2)) 
+                            break;
 
-                        var result2 = GameRequests.GetGame(_client, id2)?.ToArray();
-
-                        new GameLogic().StartRound(_client, result2, id2);
-
+                        var gamers = await GameRequests.GetGame(_client, id2);
+                        
+                        await new GameLogic().StartGame(_client, gamers, id2);
                         break;
-
                     case 3:
-                        return Task.CompletedTask;
+                        return;
                 }
             }
         }

@@ -1,17 +1,20 @@
+using System;
 using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace RSPGame.Models
 {
+    [Serializable]
     public class User
     {
 
-        [JsonPropertyName("userName")]
+        [JsonProperty("userName")]
         public string UserName { get; set; }
         
-        [JsonPropertyName("passwordHash")]
+        [JsonProperty("passwordHash")]
         public string PasswordHash { get; set; }
 
-        [JsonPropertyName("gamerInfo")]
+        [JsonProperty("gamerInfo")]
         public GamerInfo GamerInfo { get; set; }
     }
 }

@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RSPGame.Models;
+using RSPGame.UI.Game;
 using RSPGame.UI.PlayRequests;
 
 namespace RSPGame.UI.Menus
@@ -20,7 +21,7 @@ namespace RSPGame.UI.Menus
             _currentSession = currentSession;
         }
 
-        public Task Start()
+        public async Task Start()
         {
             while (true)
             {
@@ -33,29 +34,37 @@ namespace RSPGame.UI.Menus
                 while (true)
                 {
                     Console.Write("Enter the number: ");
-                    if (!int.TryParse(Console.ReadLine(), out num)) Console.WriteLine("The only numbers can be entered. Try again");
-                    else if (num < 1 || num > 4) Console.WriteLine("Incorrect number. Try again");
-                    else break;
+                    if (!int.TryParse(Console.ReadLine(), out num)) 
+                        Console.WriteLine("The only numbers can be entered. Try again");
+                    else if (num < 1 || num > 4) 
+                        Console.WriteLine("Incorrect number. Try again");
+                    else 
+                        break;
                 }
+                
                 Console.WriteLine();
                 switch (num)
                 {
                     case 1:
-                        var json = RoomRequests.QuickSearch(_client, _currentSession.GamerInfo)?.Result;
-                        if (json == null) break;
-                        var id = JsonConvert.DeserializeObject<int>(json);
+                        var json = await RoomRequests.QuickSearch(_client, _currentSession.GamerInfo);
+                        if (json == null) 
+                            break;
+                        
+                        var roomId = JsonConvert.DeserializeObject<int>(json);
+                        Console.WriteLine($"You will play in room {roomId}!");
 
-                        var result = GameRequests.GetGame(_client, id)?.ToArray();
-
+                        var gamers = await GameRequests.GetGame(_client, roomId);
+                        
+                        await new GameLogic().StartGame(_client, gamers, roomId);
                         break;
                     case 2:
-                        new PrivateRoomMenu(_client, _currentSession).Start();
+                        await new PrivateRoomMenu(_client, _currentSession).Start();
                         break;
                     case 3:
                         //
                         break;
                     case 4:
-                        return Task.CompletedTask;
+                        return;
                 }
             }
         }

@@ -3,10 +3,11 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using RSPGame.Models;
 using RSPGame.UI.Menus;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace RSPGame.UI.PlayRequests
 {
@@ -41,7 +42,7 @@ namespace RSPGame.UI.PlayRequests
             {
                 var jsonFromApi = await response.Content.ReadAsStringAsync();
 
-                currentSession = JsonSerializer.Deserialize<Session>(jsonFromApi);
+                currentSession = JsonConvert.DeserializeObject<Session>(jsonFromApi);
                 
                 await new SessionMenu(client, currentSession).Start();
                 return;

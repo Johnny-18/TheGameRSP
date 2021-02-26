@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RSPGame.Models;
-using RSPGame.Models.RoomModel;
-using RSPGame.Services;
-using RSPGame.Services.Room;
+using RSPGame.Models.Game;
+using RSPGame.Services.Rooms;
 
 namespace RSPGame.Controllers
 {
@@ -25,9 +25,38 @@ namespace RSPGame.Controllers
             if (gamer == null)
                 return BadRequest();
 
-            var result = await _roomService.JoinRoom(gamer);
+            var roomId = await _roomService.JoinRoomAsync(gamer);
 
-            return Ok(result);
+            return Ok(roomId);
+        }
+        
+        [HttpGet("{roomId}")]
+        public IActionResult GetRoomById([FromRoute] int roomId)
+        {
+            if (roomId < 0)
+                return BadRequest();
+
+            var roomRep = _roomService.GetRoomRepById(roomId);
+            if (roomRep == null)
+            {
+                return NotFound();
+            }
+            
+            return Ok(roomRep);
+        }
+
+        [HttpDelete("{roomId}")]
+        public IActionResult DeleteRoom([FromRoute] int roomId)
+        {
+            if (roomId < 0)
+                return BadRequest();
+
+            if (_roomService.RemoveRoom(roomId))
+            {
+                return Ok();
+            }
+            
+            return NoContent();
         }
 
         [HttpPost("create")]
@@ -36,7 +65,7 @@ namespace RSPGame.Controllers
             if (gamer == null)
                 return BadRequest();
 
-            var result = await _roomService.CreateRoom(gamer, RoomStatus.Private);
+            var result = await _roomService.CreateRoomAsync(gamer, true);
 
             return Ok(result);
         }
@@ -49,7 +78,7 @@ namespace RSPGame.Controllers
 
             try
             {
-                await _roomService.JoinRoom(gamer, id);
+                await _roomService.JoinRoomAsync(gamer, id);
             }
             catch (ArgumentNullException)
             {
@@ -59,6 +88,55 @@ namespace RSPGame.Controllers
             return Ok();
         }
 
+        [HttpPost("{roomId}/action")]
+        public IActionResult GamerAction([FromRoute] int roomId, [FromBody] GameRequest gameRequest)
+        {
+            if (roomId < 0 || gameRequest == null)
+                return BadRequest();
 
+            var roomRep = _roomService.GetRoomRepById(roomId);
+            if (roomRep == null)
+                return NotFound();
+            
+            roomRep.RoundService.AddGamerAction(gameRequest.GamerInfo, gameRequest.Action);
+
+            return Ok();
+        }
+
+        [HttpPost("{roomId}/gamers")]
+        public async Task<IActionResult> AddGamers([FromRoute] int roomId, [FromBody] GamerInfo[] gamers)
+        {
+            if (roomId < 0 || gamers == null)
+                return BadRequest();
+
+            var roomRep = _roomService.GetRoomRepById(roomId);
+            if (roomRep == null)
+                return NotFound();
+
+            await Task.Run(() =>
+            {
+                roomRep.AddGamer(gamers[0]);
+                roomRep.AddGamer(gamers[1]);
+            });
+
+            return Ok();
+        }
+
+        [HttpGet("{roomId}/lastRound")]
+        public IActionResult GetLastRound([FromRoute] int roomId)
+        {
+            if (roomId < 0)
+                return BadRequest();
+
+            var roomRep = _roomService.GetRoomRepById(roomId);
+            if (roomRep == null)
+                return NotFound();
+
+            var round = roomRep.SeriesRepository.GetLastRound();
+            if (round == null)
+                return NoContent();
+
+            return Ok();
+        }
     }
 }

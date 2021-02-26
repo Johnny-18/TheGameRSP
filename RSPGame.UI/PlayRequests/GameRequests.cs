@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
@@ -7,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RSPGame.Models;
+using RSPGame.Models.Game;
 using RSPGame.UI.Game;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -14,7 +14,7 @@ namespace RSPGame.UI.PlayRequests
 {
     public static class GameRequests
     {
-        public static IEnumerable<string> GetGame(HttpClient client, int roomId)
+        public static async Task<GamerInfo[]> GetGame(HttpClient client, int roomId)
         {
             if (client == null)
                 throw new ArgumentNullException(nameof(client));
@@ -26,22 +26,26 @@ namespace RSPGame.UI.PlayRequests
 
             while (true)
             {
-                if (stopwatch.ElapsedMilliseconds < 2500) continue;
+                if (stopwatch.ElapsedMilliseconds < 2500) 
+                    continue;
 
                 try
                 {
-                    response = client.GetAsync($"api/game/{roomId}").Result;
+                    response = await client.GetAsync($"api/game/{roomId}");
+                    
+                    if (response.StatusCode == HttpStatusCode.OK) 
+                        break;
+
+                    counter++;
+                    stopwatch.Restart();
+                    if (counter == 12) 
+                        break;
                 }
                 catch (HttpRequestException)
                 {
                     Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
                     return null;
                 }
-                if (response.StatusCode == HttpStatusCode.OK) break;
-
-                counter++;
-                stopwatch.Restart();
-                if (counter == 12) break;
             }
 
             if (response.StatusCode == HttpStatusCode.NotFound)
@@ -52,26 +56,32 @@ namespace RSPGame.UI.PlayRequests
 
             Console.WriteLine("\nDone!\n\n");
 
-            var json = response.Content.ReadAsStringAsync().Result;
-            return JsonConvert.DeserializeObject<string[]>(json);
+            var json = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<GamerInfo[]>(json);
         }
 
-        public static Task<string> PostAction(HttpClient client, GameActionsUi action, int roomId, int roundId)
+        public static async Task<string> PostAction(HttpClient client, GamerInfo gamerInfo, GameActionsUi action)
         {
             if (client == null)
                 throw new ArgumentNullException(nameof(client));
 
-            var json = JsonSerializer.Serialize(action);
-
+            var gameRequest = new GameRequest
+            {
+                GamerInfo = gamerInfo,
+                Action = (GameActions)action
+            };
+            
+            var json = JsonSerializer.Serialize(gameRequest);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            Task<string> result = null;
-
+            
             try
             {
-                var message = client.PostAsync($"/api/round/{roomId}/{roundId}", content).Result;
+                var message = await client.PostAsync($"/api/round", content);
                 if (message.StatusCode == HttpStatusCode.OK)
-                    result = message.Content.ReadAsStringAsync();
+                {
+                    Console.WriteLine("\nRequest has been sent!\n\n");
+                    return await message.Content.ReadAsStringAsync();
+                }
             }
             catch (AggregateException)
             {
@@ -79,8 +89,7 @@ namespace RSPGame.UI.PlayRequests
                 return null;
             }
 
-            Console.WriteLine("\nRequest has been sent!\n\n");
-            return result;
+            return null;
         }
 
     }

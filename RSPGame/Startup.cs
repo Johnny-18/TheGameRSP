@@ -8,7 +8,8 @@ using Microsoft.IdentityModel.Tokens;
 using RSPGame.Models.OptionsModel;
 using RSPGame.Services;
 using RSPGame.Services.Authentication;
-using RSPGame.Services.Room;
+using RSPGame.Services.Game;
+using RSPGame.Services.Rooms;
 using RSPGame.Storage;
 using Serilog;
 
@@ -53,7 +54,8 @@ namespace RSPGame
             services.AddTransient<IRspService, RspService>();
             services.AddTransient<PasswordHashGenerator>();
             services.AddTransient<SinglePlayerService>();
-
+            
+            services.AddSingleton<RoundService>();
             services.AddScoped<IAuthService, AuthService>();
 
             services.AddSingleton<RoomStorage>();

@@ -14,7 +14,7 @@ namespace RSPGame.Services
         public RoundResult GetWinner(GameActions gamer1, GameActions gamer2)
         {
             if (gamer1 == GameActions.None || gamer2 == GameActions.None)
-                throw new ArgumentException("Gamers need to do actions!");
+                return RoundResult.None;
             
             if (gamer1 == gamer2)
             {

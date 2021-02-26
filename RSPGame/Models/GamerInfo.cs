@@ -5,6 +5,7 @@ using RSPGame.Models.JsonConverter;
 
 namespace RSPGame.Models
 {
+    [Serializable]
     public class GamerInfo
     {
         public GamerInfo()
@@ -41,7 +42,7 @@ namespace RSPGame.Models
         [JsonConverter(typeof(TimespanConverter))]
         public TimeSpan OnlineTime { get; set; }
 
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public int Games => CountLoses + CountDraws + CountWins;
 
         public override string ToString()

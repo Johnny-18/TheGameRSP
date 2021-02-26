@@ -21,12 +21,12 @@ namespace RSPGame.Controllers
         }
 
         [HttpPost("{roomId}")]
-        public IActionResult PostGame([FromBody] string[] usersName, [FromRoute] int roomId)
+        public IActionResult PostGame([FromBody] GamerInfo[] gamers, [FromRoute] int roomId)
         {
-            if (roomId == 0 || usersName.Any(string.IsNullOrWhiteSpace))
+            if (roomId == 0 || gamers == null)
                 return BadRequest();
 
-            if (_gameStorage.DictionaryGame.TryAdd(roomId, usersName)) 
+            if (_gameStorage.DictionaryGame.TryAdd(roomId, gamers))
                 return Ok();
             
             return Conflict();
@@ -35,11 +35,18 @@ namespace RSPGame.Controllers
         [HttpGet("{roomId}")]
         public IActionResult GetGame([FromRoute] int roomId)
         {
-            if (roomId == 0 || roomId > 1000)
+            if (roomId < 0)
                 return BadRequest(roomId);
+            
+            //check key
             if (!_gameStorage.DictionaryGame.ContainsKey(roomId))
                 return NotFound();
-            return Ok(_gameStorage.DictionaryGame[roomId]);
+
+            //get gamers from storage
+            if(_gameStorage.DictionaryGame.TryGetValue(roomId, out var gamers))
+                return Ok(gamers);
+
+            return NoContent();
         }
 
         [HttpGet("bot")]
