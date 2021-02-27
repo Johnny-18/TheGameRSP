@@ -50,7 +50,7 @@ namespace RSPGame.UI.Menus
                         var requestOptions = new RequestOptions
                         {
                             Body = json,
-                            Address = "api/rooms/join",
+                            Address = _client.BaseAddress +  "api/rooms/join",
                             Method = RequestMethod.Post
                         };
                         

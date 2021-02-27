@@ -18,17 +18,6 @@ namespace RSPGame.Controllers
             _roomService = roomService;
         }
 
-        // [HttpPost("find")]
-        // public IActionResult FindPublicRoom([FromBody] GamerInfo gamer)
-        // {
-        //     if (gamer == null)
-        //         return BadRequest();
-        //
-        //     var roomId = _roomService.JoinRoom(gamer);
-        //
-        //     return Ok(roomId);
-        // }
-
         [HttpPost("join")]
         public IActionResult JoinPrivateRoom([FromBody] GamerInfo gamer, [FromQuery] int id)
         {

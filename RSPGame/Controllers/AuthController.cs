@@ -52,7 +52,7 @@ namespace RSPGame.Controllers
 
             _authService.Logout(session);
 
-            return Ok();
+            return Ok(session);
         }
     }
 }

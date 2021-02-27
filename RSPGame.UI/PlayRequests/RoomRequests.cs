@@ -43,7 +43,7 @@ namespace RSPGame.UI.PlayRequests
             {
                 var requestOptions = new RequestOptions
                 {
-                    Address = $"/api/rooms/{roomId}",
+                    Address = client.BaseAddress + $"/api/rooms/{roomId}",
                     Method = RequestMethod.Get
                 };
                 
@@ -80,7 +80,7 @@ namespace RSPGame.UI.PlayRequests
             {
                 var requestOptions = new RequestOptions
                 {
-                    Address = $"/api/rooms/{roomId}",
+                    Address = client.BaseAddress + $"/api/rooms/{roomId}",
                     Method = RequestMethod.Delete
                 };
 
@@ -111,7 +111,7 @@ namespace RSPGame.UI.PlayRequests
 
             var requestOptions = new RequestOptions
             {
-                Address = $"/api/rooms/{roomId}/action",
+                Address = client.BaseAddress + $"/api/rooms/{roomId}/action",
                 Method = RequestMethod.Post,
                 Body = json
             };
@@ -138,7 +138,7 @@ namespace RSPGame.UI.PlayRequests
         {
             if (client == null)
                 throw new ArgumentNullException(nameof(client));
-
+            //
             var response = await client.GetAsync($"{roomId}/lastRound");
             
             if (response.StatusCode == HttpStatusCode.NotFound || response.StatusCode == HttpStatusCode.NoContent)
@@ -164,7 +164,7 @@ namespace RSPGame.UI.PlayRequests
 
             var requestOptions = new RequestOptions
             {
-                Address = $"/api/rooms/join?id={id}",
+                Address = client.BaseAddress + $"/api/rooms/join?id={id}",
                 Body = json,
                 Method = RequestMethod.Post
             };

@@ -19,7 +19,7 @@ namespace RSPGame.Services.Rooms
 
         public readonly RoundService RoundService;
 
-        public bool IsStarted = false;
+        public bool IsStarted;
         
         private readonly Room _room;
 
@@ -38,22 +38,6 @@ namespace RSPGame.Services.Rooms
         }
 
         public bool IsPrivate() => _room.IsPrivate;
-
-        // public Task GamersCheck()
-        // {
-        //     return Task.Run(async() =>
-        //     {
-        //         while (true)
-        //         {
-        //             if (_room.Gamers.Count != 2) continue;
-        //             //request
-        //             //request from controller
-        //             //request
-        //             await StartGame();
-        //             break;
-        //         }
-        //     });
-        // }
 
         public void AddGamer(GamerInfo gamer)
         {

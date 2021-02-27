@@ -26,15 +26,14 @@ namespace RSPGame.UI.PlayRequests
 
             while (true)
             {
-                if (stopwatch.ElapsedMilliseconds < 2500) 
+                if (stopwatch.ElapsedMilliseconds < 1000) 
                     continue;
 
                 try
                 {
                     response = RequestHandler.HandleRequest(client, new RequestOptions
                     {
-                        Address = $"api/rooms/gamers/{roomId}",
-                        Body = "",
+                        Address = client.BaseAddress + $"api/rooms/gamers/{roomId}",
                         Method = RequestMethod.Get
                     });
                     
@@ -80,6 +79,7 @@ namespace RSPGame.UI.PlayRequests
             
             try
             {
+                //todo
                 var message = await client.PostAsync($"/api/round", content);
                 if (message.StatusCode == HttpStatusCode.OK)
                 {
