@@ -2,16 +2,12 @@
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RSPGame.Models;
 using RSPGame.Models.Game;
-using RSPGame.Models.RoomModel;
 using RSPGame.Services.Rooms;
-using RSPGame.UI.Game;
 using RSPGame.UI.Models;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace RSPGame.UI.PlayRequests
 {
@@ -108,10 +104,9 @@ namespace RSPGame.UI.PlayRequests
             };
 
             var json = JsonConvert.SerializeObject(gameRequest);
-
             var requestOptions = new RequestOptions
             {
-                Address = client.BaseAddress + $"/api/rooms/{roomId}/action",
+                Address = client.BaseAddress + $"api/rooms/{roomId}/action",
                 Method = RequestMethod.Post,
                 Body = json
             };
@@ -119,14 +114,12 @@ namespace RSPGame.UI.PlayRequests
             try
             {
                 var response = RequestHandler.HandleRequest(client, requestOptions);
-                
                 if (response.StatusCode == (int)HttpStatusCode.NotFound || response.StatusCode == (int)HttpStatusCode.BadRequest)
                 {
-                    Console.WriteLine("\nThe room was not found. Check the number again.\n\n");
-                    return;
+                    Console.WriteLine("\nSomething going wrong!.\n\n");
                 }
 
-                Console.WriteLine("\nWaiting end of round!\n\n");
+                Console.WriteLine($"Your choice: {action.ToString()}");
             }
             catch (AggregateException)
             {
@@ -134,20 +127,24 @@ namespace RSPGame.UI.PlayRequests
             }
         }
 
-        public static async Task<Round> GetLastRound(HttpClient client, int roomId)
+        public static Round GetLastRound(HttpClient client, int roomId)
         {
             if (client == null)
                 throw new ArgumentNullException(nameof(client));
-            //
-            var response = await client.GetAsync($"{roomId}/lastRound");
             
-            if (response.StatusCode == HttpStatusCode.NotFound || response.StatusCode == HttpStatusCode.NoContent)
+            var requestOptions = new RequestOptions
             {
-                Console.WriteLine("\nRound was failed!\n\n");
+                Address = client.BaseAddress + $"api/rooms/{roomId}/lastRound",
+                Method = RequestMethod.Get
+            };
+            
+            var response = RequestHandler.HandleRequest(client, requestOptions);
+            if (response.StatusCode == (int)HttpStatusCode.NotFound || response.StatusCode == (int)HttpStatusCode.NoContent)
+            {
                 return null;
             }
 
-            var json = await response.Content.ReadAsStringAsync();
+            var json = response.Content;
             var round = JsonConvert.DeserializeObject<Round>(json);
 
             return round;
@@ -160,7 +157,7 @@ namespace RSPGame.UI.PlayRequests
             if (gamer == null)
                 throw new ArgumentNullException(nameof(gamer));
 
-            var json = JsonSerializer.Serialize(gamer);
+            var json = JsonConvert.SerializeObject(gamer);
 
             var requestOptions = new RequestOptions
             {

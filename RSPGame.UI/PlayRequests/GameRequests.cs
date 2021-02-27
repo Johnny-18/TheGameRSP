@@ -8,7 +8,6 @@ using Newtonsoft.Json;
 using RSPGame.Models;
 using RSPGame.Models.Game;
 using RSPGame.UI.Models;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace RSPGame.UI.PlayRequests
 {
@@ -17,12 +16,17 @@ namespace RSPGame.UI.PlayRequests
         public static GamerInfo[] GetGame(HttpClient client, int roomId)
         {
             if (client == null)
-                throw new ArgumentNullException(nameof(client));
+                return null;
 
             var counter = 0;
-            Response response;
             var stopwatch = new Stopwatch();
             stopwatch.Start();
+
+            var requestOptions = new RequestOptions
+            {
+                Address = client.BaseAddress + $"api/rooms/gamers/{roomId}",
+                Method = RequestMethod.Get
+            };
 
             while (true)
             {
@@ -31,14 +35,14 @@ namespace RSPGame.UI.PlayRequests
 
                 try
                 {
-                    response = RequestHandler.HandleRequest(client, new RequestOptions
+                    var response = RequestHandler.HandleRequest(client, requestOptions);
+                    if (response.StatusCode == (int) HttpStatusCode.OK)
                     {
-                        Address = client.BaseAddress + $"api/rooms/gamers/{roomId}",
-                        Method = RequestMethod.Get
-                    });
-                    
-                    if (response.StatusCode == (int)HttpStatusCode.OK) 
-                        break;
+                        var json = response.Content;
+                        var gamers = JsonConvert.DeserializeObject<GamerInfo[]>(json);
+                        if(gamers != null && gamers.Length == 2)
+                            return gamers;
+                    }
 
                     counter++;
                     stopwatch.Restart();
@@ -57,10 +61,6 @@ namespace RSPGame.UI.PlayRequests
                     return null;
                 }
             }
-
-            var json = response.Content;
-            var gamers = JsonConvert.DeserializeObject<GamerInfo[]>(json);
-            return gamers;
         }
 
         public static async Task<string> PostAction(HttpClient client, GamerInfo gamerInfo, GameActionsUi action)
@@ -74,7 +74,7 @@ namespace RSPGame.UI.PlayRequests
                 Action = (GameActions)action
             };
             
-            var json = JsonSerializer.Serialize(gameRequest);
+            var json = JsonConvert.SerializeObject(gameRequest);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             
             try

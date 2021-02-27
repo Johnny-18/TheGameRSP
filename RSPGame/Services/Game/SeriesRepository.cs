@@ -14,10 +14,17 @@ namespace RSPGame.Services.Game
 
         public void AddRound(Round round)
         {
-            if (round == null || round.Gamer1 == null || round.Gamer2 == null) 
+            if (round == null) 
                 return;
 
             _rounds.Push(round);
+        }
+
+        public Round RemoveLastRound()
+        {
+            _rounds.TryPop(out var round);
+
+            return round;
         }
 
         public Round GetLastRound()

@@ -72,7 +72,7 @@ namespace RSPGame.UI.Menus
                                 var gamerInfos = RoomRequests.GetGamers(_client, roomId);
                                 if (gamerInfos != null && gamerInfos.Length == 2)
                                 {
-                                    new GameLogic().StartGame(_client, gamerInfos, roomId);
+                                    new GameLogic().StartGame(_client, gamerInfos, _currentSession.UserName, roomId);
                                 }
                                 else
                                 {
@@ -107,7 +107,7 @@ namespace RSPGame.UI.Menus
 
                         var gamers = GameRequests.GetGame(_client, id2);
                         
-                        new GameLogic().StartGame(_client, gamers, id2);
+                        new GameLogic().StartGame(_client, gamers, _currentSession.UserName, id2);
                         break;
                     case 3:
                         return;

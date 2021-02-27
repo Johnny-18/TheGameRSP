@@ -52,6 +52,27 @@ namespace RSPGame.Services.Rooms
             if (_room.Gamers.Count == 2)
             {
                 StartGame();
+                SeriesRepository.AddRound(RoundService.GetRound());
+            }
+        }
+        
+        public void AddGamerAction(GamerInfo gamer, GameActions action)
+        {
+            if (gamer == null)
+                return;
+
+            lock (_locker)
+            {
+                RoundService.AddGamerAction(gamer, action);
+
+                //first action
+                if (!RoundService.CanPlay())
+                {
+                    SeriesRepository.RemoveLastRound();
+                    SeriesRepository.AddRound(RoundService.GetCompleteRound());
+                    
+                    RoundService.RefreshRound();
+                }
             }
         }
 

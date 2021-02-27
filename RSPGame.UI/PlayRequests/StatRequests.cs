@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using System.Text.Json;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 using RSPGame.Models;
 using RSPGame.UI.Models;
 
@@ -14,11 +13,17 @@ namespace RSPGame.UI.PlayRequests
         public static void GetGeneralStat(HttpClient client)
         {
             Console.WriteLine("General statistics");
+            
+            var requestOptions = new RequestOptions
+            {   
+                Method = RequestMethod.Get,
+                Address = client.BaseAddress + "api/stat/general"
+            };
 
-            var response = AuthRequests.GetResponse(client, "api/stat/general");
+            var response = RequestHandler.HandleRequest(client, requestOptions);
             if (response.StatusCode == (int)HttpStatusCode.OK)
             {
-                var gamerInfos = JsonSerializer.Deserialize<List<GamerInfo>>(response.Content);
+                var gamerInfos = JsonConvert.DeserializeObject<List<GamerInfo>>(response.Content);
                 foreach (var gamerInfo in gamerInfos)
                 {
                     Console.WriteLine(gamerInfo.ToString());

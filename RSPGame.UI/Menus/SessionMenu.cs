@@ -2,6 +2,8 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using RSPGame.Models;
+using RSPGame.Services.Statistics;
+using RSPGame.UI.PlayRequests;
 
 namespace RSPGame.UI.Menus
 {
@@ -41,10 +43,10 @@ namespace RSPGame.UI.Menus
                         new PlayMenu(_client, _currentSession).Start();
                         break;
                     case 2:
-                        //
+                        StatRequests.GetGeneralStat(_client);
                         break;
                     case 3:
-                        //
+                        Console.WriteLine(_currentSession.GamerInfo.ToString());
                         break;
                     case 4:
                         return Task.CompletedTask;

@@ -1,7 +1,10 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
+using Newtonsoft.Json;
 
 namespace RSPGame.Models.RoomModel
 {
+    [Serializable]
     public class Room
     {
         private static int _id;
@@ -23,10 +26,13 @@ namespace RSPGame.Models.RoomModel
             IsPrivate = isPrivate;
         }
 
+        [JsonProperty("id")]
         public int Id { get; set; }
 
+        [JsonProperty("gamers")]
         public BlockingCollection<GamerInfo> Gamers { get; set; }
 
+        [JsonProperty("isPrivate")]
         public bool IsPrivate { get; }
 
         private void DefaultInitialize()

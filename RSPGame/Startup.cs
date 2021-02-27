@@ -13,6 +13,7 @@ using RSPGame.Services.Authentication;
 using RSPGame.Services.Game;
 using RSPGame.Services.JsonConverter;
 using RSPGame.Services.Rooms;
+using RSPGame.Services.Statistics;
 using RSPGame.Storage;
 using Serilog;
 
@@ -64,6 +65,8 @@ namespace RSPGame
             
             services.AddSingleton<RoundService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IIndividualStatService, IndividualStatService>();
+            services.AddScoped<IGeneralStatService, GeneralStatService>();
 
             services.AddSingleton<RoomStorage>();
             services.AddSingleton<GameStorage>();

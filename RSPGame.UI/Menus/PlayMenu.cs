@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.Http;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RSPGame.Models;
 using RSPGame.UI.Game;
@@ -60,14 +59,16 @@ namespace RSPGame.UI.Menus
                         
                         var roomId = JsonConvert.DeserializeObject<int>(content);
                         Console.WriteLine($"You will play in room {roomId}!");
+                        Console.WriteLine($"Waiting for opponent!");
 
                         var gamers = GameRequests.GetGame(_client, roomId);
                         if (gamers == null || gamers.Length != 2)
                         {
+                            Console.WriteLine("Game canceled because opponent did not found!");
                             break;
                         }
                         
-                        new GameLogic().StartGame(_client, gamers, roomId);
+                        new GameLogic().StartGame(_client, gamers, _currentSession.UserName, roomId);
                         break;
                     case 2:
                         new PrivateRoomMenu(_client, _currentSession).Start();

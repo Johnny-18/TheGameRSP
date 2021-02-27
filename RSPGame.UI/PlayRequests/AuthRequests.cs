@@ -7,7 +7,6 @@ using Newtonsoft.Json;
 using RSPGame.Models;
 using RSPGame.UI.Menus;
 using RSPGame.UI.Models;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace RSPGame.UI.PlayRequests
 {
@@ -22,7 +21,7 @@ namespace RSPGame.UI.PlayRequests
             {
                 var jsonFromApi = response.Content;
 
-                currentSession = JsonSerializer.Deserialize<Session>(jsonFromApi);
+                currentSession = JsonConvert.DeserializeObject<Session>(jsonFromApi);
                 
                 await new SessionMenu(client, currentSession).Start();
                 return;
@@ -79,7 +78,7 @@ namespace RSPGame.UI.PlayRequests
         public static Response GetResponse(HttpClient client, string url)
         {
             var user = UserDataFromConsole();
-            var userJsonForBody = JsonSerializer.Serialize(user);
+            var userJsonForBody = JsonConvert.SerializeObject(user);
 
             var requestOptions = new RequestOptions
             {   

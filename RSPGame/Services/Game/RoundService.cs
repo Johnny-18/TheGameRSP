@@ -17,7 +17,7 @@ namespace RSPGame.Services.Game
 
         public bool CanPlay()
         {
-            if (_round.Gamer1 != null && _round.Gamer2 != null)
+            if (_round.Gamer1 == null || _round.Gamer2 == null)
             {
                 return true;
             }
@@ -42,7 +42,12 @@ namespace RSPGame.Services.Game
             }
         }
 
-        public Round PlayRound()
+        public Round GetRound()
+        {
+            return _round;
+        }
+
+        public Round GetCompleteRound()
         {
             _round.RoundResultForGamer1 = _rspService.GetWinner(_round.UserAction1, _round.UserAction2);
             if (_round.RoundResultForGamer1 == RoundResult.None)
@@ -56,7 +61,23 @@ namespace RSPGame.Services.Game
                 return null;
             }
 
-            return _round;
+            var round = new Round
+            {
+                Gamer1 = _round.Gamer1,
+                Gamer2 = _round.Gamer2,
+                UserAction1 = _round.UserAction1,
+                UserAction2 = _round.UserAction2,
+                RoundResultForGamer1 = _round.RoundResultForGamer1,
+                RoundResultForGamer2 = _round.RoundResultForGamer2
+            };
+            
+
+            return round;
+        }
+
+        public void RefreshRound()
+        {
+            _round = new Round();
         }
     }
 }

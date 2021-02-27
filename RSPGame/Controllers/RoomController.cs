@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RSPGame.Models;
@@ -49,6 +50,21 @@ namespace RSPGame.Controllers
             return Ok(roomRep);
         }
 
+        [HttpGet("gamers/{roomId}")]
+        public IActionResult GetGamerFromRoom([FromRoute] int roomId)
+        {
+            if (roomId < 0)
+                return BadRequest();
+
+            var roomRep = _roomService.GetRoomRepById(roomId);
+            if (roomRep == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(roomRep.GetGamers().ToArray());
+        }
+
         [HttpDelete("{roomId}")]
         public IActionResult DeleteRoom([FromRoute] int roomId)
         {
@@ -84,7 +100,7 @@ namespace RSPGame.Controllers
             if (roomRep == null)
                 return NotFound();
             
-            roomRep.RoundService.AddGamerAction(gameRequest.GamerInfo, gameRequest.Action);
+            roomRep.AddGamerAction(gameRequest.GamerInfo, gameRequest.Action);
 
             return Ok();
         }
@@ -100,6 +116,23 @@ namespace RSPGame.Controllers
                 return NotFound();
 
             var round = roomRep.SeriesRepository.GetLastRound();
+            if (round == null)
+                return NoContent();
+
+            return Ok(round);
+        }
+
+        [HttpDelete("{roomId}/laseRound")]
+        public IActionResult DeleteLastRound([FromRoute] int roomId)
+        {
+            if (roomId < 0)
+                return BadRequest();
+            
+            var roomRep = _roomService.GetRoomRepById(roomId);
+            if (roomRep == null)
+                return NotFound();
+            
+            var round = roomRep.SeriesRepository.RemoveLastRound();
             if (round == null)
                 return NoContent();
 

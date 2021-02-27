@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using RSPGame.Models;
 using RSPGame.UI.PlayRequests;
-using System.Runtime.InteropServices;
+using System.Threading;
 using Newtonsoft.Json;
 using RSPGame.Models.Game;
 using RSPGame.UI.Models;
@@ -13,105 +14,60 @@ namespace RSPGame.UI.Game
 {
     public class GameLogic
     {
-        private enum StdHandle { Stdin = -10, Stdout = -11, Stderr = -12 };
-        
-        [DllImport("kernel32.dll")]
-        private static extern IntPtr GetStdHandle(StdHandle std);
-        
-        [DllImport("kernel32.dll")]
-        private static extern bool CloseHandle(IntPtr hdl);
-        
-        public async void StartGame(HttpClient client, GamerInfo[] gamers, int roomId)
+        public async void StartGame(HttpClient client, GamerInfo[] gamers, string currentUser, int roomId)
         {
-            Round round = null;
             
-            StartRound(client, gamers, roomId);
+            //todo start series
+            
+            Round round;
+            var roundConfigurationSw = new Stopwatch();
+            var requestPeriodSw = new Stopwatch();
+            
+            requestPeriodSw.Start();
+            roundConfigurationSw.Start();
+            
+            var cancelTokenSource = new CancellationTokenSource();
+            var token = cancelTokenSource.Token;
+            
+            var task = Task.Run(() => StartRound(client, gamers, roomId), token);
+            //StartRound(client, gamers, roomId);
 
-            Task waitingTask = Task.Delay(20000).ContinueWith(async _ =>
+            while (true)
             {
-                IntPtr stdin = GetStdHandle(StdHandle.Stdin);
-                CloseHandle(stdin);
-                Console.WriteLine("----------------------------------------------");
-                //task.Dispose();
-                
-                round = await RoomRequests.GetLastRound(client, roomId);
-                if (round != null)
+                if (requestPeriodSw.ElapsedMilliseconds > 500)
                 {
-                    switch (@round.RoundResultForGamer1)
+                    round = RoomRequests.GetLastRound(client, roomId);
+                    if (round != null)
                     {
-                        case RoundResult.Draw:
-                            Console.WriteLine("Draw!");
-                            break;
-                        case RoundResult.Win:
-                            Console.WriteLine("You Win!");
-                            break;
-                        case RoundResult.Lose:
-                            Console.WriteLine("You Lose(");
-                            break;
-                    }
-                }
-            });
+                        if (roundConfigurationSw.Elapsed.Seconds < 20)
+                        {
+                            if (round.UserAction1 == GameActions.None || round.UserAction2 == GameActions.None)
+                            {
+                                continue;
+                            }
 
-            await Task.WhenAll(waitingTask);
+                            PrintResult(GetCorrectResultByUserName(round, currentUser));
+                            break;
+                        }
+                        
+                        if(!task.IsCompleted)
+                            cancelTokenSource.Cancel();
+                        
+                        //todo remove invalid round
+
+                        PrintResult(GetCorrectResultByUserName(round, currentUser));
+                        break;
+                    }
+                    
+                    requestPeriodSw.Restart();
+                }
+            }
 
             var roomRep = await RoomRequests.GetRoomById(client, roomId);
             
             roomRep.SeriesRepository.AddRound(round);
         }
 
-        private int GetNumberFromUser(string message)
-        {
-            while (true)
-            {
-                Console.WriteLine(message);
-                if (int.TryParse(Console.ReadLine(), out var number) || number > 0 && number < 5)
-                {
-                    return number;
-                }
-
-                Console.WriteLine("Incorrect number. Try again");
-            }
-        }
-
-        private void StartRound(HttpClient client, GamerInfo[] gamers, int roomId)
-        {
-            var firstGamer = gamers[0];
-            var secondGamer = gamers[1];
-            
-            Console.Clear();
-            Console.WriteLine($"Room ID:\t{roomId}");
-            Console.WriteLine($"Match:\t{string.Join(firstGamer.UserName," vs ", secondGamer.UserName)}");
-            Console.WriteLine("Rules:\tRock > scissors; scissors > paper; paper > rock.\n\n");
-
-            var action = GetAction();
-
-            RoomRequests.GameAction(client, firstGamer, action, roomId);
-        }
-
-        private GameActionsUi GetAction()
-        {
-            Console.WriteLine("1.\tRock");
-            Console.WriteLine("2.\tScissors");
-            Console.WriteLine("3.\tPaper");
-            Console.WriteLine("4.\tExit");
-
-            var number = GetNumberFromUser("Enter the number: ");
-
-            Console.WriteLine();
-            switch (number)
-            {
-                case 1:
-                    return GameActionsUi.Rock;
-                case 2:
-                    return GameActionsUi.Scissors;
-                case 3:
-                    return GameActionsUi.Paper;
-                default:
-                    Console.WriteLine("Goodbye!");
-                    return GameActionsUi.None;
-            }
-        }
-        
         public void PlayWithBotAsync(HttpClient client)
         {
             var action = GetAction();
@@ -131,18 +87,84 @@ namespace RSPGame.UI.Game
             }
 
             var roundResult = JsonConvert.DeserializeObject<RoundResult>(json);
+            PrintResult(roundResult);
+        }
 
-            switch (roundResult)
+        private void StartRound(HttpClient client, GamerInfo[] gamers, int roomId)
+        {
+            var firstGamer = gamers[0];
+            var secondGamer = gamers[1];
+            
+            Console.Clear();
+            Console.WriteLine($"Room ID:\t{roomId}");
+            Console.WriteLine($"Match:\t{firstGamer.UserName} vs {secondGamer.UserName}");
+            Console.WriteLine("Rules:\tRock > scissors; scissors > paper; paper > rock.\n");
+
+            var action = GetAction();
+
+            RoomRequests.GameAction(client, firstGamer, action, roomId);
+        }
+
+        private GameActionsUi GetAction()
+        {
+            Console.WriteLine("1.\tRock");
+            Console.WriteLine("2.\tScissors");
+            Console.WriteLine("3.\tPaper");
+            Console.WriteLine("4.\tExit");
+            
+
+            Console.WriteLine();
+            switch (GetNumberFromUser("Enter the number: "))
             {
+                case 1:
+                    return GameActionsUi.Rock;
+                case 2:
+                    return GameActionsUi.Scissors;
+                case 3:
+                    return GameActionsUi.Paper;
+                default:
+                    Console.WriteLine("Goodbye!");
+                    return GameActionsUi.None;
+            }
+        }
+
+        private RoundResult GetCorrectResultByUserName(Round round, string userName)
+        {
+            return userName == round.Gamer1.UserName
+                ? round.RoundResultForGamer1
+                : round.RoundResultForGamer2;
+        }
+
+        private void PrintResult(RoundResult result)
+        {
+            switch (result)
+            {
+                case RoundResult.Draw:
+                    Console.WriteLine("Draw!");
+                    break;
                 case RoundResult.Win:
-                    Console.WriteLine("\nCongratulation! You win!\n\n");
+                    Console.WriteLine("You Win!");
                     break;
                 case RoundResult.Lose:
-                    Console.WriteLine("\nUnfortunately, you lose!\n\n");
+                    Console.WriteLine("You Lose!");
                     break;
-                case RoundResult.Draw:
-                    Console.WriteLine("\nDraw!\n\n");
+                case RoundResult.None:
+                    Console.WriteLine("Round was canceled!");
                     break;
+            }
+        }
+
+        private int GetNumberFromUser(string message)
+        {
+            while (true)
+            {
+                Console.WriteLine(message);
+                if (int.TryParse(Console.ReadLine(), out var number) || number > 0 && number < 5)
+                {
+                    return number;
+                }
+
+                Console.WriteLine("Incorrect number. Try again");
             }
         }
     }

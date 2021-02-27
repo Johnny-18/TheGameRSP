@@ -14,8 +14,11 @@ namespace RSPGame.Services.Statistics
             if (storage == null)
                 throw new ArgumentNullException(nameof(storage));
             
-            var usersFromStorage = (await storage.GetUsersAsync()).Where(x => x.GamerInfo.Games > 10);
-            var users = usersFromStorage.OrderByDescending(x => x.GamerInfo.Games).Take(10).ToList();
+            var usersFromStorage = await storage.GetUsersAsync();
+            if (usersFromStorage == null)
+                return null;
+            
+            var users = usersFromStorage.Where(x => x.GamerInfo.Games > 10).OrderByDescending(x => x.GamerInfo.Games).Take(10).ToList();
             
             var result = new List<GamerInfo>();
             
