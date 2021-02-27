@@ -22,7 +22,7 @@ namespace RSPGame.Controllers
         [HttpPost("{roomId}/{userName}")]
         public IActionResult PostGameRound([FromBody] GameActions action, [FromRoute] string userName, [FromRoute] int roomId)
         {
-            if (roomId < 1 || roomId > 1000)
+            if (roomId < 0)
                 return BadRequest(roomId);
 
             var gamerReq = new GamerStep
@@ -39,15 +39,14 @@ namespace RSPGame.Controllers
         [HttpGet("{roomId}/{userName}")]
         public IActionResult GetGameRound([FromRoute] string userName, [FromRoute] int roomId)
         {
-            if (roomId < 1 || roomId > 1000)
+            if (roomId < 0)
                 return BadRequest(roomId);
 
             if (!_roundStorage.ContainRoom(roomId))
                 return NotFound(roomId);
 
             var gamers = _roundStorage.PeekGamers(roomId).ToArray();
-
-            if (gamers.Count() != 2)
+            if (gamers.Length != 2)
                 return Conflict();
 
             var gamer1 = gamers.First();
