@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RSPGame.Models;
@@ -11,7 +12,7 @@ namespace RSPGame.UI.Menus
 {
     public class PrivateRoomMenu
     {
-        private Session _currentSession;
+        private readonly Session _currentSession;
 
         private readonly HttpClient _client;
 
@@ -21,7 +22,7 @@ namespace RSPGame.UI.Menus
             _currentSession = currentSession;
         }
 
-        public Task Start()
+        public async Task Start()
         {
             while (true)
             {
@@ -41,26 +42,26 @@ namespace RSPGame.UI.Menus
                 switch (num)
                 {
                     case 1:
-                        var json = RoomRequests.CreateRoom(_client, _currentSession.GamerInfo)?.Result;
-                        if (json == null) break;
+                        var json = await RoomRequests.PostAsync(_client, _currentSession.GamerInfo, "create");
+                        if (json == null)
+                        {
+                            Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                            break;
+                        }
                         var id1 = JsonConvert.DeserializeObject<int>(json);
 
                         Console.WriteLine($"\nRoom with id {id1} has been created!");
                         Console.WriteLine("\nWaiting for opponent\n\n");
 
-                        var result1 = GameRequests.GetGame(_client, id1)?.ToArray();
+                        var result1 = (await GameRequests.GetGame(_client, id1))?.ToArray();
                         if (result1 == null) break;
 
                         var opponent1 = result1
                             .FirstOrDefault(x => !x.Equals(_currentSession.GamerInfo.UserName));
 
-                        if (opponent1 == null)
-                        {
-                            Console.WriteLine("Error: You can`t play with yourself!\n\n");
-                            break;
-                        }
-
                         new GameLogic().StartGame(_client, _currentSession.GamerInfo.UserName, opponent1, id1);
+
+                        await _client.DeleteAsync($"api/rooms/stop/{id1}");
                         break;
 
                     case 2:
@@ -76,27 +77,22 @@ namespace RSPGame.UI.Menus
                             Console.WriteLine("\nERROR:\tIncorrect number. Try again\n\n");
                             break;
                         }
-                        
-                        if (RoomRequests.JoinRoom(_client, _currentSession.GamerInfo, id2) == null) break;
 
-                        var result2 = GameRequests.GetGame(_client, id2)?.ToArray();
+                        if (RoomRequests.JoinAsync(_client, _currentSession.GamerInfo, id2) == null)
+                            break;
+
+                        var result2 = (await GameRequests.GetGame(_client, id2))?.ToArray();
                         if (result2 == null) break;
 
                         var opponent2 = result2
                             .FirstOrDefault(x => !x.Equals(_currentSession.GamerInfo.UserName));
-
-                        if (opponent2 == null)
-                        {
-                            Console.WriteLine("Error: You can`t play with yourself!\n\n");
-                            break;
-                        }
 
                         new GameLogic().StartGame(_client, _currentSession.GamerInfo.UserName, opponent2, id2);
 
                         break;
 
                     case 3:
-                        return Task.CompletedTask;
+                        return;
                 }
             }
         }

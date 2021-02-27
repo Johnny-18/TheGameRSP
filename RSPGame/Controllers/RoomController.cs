@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RSPGame.Models.RoomModel;
-using RSPGame.Services.Room;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using RSPGame.Models.GameModel;
+using RSPGame.Services.RoomService;
 
 namespace RSPGame.Controllers
 {
@@ -16,17 +17,6 @@ namespace RSPGame.Controllers
         public RoomController(IRoomService roomService)
         {
             _roomService = roomService;
-        }
-
-        [HttpPost("find")]
-        public async Task<IActionResult> FindPublicRoom([FromBody] GamerInfo gamer)
-        {
-            if (gamer == null)
-                return BadRequest();
-
-            var result = await _roomService.JoinRoom(gamer);
-
-            return Ok(result);
         }
 
         [HttpPost("create")]
@@ -48,18 +38,33 @@ namespace RSPGame.Controllers
 
             try
             {
-                await _roomService.JoinRoom(gamer, id);
+                var result = await _roomService.JoinRoom(gamer, id);
+                if (result == 0) return NotFound();
+
+                return Ok(result);
             }
             catch (ArgumentNullException)
             {
                 return NotFound();
             }
-
-            return Ok();
         }
 
-        [HttpPost("stop")]
-        public IActionResult PostStopRoom([FromBody] int roomId)
+        [HttpGet("{roomId}")]
+        public IActionResult GetGame([FromRoute] int roomId)
+        {
+            if (roomId == 0 || roomId > 1000)
+                return BadRequest(roomId);
+
+            var room = _roomService.GetRoom(roomId);
+
+            if (room == null || room.IsFree())
+                return NotFound();
+            
+            return Ok(room.GetGamers.Select(x => x.UserName).ToArray());
+        }
+
+        [HttpDelete("stop/{roomId}")]
+        public IActionResult PostStopRoom([FromRoute] int roomId)
         {
             _roomService.DeleteRoom(roomId);
             return Ok();

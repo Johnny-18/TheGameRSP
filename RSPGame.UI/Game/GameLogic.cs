@@ -15,7 +15,7 @@ namespace RSPGame.UI.Game
             var roundId = 0;
             roundId++;
             Console.Clear();
-            Console.WriteLine($"Room ID:{roomId}");
+            Console.WriteLine($"RoomRepository ID:{roomId}");
             Console.WriteLine($"Round:\t{roundId}");
             Console.WriteLine($"Match:\t{userName} vs {opponentName}");
             Console.WriteLine("Rules:\tRock > scissors; scissors > paper; paper > rock.\n\n");
@@ -25,7 +25,6 @@ namespace RSPGame.UI.Game
 
         public void StartRound(HttpClient client, string userName, int roomId)
         {
-            //userName = userName.Trim();
             int num;
             GameActionsUi action = GameActionsUi.None;
 
@@ -92,16 +91,16 @@ namespace RSPGame.UI.Game
             switch (result)
             {
                 case RoundResult.None:
-                    Console.WriteLine("\nResult:\tNone\n\n\n\n");
+                    Console.WriteLine("\nResult:\tNone\n\n");
                     break;
                 case RoundResult.Draw:
-                    Console.WriteLine("\nResult:\tDraw\n\n\n\n");
+                    Console.WriteLine("\nResult:\tDraw\n\n");
                     break;
                 case RoundResult.Win:
-                    Console.WriteLine("\nResult:\tWin\n\n\n\n");
+                    Console.WriteLine("\nResult:\tWin\n\n");
                     break;
                 case RoundResult.Lose:
-                    Console.WriteLine("\nResult:\tLose\n\n\n\n");
+                    Console.WriteLine("\nResult:\tLose\n\n");
                     break;
             }
 
@@ -117,6 +116,7 @@ namespace RSPGame.UI.Game
         public Task PlayWithBotAsync(HttpClient client)
         {
             Console.Clear();
+
             int num;
             GameActionsUi action = GameActionsUi.None;
 
@@ -146,7 +146,6 @@ namespace RSPGame.UI.Game
                     action = GameActionsUi.Paper;
                     break;
                 case 4:
-                    Console.WriteLine("Goodbye!\n");
                     return Task.CompletedTask;
             }
 
@@ -154,7 +153,7 @@ namespace RSPGame.UI.Game
 
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = client.PostAsync($"/api/game/bot", content).Result;
+            var response = client.PostAsync($"/api/bot", content).Result;
 
             if (response.StatusCode == HttpStatusCode.OK)
                 json = response.Content.ReadAsStringAsync().Result;

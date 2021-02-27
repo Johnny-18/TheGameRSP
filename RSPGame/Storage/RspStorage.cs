@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using RSPGame.Models;
@@ -54,8 +55,8 @@ namespace RSPGame.Storage
         public async Task<IEnumerable<User>> GetUsersAsync()
         {
             await CheckCollection();
-            
-            return _users as IEnumerable<User>;
+
+            return _users.Select(x => x.Value).ToList();
         }
         
         public async Task SaveToFile()

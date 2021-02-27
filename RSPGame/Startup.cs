@@ -10,8 +10,9 @@ using RSPGame.Models.OptionsModel;
 using RSPGame.Services;
 using RSPGame.Services.Authentication;
 using RSPGame.Services.FileWorker;
-using RSPGame.Services.Room;
+using RSPGame.Services.RoomService;
 using RSPGame.Services.Rsp;
+using RSPGame.Services.Statistics;
 using RSPGame.Storage;
 using Serilog;
 
@@ -56,17 +57,17 @@ namespace RSPGame
             services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
             services.AddSingleton<IFileWorker, FileWorker>();
             services.AddSingleton<IRspStorage, RspStorage>();
+            services.AddSingleton<RoomStorage>();
+            services.AddSingleton<RoundStorage>();
 
             services.AddTransient<IRspService, RspService>();
             services.AddTransient<PasswordHashGenerator>();
             services.AddTransient<SinglePlayerService>();
+            services.AddTransient<IIndividualStatService, IndividualStatService>();
+            services.AddTransient<IGeneralStatService, GeneralStatService>();
+            services.AddTransient<IRoomService, RoomService>();
 
             services.AddScoped<IAuthService, AuthService>();
-
-            services.AddSingleton<RoomStorage>();
-            services.AddSingleton<GameStorage>();
-            services.AddSingleton<RoundStorage>();
-            services.AddSingleton<IRoomService, RoomService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
