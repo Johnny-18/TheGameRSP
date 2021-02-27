@@ -9,7 +9,23 @@ namespace RSPGame.Models.RoomModel
 {
     public class RoomRepository
     {
-        private readonly int _id = new Random().Next(1, 1001);
+        static RoomRepository()
+        {
+            _staticId = 1;
+        }
+
+        public RoomRepository(RoomStatus roomStatus)
+        {
+            _id = _staticId;
+            _staticId++;
+
+            _roomStatus = roomStatus;
+            _gamers = new BlockingCollection<GamerInfo>(2);
+        }
+
+        private static int _staticId;
+
+        private readonly int _id;
 
         private readonly RoomStatus _roomStatus;
 
@@ -17,11 +33,15 @@ namespace RSPGame.Models.RoomModel
 
         private readonly object _locker = new();
 
-        public RoomRepository(RoomStatus roomStatus)
-        {
-            _roomStatus = roomStatus;
-            _gamers = new BlockingCollection<GamerInfo>(2);
-        }
+        public int GetId() => _id;
+
+        public GamerInfo GetGamer() => _gamers.FirstOrDefault();
+
+        public IEnumerable<GamerInfo> GetGamers => _gamers;
+
+        public bool IsPublic() => _roomStatus == RoomStatus.Public;
+
+        public bool IsFree() => _gamers.Count != 2;
 
         public Task AddGamer(GamerInfo gamer)
         {
@@ -34,15 +54,5 @@ namespace RSPGame.Models.RoomModel
             }
             return Task.CompletedTask;
         }
-
-        public int GetId() => _id;
-
-        public GamerInfo GetGamer() => _gamers.FirstOrDefault();
-
-        public IEnumerable<GamerInfo> GetGamers => _gamers;
-
-        public bool IsPublic() => _roomStatus == RoomStatus.Public;
-
-        public bool IsFree() => _gamers.Count != 2;
     }
 }
