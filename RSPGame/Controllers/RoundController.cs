@@ -45,7 +45,7 @@ namespace RSPGame.Controllers
             if (!_roundStorage.ContainRoom(roomId))
                 return NotFound(roomId);
 
-            var gamers = _roundStorage.PeekGamers(roomId).ToArray();
+            var gamers = _roundStorage.GetGamerSteps(roomId).ToArray();
             if (gamers.Length != 2)
                 return Conflict();
 

@@ -1,6 +1,7 @@
 using System;
-using RSPGame.Models;
 using RSPGame.Models.Game;
+using RSPGame.Models.GameModel;
+using RSPGame.Services.Rsp;
 
 namespace RSPGame.Services.Game
 {

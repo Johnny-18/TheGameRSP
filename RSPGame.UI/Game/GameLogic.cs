@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RSPGame.UI.PlayRequests;
@@ -24,20 +25,42 @@ namespace RSPGame.UI.Game
 
                 PrintPreview(roomId, roundId, userName, opponentName);
 
-                var roundTask = StartRound(client, userName, roomId);
+                //var cancelable = new CancellationTokenSource();
 
-                if (seriesSw.Elapsed.Minutes >= 5)
-                {
+                //var roundTask = Task.Run(() => StartRound(client, userName, roomId), cancelable.Token);
 
-                }
-                else
-                {
-                    if (roundTask.IsCompleted)
-                    {
+                StartRound(client, userName, roomId); //, cancelable.Token);
 
-                    }
-                }
+                // while (true)
+                // {
+                //     if (seriesSw.Elapsed.Minutes >= 5)
+                //     {
+                //         //todo close game logic
+                //         return;
+                //     }
+                //     else
+                //     {
+                //         if (roundTask.IsCompleted)
+                //         {
+                //             var response = await GameRequests.RequestWithTimer(client, $"/api/round/{roomId}/{userName}", 1);
+                //
+                //             var json = await response.Content.ReadAsStringAsync();
+                //
+                //             var roundResult = JsonConvert.DeserializeObject<RoundResult>(json);
+                //             if (roundResult == RoundResult.None)
+                //             {
+                //                 //cancel round
+                //                 return;
+                //             }
+                //         }
+                //     }
+                // }
             }
+        }
+
+        private void StartRounds(HttpClient client, string userName, string opponentName, int roomId)
+        {
+            
         }
 
         private void PrintPreview(int roomId, int roundId, string userName, string opponentName)
@@ -80,7 +103,7 @@ namespace RSPGame.UI.Game
             }
         }
 
-        private async Task StartRound(HttpClient client, string userName, int roomId)
+        private async void StartRound(HttpClient client, string userName, int roomId)
         {
             GameActionsUi action = GetAction();
 
@@ -90,6 +113,8 @@ namespace RSPGame.UI.Game
                 json = JsonConvert.SerializeObject(action);
 
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                //send action
                 await client.PostAsync($"/api/round/{roomId}/{userName}", content);
             }
             catch (HttpRequestException)
@@ -97,8 +122,10 @@ namespace RSPGame.UI.Game
                 Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
                 return;
             }
+            ////////////////////////////////////////////
 
-            var response = GameRequests.RequestWithTimer(client, $"/api/round/{roomId}/{userName}", 20);
+            //check on opponent step
+            var response = await GameRequests.RequestWithTimer(client, $"/api/round/{roomId}/{userName}", 20);
             if (response == null)
             {
                 Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
@@ -111,7 +138,7 @@ namespace RSPGame.UI.Game
                 return;
             }
 
-            json = response.Content.ReadAsStringAsync().Result;
+            json = await response.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<RoundResult>(json);
             if (result == RoundResult.None)
             {
