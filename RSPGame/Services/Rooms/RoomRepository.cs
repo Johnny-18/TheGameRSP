@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using RSPGame.Models;
+using RSPGame.Models.Game;
 using RSPGame.Models.RoomModel;
 using RSPGame.Services.Game;
 
@@ -11,14 +13,12 @@ namespace RSPGame.Services.Rooms
         {
             _room = room;
             SeriesRepository = new SeriesRepository();
-            _roundService = new RoundService();
+            _currentRound = new RoundRepository();
         }
 
         public readonly SeriesRepository SeriesRepository;
 
-        private readonly RoundService _roundService;
-
-        public bool IsStarted;
+        private readonly RoundRepository _currentRound;
         
         private readonly Room _room;
 
@@ -28,15 +28,9 @@ namespace RSPGame.Services.Rooms
 
         public IEnumerable<GamerInfo> GetGamers() => _room.Gamers;
 
-        public bool IsFree()
-        {
-            if (_room.Gamers.Count == 2)
-                return false;
-
-            return true;
-        }
-
         public bool IsPrivate() => _room.IsPrivate;
+
+        public bool IsFree() => _room.Gamers.Count != 2;
 
         public void AddGamer(GamerInfo gamer)
         {
@@ -47,12 +41,6 @@ namespace RSPGame.Services.Rooms
             {
                 _room.Gamers.Add(gamer);
             }
-
-            if (_room.Gamers.Count == 2)
-            {
-                StartGame();
-                SeriesRepository.AddRound(_roundService.GetRound());
-            }
         }
         
         public void AddGamerAction(GamerInfo gamer, GameActions action)
@@ -62,22 +50,29 @@ namespace RSPGame.Services.Rooms
 
             lock (_locker)
             {
-                _roundService.AddGamerAction(gamer, action);
-
-                //first action
-                if (_roundService.CanPlay() == false)
-                {
-                    SeriesRepository.RemoveLastRound();
-                    SeriesRepository.AddRound(_roundService.GetCompleteRound());
-                    
-                    _roundService.RefreshRound();
-                }
+                if (_currentRound.CanPlay() == false)
+                    throw new InvalidOperationException("Two actions was done!");
+                
+                _currentRound.AddGamerAction(gamer, action);
             }
         }
 
-        private void StartGame()
+        public Round TryGetCompleteRound()
         {
-            IsStarted = true;
+            if(_currentRound.CanPlay())
+                return _currentRound.GetCompleteRound();
+
+            return null;
+        }
+
+        public Round GetCurrentRound()
+        {
+            return _currentRound.GetRound();
+        }
+
+        public void RefreshCurrentRound()
+        {
+            _currentRound.RefreshRound();
         }
     }
 }

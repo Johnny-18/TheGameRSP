@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RSPGame.Models;
-using RSPGame.Models.Game;
 using RSPGame.Services.Rooms;
 
 namespace RSPGame.Controllers
@@ -17,22 +16,6 @@ namespace RSPGame.Controllers
         public RoomController(IRoomService roomService)
         {
             _roomService = roomService;
-        }
-
-        [HttpPost("join")]
-        public IActionResult JoinPrivateRoom([FromBody] GamerInfo gamer, [FromQuery] int id)
-        {
-            if (gamer == null)
-                return BadRequest();
-
-            try
-            {
-                return Ok(_roomService.JoinRoom(gamer, id));
-            }
-            catch (ArgumentNullException)
-            {
-                return NotFound();
-            }
         }
 
         [HttpGet("{roomId}")]
@@ -65,6 +48,46 @@ namespace RSPGame.Controllers
             return Ok(roomRep.GetGamers().ToArray());
         }
 
+        [HttpGet("save/{roomId}")]
+        public IActionResult SaveWork([FromRoute] int roomId)
+        {
+            if (roomId < 0)
+                return BadRequest();
+
+            var roomRep = _roomService.GetRoomRepById(roomId);
+            if (roomRep == null)
+                return BadRequest();
+
+            return Ok();
+        }
+
+        [HttpPost("join")]
+        public IActionResult JoinRoom([FromBody] GamerInfo gamer, [FromQuery] int id)
+        {
+            if (gamer == null)
+                return BadRequest();
+
+            try
+            {
+                return Ok(_roomService.JoinRoom(gamer, id));
+            }
+            catch (ArgumentNullException)
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateRoom([FromBody] GamerInfo gamer)
+        {
+            if (gamer == null)
+                return BadRequest();
+
+            var result = await _roomService.CreateRoomAsync(gamer, true);
+
+            return Ok(result);
+        }
+
         [HttpDelete("{roomId}")]
         public IActionResult DeleteRoom([FromRoute] int roomId)
         {
@@ -77,66 +100,6 @@ namespace RSPGame.Controllers
             }
             
             return NoContent();
-        }
-
-        [HttpPost("create")]
-        public async Task<IActionResult> CreatePrivateRoom([FromBody] GamerInfo gamer)
-        {
-            if (gamer == null)
-                return BadRequest();
-
-            var result = await _roomService.CreateRoomAsync(gamer, true);
-
-            return Ok(result);
-        }
-
-        [HttpPost("{roomId}/action")]
-        public IActionResult GamerAction([FromRoute] int roomId, [FromBody] GameRequest gameRequest)
-        {
-            if (roomId < 0 || gameRequest == null)
-                return BadRequest();
-
-            var roomRep = _roomService.GetRoomRepById(roomId);
-            if (roomRep == null)
-                return NotFound();
-            
-            roomRep.AddGamerAction(gameRequest.GamerInfo, gameRequest.Action);
-
-            return Ok();
-        }
-
-        [HttpGet("{roomId}/lastRound")]
-        public IActionResult GetLastRound([FromRoute] int roomId)
-        {
-            if (roomId < 0)
-                return BadRequest();
-
-            var roomRep = _roomService.GetRoomRepById(roomId);
-            if (roomRep == null)
-                return NotFound();
-
-            var round = roomRep.SeriesRepository.GetLastRound();
-            if (round == null)
-                return NoContent();
-
-            return Ok(round);
-        }
-
-        [HttpDelete("{roomId}/laseRound")]
-        public IActionResult DeleteLastRound([FromRoute] int roomId)
-        {
-            if (roomId < 0)
-                return BadRequest();
-            
-            var roomRep = _roomService.GetRoomRepById(roomId);
-            if (roomRep == null)
-                return NotFound();
-            
-            var round = roomRep.SeriesRepository.RemoveLastRound();
-            if (round == null)
-                return NoContent();
-
-            return Ok(round);
         }
     }
 }

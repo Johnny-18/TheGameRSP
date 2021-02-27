@@ -1,22 +1,102 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
-using RSPGame.Models;
 using RSPGame.Models.Game;
-using RSPGame.Services;
-using RSPGame.Services.Game;
-using RSPGame.Storage;
+using RSPGame.Services.Rooms;
 
 namespace RSPGame.Controllers
 {
     [ApiController]
-    [Route("api/round")]
+    [Route("api/rounds")]
     public class RoundController : ControllerBase
     {
-        private readonly RoundService _roundService;
+        private readonly IRoomService _roomService;
 
-        public RoundController(RoundService roundService)
+        public RoundController(IRoomService roomService)
         {
-            _roundService = roundService;
+            _roomService = roomService;
+        }
+        
+        [HttpGet("{roomId}")]
+        public IActionResult GetCurrentRound([FromRoute] int roomId)
+        {
+            var roomRep = GetRoom(roomId);
+            if (roomRep == null)
+                return NoContent();
+
+            var round = roomRep.GetCurrentRound();
+            if (round == null)
+                return NoContent();
+
+            return Ok(round);
+        }
+        
+        [HttpGet("complete/{roomId}")]
+        public IActionResult TryGetCompletedRound([FromRoute] int roomId)
+        {
+            var roomRep = GetRoom(roomId);
+            if (roomRep == null)
+                return NoContent();
+
+            var round = roomRep.TryGetCompleteRound();
+            if (round == null)
+                return NoContent();
+
+            return Ok(round);
+        }
+        
+        [HttpPost("action/{roomId}")]
+        public IActionResult GamerAction([FromRoute] int roomId, [FromBody] GameRequest gameRequest)
+        {
+            if (gameRequest == null)
+                return BadRequest();
+            
+            var roomRep = GetRoom(roomId);
+            if (roomRep == null)
+                return NoContent();
+            try
+            {
+                roomRep.AddGamerAction(gameRequest.GamerInfo, gameRequest.Action);
+            }
+            catch (InvalidOperationException)
+            {
+                return Conflict();
+            }
+
+            return Ok();
+        }
+
+        [HttpPost("{roomId}")]
+        public IActionResult AddRound([FromBody] Round round, [FromRoute] int roomId)
+        {
+            if (round == null)
+                return BadRequest();
+            
+            var roomRep = GetRoom(roomId);
+            if (roomRep == null)
+                return NoContent();
+            
+            roomRep.SeriesRepository.AddRound(round);
+            
+            return Ok();
+        }
+        
+        [HttpDelete("{roomId}")]
+        public IActionResult DeleteLastRound([FromRoute] int roomId)
+        {
+            var roomRep = GetRoom(roomId);
+            if (roomRep == null)
+                return NoContent();
+            
+            roomRep.RefreshCurrentRound();
+            return Ok();
+        }
+
+        private RoomRepository GetRoom(int roomId)
+        {
+            if (roomId < 0)
+                return null;
+            
+            return _roomService.GetRoomRepById(roomId);
         }
     }
 }

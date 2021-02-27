@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -6,7 +5,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 using RSPGame.Models.OptionsModel;
 using RSPGame.Services;
 using RSPGame.Services.Authentication;
@@ -63,13 +61,12 @@ namespace RSPGame
             services.AddTransient<PasswordHashGenerator>();
             services.AddTransient<SinglePlayerService>();
             
-            services.AddSingleton<RoundService>();
+            services.AddSingleton<RoundRepository>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IIndividualStatService, IndividualStatService>();
             services.AddScoped<IGeneralStatService, GeneralStatService>();
 
             services.AddSingleton<RoomStorage>();
-            services.AddSingleton<GameStorage>();
             services.AddSingleton<RoundStorage>();
             services.AddSingleton<IRoomService, RoomService>();
         }

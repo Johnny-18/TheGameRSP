@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using RSPGame.Models;
 using RSPGame.Models.RoomModel;
 using RSPGame.Services.Game;
+using RSPGame.Services.Statistics;
 using RSPGame.Storage;
 
 namespace RSPGame.Services.Rooms
@@ -15,13 +16,16 @@ namespace RSPGame.Services.Rooms
         //rooms with 1 free slot
         private readonly RoomStorage _roomStorage;
 
+        private readonly IIndividualStatService _individualStat;
+        
         private readonly ILogger<RoomService> _logger;
 
         private static readonly object Locker = new();
 
-        public RoomService(RoomStorage roomStorage, ILogger<RoomService> logger)
+        public RoomService(RoomStorage roomStorage, ILogger<RoomService> logger, IIndividualStatService individualStat)
         {
             _logger = logger;
+            _individualStat = individualStat;
             _roomStorage = roomStorage;
         }
 
@@ -107,6 +111,23 @@ namespace RSPGame.Services.Rooms
             
             return roomRep.GetId();
         }
+
+        public void SaveStatForGamers(int roomId)
+        {
+            var roomRep = GetRoomRepById(roomId);
+            if(roomRep == null)
+                return;
+
+            var rounds = roomRep.SeriesRepository.GetRounds();
+            var gamers = roomRep.GetGamers().ToList();
+
+            foreach (var round in rounds)
+            {
+                
+            }
+        }
+        
+        //private void 
 
         public bool RemoveRoom(int id)
         {

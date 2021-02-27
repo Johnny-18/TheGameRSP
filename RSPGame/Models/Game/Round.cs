@@ -13,5 +13,7 @@ namespace RSPGame.Models.Game
         public GameActions UserAction2 { get; set; }
         
         public RoundResult RoundResultForGamer2 { get; set; }
+
+        public bool IsValid() => RoundResultForGamer1 != RoundResult.None && RoundResultForGamer2 != RoundResult.None;
     }
 }

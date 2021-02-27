@@ -2,8 +2,6 @@
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RSPGame.Models;
 using RSPGame.Models.Game;
@@ -48,7 +46,6 @@ namespace RSPGame.UI.PlayRequests
                     stopwatch.Restart();
                     if (counter == count)
                     {
-                        //Console.WriteLine("\nThe game could not be found. Please try again.\n\n");
                         return null;
                     }
                 }
@@ -59,39 +56,40 @@ namespace RSPGame.UI.PlayRequests
                 }
             }
         }
-
-        public static async Task<string> PostAction(HttpClient client, GamerInfo gamerInfo, GameActionsUi action)
+        
+        public static void GameAction(HttpClient client, GamerInfo gamer, GameActionsUi action, int roomId)
         {
-            if (client == null)
-                throw new ArgumentNullException(nameof(client));
+            if (client == null || gamer == null)
+                return;
 
             var gameRequest = new GameRequest
             {
-                GamerInfo = gamerInfo,
+                GamerInfo = gamer,
                 Action = (GameActions)action
             };
-            
+
             var json = JsonConvert.SerializeObject(gameRequest);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var requestOptions = new RequestOptions
+            {
+                Address = client.BaseAddress + $"api/rounds/action/{roomId}",
+                Method = RequestMethod.Post,
+                Body = json
+            };
             
             try
             {
-                //todo
-                var message = await client.PostAsync($"/api/round", content);
-                if (message.StatusCode == HttpStatusCode.OK)
+                var response = RequestHandler.HandleRequest(client, requestOptions);
+                if (response.StatusCode == (int)HttpStatusCode.NotFound || response.StatusCode == (int)HttpStatusCode.BadRequest)
                 {
-                    Console.WriteLine("\nRequest has been sent!\n\n");
-                    return await message.Content.ReadAsStringAsync();
+                    Console.WriteLine("\nSomething going wrong!.\n\n");
                 }
+
+                Console.WriteLine($"Your choice: {action.ToString()}");
             }
             catch (AggregateException)
             {
                 Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
-                return null;
             }
-
-            return null;
         }
-
     }
 }

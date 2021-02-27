@@ -16,57 +16,82 @@ namespace RSPGame.UI.Game
     {
         public async void StartGame(HttpClient client, GamerInfo[] gamers, string currentUser, int roomId)
         {
+            //start series
+            //start round
+            //get round
+            //check on valid
+            //continue round?
+            var seriesStopWatch = new Stopwatch();
+            seriesStopWatch.Start();
             
-            //todo start series
-            
-            Round round;
-            var roundConfigurationSw = new Stopwatch();
-            var requestPeriodSw = new Stopwatch();
-            
-            requestPeriodSw.Start();
-            roundConfigurationSw.Start();
-            
-            var cancelTokenSource = new CancellationTokenSource();
-            var token = cancelTokenSource.Token;
-            
-            var task = Task.Run(() => StartRound(client, gamers, roomId), token);
-            //StartRound(client, gamers, roomId);
-
             while (true)
             {
-                if (requestPeriodSw.ElapsedMilliseconds > 500)
-                {
-                    round = RoomRequests.GetLastRound(client, roomId);
-                    if (round != null)
-                    {
-                        if (roundConfigurationSw.Elapsed.Seconds < 20)
-                        {
-                            if (round.UserAction1 == GameActions.None || round.UserAction2 == GameActions.None)
-                            {
-                                requestPeriodSw.Restart();
-                                continue;
-                            }
+                var cancelTokenSource = new CancellationTokenSource();
+                
+                var roundTask = Task.Run(() => StartRound(client, gamers, currentUser, roomId), cancelTokenSource.Token);
 
-                            PrintResult(GetCorrectResultByUserName(round, currentUser));
+                while (true)
+                {
+                    if (seriesStopWatch.Elapsed.Minutes > 5)
+                    {
+                        //todo save stat and delete room
+                        DeleteRoom(client, roomId);
+                    }
+                    else if(roundTask.IsCompleted)
+                    {
+                        var roundTaskResult = roundTask.Result;
+                        if (roundTaskResult == null || !roundTaskResult.IsValid())
+                        {
+                            Console.WriteLine("Round was canceled!");
                             break;
                         }
-                        
-                        if(!task.IsCompleted)
-                            cancelTokenSource.Cancel();
-                        
-                        //todo remove invalid round
 
-                        PrintResult(GetCorrectResultByUserName(round, currentUser));
+                        var roomRep = await RoomRequests.GetRoomById(client, roomId);
+                        roomRep.SeriesRepository.AddRound(roundTaskResult);
+                        
+                        seriesStopWatch.Restart();
                         break;
                     }
-                    
-                    requestPeriodSw.Restart();
+                }
+
+                if (await ContinueGame(client, roomId) == false)
+                {
+                    //todo save stat and delete room
+                    DeleteRoom(client, roomId);
+                    return;
                 }
             }
+        }
 
-            var roomRep = await RoomRequests.GetRoomById(client, roomId);
+        private void DeleteRoom(HttpClient client, int roomId)
+        {
+            SaveStat();
+            RoomRequests.DeleteRoom(client, roomId);
+        }
+
+        private void SaveStat()
+        {
             
-            roomRep.SeriesRepository.AddRound(round);
+        }
+
+        private async Task<bool> ContinueGame(HttpClient client, int roomId)
+        {
+            var roomRep = await RoomRequests.GetRoomById(client, roomId);
+            if (roomRep == null)
+                return false;
+            
+            return roomRep.IsFree();
+        }
+
+        private void DeleteLastRound(HttpClient client, int roomId)
+        {
+            var requestOptions = new RequestOptions
+            {
+                Address = client.BaseAddress + $"api/rounds/{roomId}",
+                Method = RequestMethod.Delete
+            };
+
+            RequestHandler.HandleRequest(client, requestOptions);
         }
 
         public void PlayWithBotAsync(HttpClient client)
@@ -91,7 +116,64 @@ namespace RSPGame.UI.Game
             PrintResult(roundResult);
         }
 
-        private void StartRound(HttpClient client, GamerInfo[] gamers, int roomId)
+        private Round StartRound(HttpClient client, GamerInfo[] gamers, string currentUser, int roomId)
+        {
+            Round round;
+            
+            //RoundRequests.AddRoundToRoom(client, round, roomId);
+
+            var roundConfigurationSw = new Stopwatch();
+            var requestPeriodSw = new Stopwatch();
+            
+            requestPeriodSw.Start();
+            roundConfigurationSw.Start();
+            
+            var cancelTokenSource = new CancellationTokenSource();
+            
+            var task = Task.Run(() => UserActionInRound(client, gamers, currentUser, roomId), cancelTokenSource.Token);
+
+            while (true)
+            {
+                if (requestPeriodSw.ElapsedMilliseconds > 500)
+                {
+                    round = RoomRequests.GetRound(client, client.BaseAddress + $"api/rounds/complete/{roomId}");
+                    if (round != null)
+                    {
+                        if (roundConfigurationSw.Elapsed.Seconds < 20)
+                        {
+                            if (round.UserAction1 == GameActions.None || round.UserAction2 == GameActions.None)
+                            {
+                                requestPeriodSw.Restart();
+                                continue;
+                            }
+
+                            PrintResult(GetCorrectResultByUserName(round, currentUser));
+                            break;
+                        }
+
+                        if (!task.IsCompleted)
+                        {
+                            cancelTokenSource.Cancel();
+                        }
+                        
+                        if(round.IsValid() == false)
+                        {
+                            DeleteLastRound(client, roomId);
+                            break;
+                        }
+
+                        PrintResult(GetCorrectResultByUserName(round, currentUser));
+                        break;
+                    }
+                    
+                    requestPeriodSw.Restart();
+                }
+            }
+
+            return round;
+        }
+
+        private void UserActionInRound(HttpClient client, GamerInfo[] gamers, string currentUser, int roomId)
         {
             var firstGamer = gamers[0];
             var secondGamer = gamers[1];
@@ -102,8 +184,17 @@ namespace RSPGame.UI.Game
             Console.WriteLine("Rules:\tRock > scissors; scissors > paper; paper > rock.\n");
 
             var action = GetAction();
+            if (action == GameActionsUi.None)
+            {
+                var currentGamerInfo = gamers[0].UserName == currentUser ? gamers[0] : gamers[1];
+                if(RoomRequests.DeleteGamer(client, currentGamerInfo, roomId))
+                {
+                    Console.WriteLine("You leave from the game!");
+                    return;
+                }
+            }
 
-            RoomRequests.GameAction(client, firstGamer, action, roomId);
+            GameRequests.GameAction(client, firstGamer, action, roomId);
         }
 
         private GameActionsUi GetAction()
@@ -124,7 +215,6 @@ namespace RSPGame.UI.Game
                 case 3:
                     return GameActionsUi.Paper;
                 default:
-                    Console.WriteLine("Goodbye!");
                     return GameActionsUi.None;
             }
         }

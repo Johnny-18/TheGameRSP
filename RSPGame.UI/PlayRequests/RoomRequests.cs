@@ -53,12 +53,8 @@ namespace RSPGame.UI.PlayRequests
                 var json = response.Content;
                 
                 var roomRepository = JsonConvert.DeserializeObject<RoomRepository>(json);
-                if (roomRepository != null && roomRepository.IsStarted)
-                {
-                    return roomRepository.GetGamers().ToArray();
-                }
-
-                return null;
+                
+                return roomRepository?.GetGamers().ToArray();
             }
             catch (AggregateException)
             {
@@ -92,49 +88,14 @@ namespace RSPGame.UI.PlayRequests
             }
         }
 
-        public static void GameAction(HttpClient client, GamerInfo gamer, GameActionsUi action, int roomId)
-        {
-            if (client == null || gamer == null)
-                return;
-
-            var gameRequest = new GameRequest
-            {
-                GamerInfo = gamer,
-                Action = (GameActions)action
-            };
-
-            var json = JsonConvert.SerializeObject(gameRequest);
-            var requestOptions = new RequestOptions
-            {
-                Address = client.BaseAddress + $"api/rooms/{roomId}/action",
-                Method = RequestMethod.Post,
-                Body = json
-            };
-            
-            try
-            {
-                var response = RequestHandler.HandleRequest(client, requestOptions);
-                if (response.StatusCode == (int)HttpStatusCode.NotFound || response.StatusCode == (int)HttpStatusCode.BadRequest)
-                {
-                    Console.WriteLine("\nSomething going wrong!.\n\n");
-                }
-
-                Console.WriteLine($"Your choice: {action.ToString()}");
-            }
-            catch (AggregateException)
-            {
-                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
-            }
-        }
-
-        public static Round GetLastRound(HttpClient client, int roomId)
+        public static Round GetRound(HttpClient client, string url)
         {
             if (client == null)
-                throw new ArgumentNullException(nameof(client));
+                return null;
             
             var requestOptions = new RequestOptions
             {
-                Address = client.BaseAddress + $"api/rooms/{roomId}/lastRound",
+                Address = url,
                 Method = RequestMethod.Get
             };
             
@@ -144,10 +105,7 @@ namespace RSPGame.UI.PlayRequests
                 return null;
             }
 
-            var json = response.Content;
-            var round = JsonConvert.DeserializeObject<Round>(json);
-
-            return round;
+            return JsonConvert.DeserializeObject<Round>(response.Content);
         }
 
         public static bool JoinRoom(HttpClient client, GamerInfo gamer, int id)
@@ -195,7 +153,6 @@ namespace RSPGame.UI.PlayRequests
                 throw new ArgumentNullException(nameof(client));
 
             var response = await client.GetAsync($"api/rooms/{roomId}");
-
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -204,6 +161,27 @@ namespace RSPGame.UI.PlayRequests
             }
 
             return null;
+        }
+
+        public static bool DeleteGamer(HttpClient client, GamerInfo currentUser, int roomId)
+        {
+            if (client == null || currentUser == null)
+                return false;
+
+            var requestOptions = new RequestOptions
+            {
+                Address = client.BaseAddress + $"api/rooms/gamer/{roomId}",
+                Method = RequestMethod.Delete,
+                Body = JsonConvert.SerializeObject(currentUser)
+            };
+
+            var response = RequestHandler.HandleRequest(client, requestOptions);
+            if (response.StatusCode != (int) HttpStatusCode.OK)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

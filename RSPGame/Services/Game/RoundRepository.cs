@@ -3,13 +3,13 @@ using RSPGame.Models.Game;
 
 namespace RSPGame.Services.Game
 {
-    public class RoundService
+    public class RoundRepository
     {
         private readonly IRspService _rspService;
 
         private Round _round;
 
-        public RoundService()
+        public RoundRepository()
         {
             _rspService = new RspService();
             _round = new Round();
