@@ -43,25 +43,7 @@ namespace RSPGame.UI.Menus
                 switch (num)
                 {
                     case 1:
-                        var json = await RoomRequests.PostAsync(_client, _currentSession.GamerInfo, "join");
-                        if (string.IsNullOrEmpty(json))
-                        {
-                            Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
-                            break;
-                        }
-
-                        var id = JsonConvert.DeserializeObject<int>(json);
-
-                        var result = (await GameRequests.GetGame(_client, id))?.ToArray();
-                        if (result == null) break;
-
-                        var opponent = result
-                            .FirstOrDefault(x => !x.Equals(_currentSession.GamerInfo.UserName));
-
-                        new GameLogic().StartGame(_client, _currentSession.GamerInfo.UserName, opponent, id);
-
-                        await _client.DeleteAsync($"api/rooms/stop/{id}");
-
+                        QuickSearch();
                         break;
                     case 2:
                         await new PrivateRoomMenu(_client, _currentSession).Start();
@@ -73,6 +55,28 @@ namespace RSPGame.UI.Menus
                         return;
                 }
             }
+        }
+
+        public async void QuickSearch()
+        {
+            var json = await RoomRequests.PostAsync(_client, _currentSession.GamerInfo, "join");
+            if (string.IsNullOrEmpty(json))
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                return;
+            }
+
+            var id = JsonConvert.DeserializeObject<int>(json);
+
+            var result = (await GameRequests.GetGame(_client, id))?.ToArray();
+            if (result == null) return;
+
+            var opponent = result
+                .FirstOrDefault(x => !x.Equals(_currentSession.GamerInfo.UserName));
+
+            new GameLogic().StartGame(_client, _currentSession.GamerInfo.UserName, opponent, id);
+
+            await _client.DeleteAsync($"api/rooms/stop/{id}");
         }
     }
 }
