@@ -13,7 +13,7 @@ namespace RSPGame.UI.PlayRequests
 {
     public static class GameRequests
     {
-        public static GamerInfo[] GetGame(HttpClient client, int roomId)
+        public static GamerInfo[] GetGame(HttpClient client, int roomId, int count)
         {
             if (client == null)
                 return null;
@@ -46,13 +46,10 @@ namespace RSPGame.UI.PlayRequests
 
                     counter++;
                     stopwatch.Restart();
-                    if (counter == 12)
+                    if (counter == count)
                     {
-                        if (response.StatusCode == (int)HttpStatusCode.NotFound || response.StatusCode == (int)HttpStatusCode.BadRequest)
-                        {
-                            Console.WriteLine("\nThe game could not be found. Please try again.\n\n");
-                            return null;
-                        }
+                        //Console.WriteLine("\nThe game could not be found. Please try again.\n\n");
+                        return null;
                     }
                 }
                 catch (HttpRequestException)

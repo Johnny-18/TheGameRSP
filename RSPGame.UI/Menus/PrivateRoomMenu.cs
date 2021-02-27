@@ -48,7 +48,7 @@ namespace RSPGame.UI.Menus
                         var json = JsonConvert.SerializeObject(_currentSession.GamerInfo);
                         var requestOptions = new RequestOptions
                         {
-                            Address = "api/rooms/create",
+                            Address = _client.BaseAddress + "api/rooms/create",
                             Body = json,
                             Method = RequestMethod.Post
                         };
@@ -59,33 +59,23 @@ namespace RSPGame.UI.Menus
 
                         Console.WriteLine($"\nRoom with id {roomId} has been created!");
                         Console.WriteLine("\nWaiting for opponent\n\n");
-
-                        var counter = 0;
+                        
                         var period = new Stopwatch();
                         
                         period.Start();
                         
                         while (true)
                         {
-                            if (period.ElapsedMilliseconds > 1000)
+                            var gamerInfos = GameRequests.GetGame(_client, roomId, 10);
+                            if (gamerInfos != null && gamerInfos.Length == 2)
                             {
-                                var gamerInfos = RoomRequests.GetGamers(_client, roomId);
-                                if (gamerInfos != null && gamerInfos.Length == 2)
-                                {
-                                    new GameLogic().StartGame(_client, gamerInfos, _currentSession.UserName, roomId);
-                                }
-                                else
-                                {
-                                    period.Restart();
-                                    counter++;
-                                }
-                            }
-                            else if(counter == 30)
-                            {
-                                RoomRequests.DeleteRoom(_client, roomId);
-                                Console.WriteLine("Opponent do not found!");
+                                new GameLogic().StartGame(_client, gamerInfos, _currentSession.UserName, roomId);
                                 break;
                             }
+
+                            RoomRequests.DeleteRoom(_client, roomId);
+                            Console.WriteLine("Opponent do not found!");
+                            break;
                         }
                         break;
                     case 2:
@@ -105,7 +95,7 @@ namespace RSPGame.UI.Menus
                         if (RoomRequests.JoinRoom(_client, _currentSession.GamerInfo, id2)) 
                             break;
 
-                        var gamers = GameRequests.GetGame(_client, id2);
+                        var gamers = GameRequests.GetGame(_client, id2, 30);
                         
                         new GameLogic().StartGame(_client, gamers, _currentSession.UserName, id2);
                         break;

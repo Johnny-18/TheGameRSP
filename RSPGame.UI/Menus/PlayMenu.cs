@@ -61,7 +61,7 @@ namespace RSPGame.UI.Menus
                         Console.WriteLine($"You will play in room {roomId}!");
                         Console.WriteLine($"Waiting for opponent!");
 
-                        var gamers = GameRequests.GetGame(_client, roomId);
+                        var gamers = GameRequests.GetGame(_client, roomId, 30);
                         if (gamers == null || gamers.Length != 2)
                         {
                             Console.WriteLine("Game canceled because opponent did not found!");

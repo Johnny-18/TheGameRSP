@@ -70,7 +70,6 @@ namespace RSPGame.Services.Game
                 RoundResultForGamer1 = _round.RoundResultForGamer1,
                 RoundResultForGamer2 = _round.RoundResultForGamer2
             };
-            
 
             return round;
         }

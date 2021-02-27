@@ -43,6 +43,7 @@ namespace RSPGame.UI.Game
                         {
                             if (round.UserAction1 == GameActions.None || round.UserAction2 == GameActions.None)
                             {
+                                requestPeriodSw.Restart();
                                 continue;
                             }
 

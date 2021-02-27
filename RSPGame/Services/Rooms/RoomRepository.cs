@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using RSPGame.Models;
 using RSPGame.Models.RoomModel;
@@ -12,12 +11,12 @@ namespace RSPGame.Services.Rooms
         {
             _room = room;
             SeriesRepository = new SeriesRepository();
-            RoundService = new RoundService();
+            _roundService = new RoundService();
         }
 
         public readonly SeriesRepository SeriesRepository;
 
-        public readonly RoundService RoundService;
+        private readonly RoundService _roundService;
 
         public bool IsStarted;
         
@@ -42,7 +41,7 @@ namespace RSPGame.Services.Rooms
         public void AddGamer(GamerInfo gamer)
         {
             if (gamer == null)
-                throw new ArgumentNullException(nameof(gamer));
+                return;
             
             lock (_locker)
             {
@@ -52,7 +51,7 @@ namespace RSPGame.Services.Rooms
             if (_room.Gamers.Count == 2)
             {
                 StartGame();
-                SeriesRepository.AddRound(RoundService.GetRound());
+                SeriesRepository.AddRound(_roundService.GetRound());
             }
         }
         
@@ -63,15 +62,15 @@ namespace RSPGame.Services.Rooms
 
             lock (_locker)
             {
-                RoundService.AddGamerAction(gamer, action);
+                _roundService.AddGamerAction(gamer, action);
 
                 //first action
-                if (!RoundService.CanPlay())
+                if (_roundService.CanPlay() == false)
                 {
                     SeriesRepository.RemoveLastRound();
-                    SeriesRepository.AddRound(RoundService.GetCompleteRound());
+                    SeriesRepository.AddRound(_roundService.GetCompleteRound());
                     
-                    RoundService.RefreshRound();
+                    _roundService.RefreshRound();
                 }
             }
         }

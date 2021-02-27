@@ -21,7 +21,7 @@ namespace RSPGame.UI.PlayRequests
             try
             {
                 var response = RequestHandler.HandleRequest(client, requestOptions);
-                return response.Content;
+                return response?.Content;
             }
             catch (AggregateException)
             {
@@ -46,7 +46,7 @@ namespace RSPGame.UI.PlayRequests
                 var response = RequestHandler.HandleRequest(client, requestOptions);
                 if (response.StatusCode == (int)HttpStatusCode.NotFound || response.StatusCode == (int)HttpStatusCode.BadRequest)
                 {
-                    Console.WriteLine("\nThe room was not found. Check the number again.\n\n");
+                    //Console.WriteLine("\nThe room was not found. Check the number again.\n\n");
                     return null;
                 }
 
