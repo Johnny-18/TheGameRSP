@@ -26,9 +26,9 @@ namespace RSPGame.Controllers
             if (roomId == 0 || usersName.Any(string.IsNullOrWhiteSpace))
                 return BadRequest();
 
-            if (_gameStorage.DictionaryGame.TryAdd(roomId, usersName)) 
+            if (_gameStorage.DictionaryGame.TryAdd(roomId, usersName))
                 return Ok();
-            
+
             return Conflict();
         }
 

@@ -47,10 +47,7 @@ namespace RSPGame.Controllers
 
             var gamers = _roundStorage.PeekGamers(roomId).ToArray();
 
-            if (gamers.Count() < 2)
-                return NotFound(roomId);
-
-            if (gamers.Count() > 2)
+            if (gamers.Count() != 2)
                 return Conflict();
 
             var gamer1 = gamers.First();

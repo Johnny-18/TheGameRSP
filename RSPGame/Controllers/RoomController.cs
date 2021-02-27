@@ -37,7 +37,10 @@ namespace RSPGame.Controllers
 
             try
             {
-                return Ok(await _roomService.JoinRoom(gamer, id));
+                var result = await _roomService.JoinRoom(gamer, id);
+                if (result == 0) return NotFound();
+
+                return Ok(result);
             }
             catch (ArgumentNullException)
             {

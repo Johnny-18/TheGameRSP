@@ -16,13 +16,15 @@ namespace RSPGame.Services.Room
     public class RoomService : IRoomService
     {
         private readonly RoomStorage _roomStorage;
+        private readonly GameStorage _gameStorage;
         private readonly ILogger<RoomService> _logger;
 
         private static readonly object Locker = new();
 
-        public RoomService(RoomStorage roomStorage, ILogger<RoomService> logger)
+        public RoomService(RoomStorage roomStorage, GameStorage gameStorage, ILogger<RoomService> logger)
         {
             _roomStorage = roomStorage;
+            _gameStorage = gameStorage;
             _logger = logger;
         }
 
@@ -86,13 +88,16 @@ namespace RSPGame.Services.Room
 
                     if (room == null)
                     {
-                        throw new ArgumentNullException(nameof(room), "No rooms with this id found!");
+                        return 0;
                     }
                 }
 
                 await room.AddGamer(gamer);
 
+                var usersName = room.GetGamersName().ToArray();
+
                 _roomStorage.ListRooms.Remove(room);
+                StartGame(room.GetId(), usersName);
 
                 return room.GetId();
 
@@ -104,12 +109,15 @@ namespace RSPGame.Services.Room
 
         }
 
-        public Task DeleteRoom(int id)
+        private void StartGame(int roomId, string[] usersName)
+        {
+            _gameStorage.DictionaryGame.TryAdd(roomId, usersName);
+        }
+
+        public void DeleteRoom(int id)
         {
             var room =_roomStorage.ListRooms.FirstOrDefault(x => x.GetId() == id);
             _roomStorage.ListRooms.Remove(room);
-
-            return Task.CompletedTask;
         }
     }
 }
