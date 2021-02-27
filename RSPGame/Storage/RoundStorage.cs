@@ -26,12 +26,12 @@ namespace RSPGame.Storage
 
         public void AddGamer(int id, GamerStep round)
         {
-            bool adding = _dictionaryRound.TryAdd(id, new BlockingCollection<GamerStep>(2));
+            _dictionaryRound.TryAdd(id, new BlockingCollection<GamerStep>(2));
 
             _dictionaryRound[id].Add(round);
         }
 
-        public IEnumerable<GamerStep> PeekGamers(int id)
+        public IEnumerable<GamerStep> GetGamerSteps(int id)
         {
             if (!_dictionaryRound.ContainsKey(id))
                 return null;
