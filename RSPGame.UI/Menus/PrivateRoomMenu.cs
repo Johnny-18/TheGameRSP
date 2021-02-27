@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RSPGame.Models;
@@ -59,6 +60,8 @@ namespace RSPGame.UI.Menus
                             .FirstOrDefault(x => !x.Equals(_currentSession.GamerInfo.UserName));
 
                         new GameLogic().StartGame(_client, _currentSession.GamerInfo.UserName, opponent1, id1);
+
+                        await _client.DeleteAsync($"api/rooms/stop/{id1}");
                         break;
 
                     case 2:

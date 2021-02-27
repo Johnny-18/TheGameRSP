@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RSPGame.Models;
 using RSPGame.UI.Menus;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace RSPGame.UI.PlayRequests
 {
@@ -90,7 +89,7 @@ namespace RSPGame.UI.PlayRequests
                 Password = password
             };
 
-            var userJson = JsonSerializer.Serialize(user);
+            var userJson = JsonConvert.SerializeObject(user);
 
             var content = new StringContent(userJson, Encoding.UTF8, "application/json");
 

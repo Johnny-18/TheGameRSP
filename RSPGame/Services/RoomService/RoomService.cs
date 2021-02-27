@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,7 +7,7 @@ using RSPGame.Models.GameModel;
 using RSPGame.Models.RoomModel;
 using RSPGame.Storage;
 
-namespace RSPGame.Services.Room
+namespace RSPGame.Services.RoomService
 {
     //todo: statistics 
     //todo: post step on server
@@ -16,15 +16,13 @@ namespace RSPGame.Services.Room
     public class RoomService : IRoomService
     {
         private readonly RoomStorage _roomStorage;
-        private readonly GameStorage _gameStorage;
         private readonly ILogger<RoomService> _logger;
 
         private static readonly object Locker = new();
 
-        public RoomService(RoomStorage roomStorage, GameStorage gameStorage, ILogger<RoomService> logger)
+        public RoomService(RoomStorage roomStorage, ILogger<RoomService> logger)
         {
             _roomStorage = roomStorage;
-            _gameStorage = gameStorage;
             _logger = logger;
         }
 
@@ -33,7 +31,7 @@ namespace RSPGame.Services.Room
             if (gamer == null)
                 return -1;
 
-            var room = new Models.RoomModel.Room(roomStatus);
+            var room = new RoomRepository(roomStatus);
 
             _logger.LogInformation($"Create room with Id {room.GetId()}");
 
@@ -43,7 +41,7 @@ namespace RSPGame.Services.Room
             try
             {
                 Monitor.Enter(Locker, ref acquiredLock);
-                _roomStorage.ListRooms.Add(room);
+                _roomStorage.AddRoom(room);
             }
             finally
             {
@@ -63,43 +61,37 @@ namespace RSPGame.Services.Room
             {
                 Monitor.Enter(Locker, ref acquiredLock);
 
-                Models.RoomModel.Room room;
+                RoomRepository roomRepository;
                 if (id == 0)
                 {
-                    room = _roomStorage.ListRooms
+                    roomRepository = _roomStorage.GetRooms()
                         .FirstOrDefault(x => x.IsPublic() && x.GetGamer().UserName != gamer.UserName);
 
-                    if (room == null)
+                    if (roomRepository == null)
                     {
-                        room = new Models.RoomModel.Room(RoomStatus.Public);
+                        roomRepository = new RoomRepository(RoomStatus.Public);
 
-                        _logger.LogInformation($"Create room with Id {room.GetId()}");
+                        _logger.LogInformation($"Create roomRepository with Id {roomRepository.GetId()}");
 
-                        await room.AddGamer(gamer);
+                        await roomRepository.AddGamer(gamer);
 
-                        _roomStorage.ListRooms.Add(room);
-                        return room.GetId();
+                        _roomStorage.AddRoom(roomRepository);
+                        return roomRepository.GetId();
                     }
                 }
                 else
                 {
-                    room = _roomStorage.ListRooms
+                    roomRepository = _roomStorage.GetRooms()
                         .FirstOrDefault(x => x.GetId() == id && !x.IsPublic() && x.GetGamer().UserName != gamer.UserName);
 
-                    if (room == null)
+                    if (roomRepository == null)
                     {
                         return 0;
                     }
                 }
 
-                await room.AddGamer(gamer);
-
-                var usersName = room.GetGamersName().ToArray();
-
-                _roomStorage.ListRooms.Remove(room);
-                StartGame(room.GetId(), usersName);
-
-                return room.GetId();
+                await roomRepository.AddGamer(gamer);
+                return roomRepository.GetId();
 
             }
             finally
@@ -109,15 +101,14 @@ namespace RSPGame.Services.Room
 
         }
 
-        private void StartGame(int roomId, string[] usersName)
-        {
-            _gameStorage.DictionaryGame.TryAdd(roomId, usersName);
-        }
+        public IEnumerable<GamerInfo> GetGamers(int id) => _roomStorage.GetRooms().Select(x => x.GetGamer());
+
+        public RoomRepository GetRoom(int id) => _roomStorage.GetRooms().FirstOrDefault(x => x.GetId() == id);
 
         public void DeleteRoom(int id)
         {
-            var room =_roomStorage.ListRooms.FirstOrDefault(x => x.GetId() == id);
-            _roomStorage.ListRooms.Remove(room);
+           var room =_roomStorage.GetRooms().FirstOrDefault(x => x.GetId() == id);
+            _roomStorage.RemoveRoom(room);
         }
     }
 }

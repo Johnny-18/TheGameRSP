@@ -47,7 +47,7 @@ namespace RSPGame.UI.PlayRequests
                 return null;
             }
 
-            var response = RequestWithTimer(client, $"api/game/{roomId}", 30);
+            var response = RequestWithTimer(client, $"api/rooms/{roomId}", 30);
             if (response == null)
             {
                 Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
@@ -57,9 +57,7 @@ namespace RSPGame.UI.PlayRequests
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
                 Console.WriteLine("\nThe game could not be found. Please try again.\n\n");
-                var json1 = JsonConvert.SerializeObject(roomId);
-                var content = new StringContent(json1, Encoding.UTF8, "application/json");
-                await client.PostAsync($"api/rooms/stop", content);
+                await client.DeleteAsync($"api/rooms/stop/{roomId}");
                 return null;
             }
 

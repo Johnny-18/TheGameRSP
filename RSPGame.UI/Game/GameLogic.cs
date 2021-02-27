@@ -15,7 +15,7 @@ namespace RSPGame.UI.Game
             var roundId = 0;
             roundId++;
             Console.Clear();
-            Console.WriteLine($"Room ID:{roomId}");
+            Console.WriteLine($"RoomRepository ID:{roomId}");
             Console.WriteLine($"Round:\t{roundId}");
             Console.WriteLine($"Match:\t{userName} vs {opponentName}");
             Console.WriteLine("Rules:\tRock > scissors; scissors > paper; paper > rock.\n\n");
@@ -153,7 +153,7 @@ namespace RSPGame.UI.Game
 
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = client.PostAsync($"/api/game/bot", content).Result;
+            var response = client.PostAsync($"/api/bot", content).Result;
 
             if (response.StatusCode == HttpStatusCode.OK)
                 json = response.Content.ReadAsStringAsync().Result;
