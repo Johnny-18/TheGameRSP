@@ -25,42 +25,50 @@ namespace RSPGame.UI.Game
 
                 PrintPreview(roomId, roundId, userName, opponentName);
 
-                //var cancelable = new CancellationTokenSource();
+                var cancelable = new CancellationTokenSource();
 
-                //var roundTask = Task.Run(() => StartRound(client, userName, roomId), cancelable.Token);
+                var roundTask = Task.Run(() => StartRound(client, userName, roomId), cancelable.Token);
 
-                StartRound(client, userName, roomId); //, cancelable.Token);
+                string json;
+                while (true)
+                {
+                    if (seriesSw.Elapsed.Seconds >= 20)
+                    {
+                        if (roundTask.IsCompleted == false)
+                        {
+                            json = JsonConvert.SerializeObject(GameActionsUi.None);
 
-                // while (true)
-                // {
-                //     if (seriesSw.Elapsed.Minutes >= 5)
-                //     {
-                //         //todo close game logic
-                //         return;
-                //     }
-                //     else
-                //     {
-                //         if (roundTask.IsCompleted)
-                //         {
-                //             var response = await GameRequests.RequestWithTimer(client, $"/api/round/{roomId}/{userName}", 1);
-                //
-                //             var json = await response.Content.ReadAsStringAsync();
-                //
-                //             var roundResult = JsonConvert.DeserializeObject<RoundResult>(json);
-                //             if (roundResult == RoundResult.None)
-                //             {
-                //                 //cancel round
-                //                 return;
-                //             }
-                //         }
-                //     }
-                // }
+                            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                            //send action
+                            await client.PostAsync($"/api/round/{roomId}/{userName}", content);
+
+                            Console.WriteLine("You need to do action or you will be kicked!");
+                        }
+
+                        var response = await GameRequests.RequestWithTimer(client, $"/api/round/{roomId}/{userName}", 1);
+
+                        json = await response.Content.ReadAsStringAsync();
+
+                        var roundResult = JsonConvert.DeserializeObject<RoundResult>(json);
+                        if (roundResult == RoundResult.None)
+                        {
+                            Console.WriteLine("\n\nNONE\n\n");
+                            //todo cancel round
+                            return;
+                        }
+
+                        PrintResult(roundResult);
+
+                        seriesSw.Restart();
+                    }
+                }
             }
         }
 
         private void StartRounds(HttpClient client, string userName, string opponentName, int roomId)
         {
-            
+
         }
 
         private void PrintPreview(int roomId, int roundId, string userName, string opponentName)
@@ -125,27 +133,27 @@ namespace RSPGame.UI.Game
             ////////////////////////////////////////////
 
             //check on opponent step
-            var response = await GameRequests.RequestWithTimer(client, $"/api/round/{roomId}/{userName}", 20);
-            if (response == null)
-            {
-                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
-                return;
-            }
+            // var response = await GameRequests.RequestWithTimer(client, $"/api/round/{roomId}/{userName}", 20);
+            // if (response == null)
+            // {
+            //     Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+            //     return;
+            // }
 
-            if (response.StatusCode != HttpStatusCode.OK)
-            {
-                Console.WriteLine("\nERROR:\tServer problems.\n\n");
-                return;
-            }
+            // if (response.StatusCode != HttpStatusCode.OK)
+            // {
+            //     Console.WriteLine("\nERROR:\tServer problems.\n\n");
+            //     return;
+            // }
+            //
+            // json = await response.Content.ReadAsStringAsync();
+            // var result = JsonConvert.DeserializeObject<RoundResult>(json);
+            // if (result == RoundResult.None)
+            // {
+            //     //todo cancel round
+            // }
 
-            json = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<RoundResult>(json);
-            if (result == RoundResult.None)
-            {
-                //todo cancel round
-            }
-
-            PrintResult(result);
+            //PrintResult(result);
         }
 
         public async Task PlayWithBotAsync(HttpClient client)

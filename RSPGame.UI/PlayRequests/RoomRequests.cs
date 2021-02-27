@@ -59,5 +59,23 @@ namespace RSPGame.UI.PlayRequests
 
             return Task.CompletedTask;
         }
+        
+        // public static async Task<bool> DeleteGamer(HttpClient client, string userName,int roomId)
+        // {
+        //     if (client == null)
+        //         return false;
+        //
+        //     var json = JsonConvert.SerializeObject(userName);
+        //
+        //     var content = new StringContent(json, Encoding.UTF8, "application/json");
+        //
+        //     var response = await client.PostAsync($"api/rooms/gamer/{roomId}", content);
+        //     if (response.StatusCode != HttpStatusCode.OK)
+        //     {
+        //         return false;
+        //     }
+        //
+        //     return true;
+        // }
     }
 }
