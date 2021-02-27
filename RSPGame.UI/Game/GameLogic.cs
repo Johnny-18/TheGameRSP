@@ -16,11 +16,6 @@ namespace RSPGame.UI.Game
     {
         public async void StartGame(HttpClient client, GamerInfo[] gamers, string currentUser, int roomId)
         {
-            //start series
-            //start round
-            //get round
-            //check on valid
-            //continue round?
             var seriesStopWatch = new Stopwatch();
             seriesStopWatch.Start();
             
@@ -118,9 +113,9 @@ namespace RSPGame.UI.Game
 
         private Round StartRound(HttpClient client, GamerInfo[] gamers, string currentUser, int roomId)
         {
-            Round round;
+            Round round = null;
             
-            //RoundRequests.AddRoundToRoom(client, round, roomId);
+            RoundRequests.AddRoundToRoom(client, round, roomId);
 
             var roundConfigurationSw = new Stopwatch();
             var requestPeriodSw = new Stopwatch();

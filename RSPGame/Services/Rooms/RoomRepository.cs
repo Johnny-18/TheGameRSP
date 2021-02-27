@@ -30,7 +30,13 @@ namespace RSPGame.Services.Rooms
 
         public bool IsPrivate() => _room.IsPrivate;
 
-        public bool IsFree() => _room.Gamers.Count != 2;
+        public bool IsFree()
+        {
+            if (_room == null || _room.Gamers == null)
+                return false;
+            
+            return _room.Gamers.Count != 2;
+        }
 
         public void AddGamer(GamerInfo gamer)
         {
@@ -59,7 +65,7 @@ namespace RSPGame.Services.Rooms
 
         public Round TryGetCompleteRound()
         {
-            if(_currentRound.CanPlay())
+            if(_currentRound.CanPlay() == false)
                 return _currentRound.GetCompleteRound();
 
             return null;

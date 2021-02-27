@@ -22,10 +22,10 @@ namespace RSPGame.Services.Rooms
 
         private static readonly object Locker = new();
 
-        public RoomService(RoomStorage roomStorage, ILogger<RoomService> logger, IIndividualStatService individualStat)
+        public RoomService(RoomStorage roomStorage, ILogger<RoomService> logger)
         {
             _logger = logger;
-            _individualStat = individualStat;
+            _individualStat = new IndividualStatService();
             _roomStorage = roomStorage;
         }
 

@@ -53,6 +53,8 @@ namespace RSPGame
                     };
                 });
 
+            services.AddSingleton<IRoomService, RoomService>();
+
             services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
             services.AddSingleton<IFileWorker, FileWorker>();
             services.AddSingleton<IRspStorage, RspStorage>();
@@ -68,7 +70,6 @@ namespace RSPGame
 
             services.AddSingleton<RoomStorage>();
             services.AddSingleton<RoundStorage>();
-            services.AddSingleton<IRoomService, RoomService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
