@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using RSPGame.Storage;
 using System.Linq;
 using RSPGame.Models.GameModel;
@@ -87,19 +89,25 @@ namespace RSPGame.Controllers
         [HttpGet("{roomId}")]
         public IActionResult IsReady([FromRoute] int roomId)
         {
-            var gamers = _roundStorage.PeekGamers(roomId).ToArray();
+            IEnumerable<GamerStep> gamers;
+
+            try
+            {
+                gamers = _roundStorage.PeekGamers(roomId).ToArray();
+            }
+            catch (ArgumentNullException)
+            {
+                return NotFound();
+            }
 
             if (gamers == null || gamers.Count() != 2)
                 return NotFound();
 
-            if (gamers != null)
-            {
-                var result = gamers.All(x => x.UserAction == GameActions.Ready);
+            var result = gamers.All(x => x.UserAction == GameActions.Ready);
 
-                if (result)
-                    return Ok(result);
-            }
-            
+            if (result)
+                return Ok(result);
+
             return NotFound();
         }
     }

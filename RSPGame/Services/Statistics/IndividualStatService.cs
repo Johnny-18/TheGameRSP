@@ -23,6 +23,22 @@ namespace RSPGame.Services.Statistics
             });
         }
 
+        public GamerInfo ChangeGamerInfoAfterRound(GamerInfo gamerInfo, GamerInfo gamerNewInfo)
+        {
+            if (gamerInfo == null || gamerNewInfo == null)
+                throw new ArgumentNullException(nameof(gamerInfo));
+
+            gamerInfo.CountDraws += gamerNewInfo.CountDraws;
+            gamerInfo.CountLoses += gamerNewInfo.CountLoses;
+            gamerInfo.CountWins += gamerNewInfo.CountWins;
+            gamerInfo.CountPapers += gamerNewInfo.CountPapers;
+            gamerInfo.CountRocks += gamerNewInfo.CountRocks;
+            gamerInfo.CountScissors += gamerNewInfo.CountScissors;
+            gamerInfo.OnlineTime += gamerNewInfo.OnlineTime;
+            return gamerInfo;
+        }
+
+
         private void ChangeCountAction(GamerInfo gamerInfo, GameActions action)
         {
             switch (action)

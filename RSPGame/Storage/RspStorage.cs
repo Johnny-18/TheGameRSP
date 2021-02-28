@@ -67,7 +67,13 @@ namespace RSPGame.Storage
             }
         }
 
-        private async Task SaveToFile()
+        public void TryUpdate(string userName, User newUser)
+        {
+            if (_users.ContainsKey(userName))
+                _users[userName] = newUser;
+        }
+
+        public async Task SaveToFile()
         {
             if (_users != null && _users.Count > 0)
             {

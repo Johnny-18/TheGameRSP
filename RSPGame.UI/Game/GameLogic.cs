@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using RSPGame.Models.GameModel;
 
 namespace RSPGame.UI.Game
 {
@@ -19,17 +20,29 @@ namespace RSPGame.UI.Game
 
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool CancelIoEx(IntPtr handle, IntPtr lpOverlapped);
-        
+
         public void StartGame(HttpClient client, string userName, string opponentName, int roomId)
         {
             var roundId = 0;
 
             while (true)
             {
+                GamerInfo gamer = new GamerInfo()
+                {
+                    UserName = userName
+                };
                 roundId++;
+
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
                 PrintPreview(roomId, roundId, userName, opponentName);
-                PostGamerAction(client, userName, roomId);
-                GetRoundResult(client, userName, roomId);
+                PostGamerAction(client, userName, roomId, gamer);
+                var roundResult = GetRoundResult(client, userName, roomId, gamer);
+
+                gamer.OnlineTime += stopwatch.Elapsed;
+
+                if (roundResult != RoundResult.None)
+                    SaveGamerInfo(client, userName, gamer);
 
                 int num;
                 Console.WriteLine("1.\tContinue");
@@ -46,7 +59,7 @@ namespace RSPGame.UI.Game
 
                 if (num == 2)
                 {
-                    var r =client.DeleteAsync($"api/round/{roomId}");
+                    var r = client.DeleteAsync($"api/round/{roomId}");
                     break;
                 }
 
@@ -73,7 +86,14 @@ namespace RSPGame.UI.Game
             }
         }
 
-        private void PostGamerAction(HttpClient client, string userName, int roomId)
+        private void SaveGamerInfo(HttpClient client, string userName, GamerInfo gamer)
+        {
+            var json = JsonConvert.SerializeObject(gamer);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = client.PostAsync("api/stat/save", content).Result;
+        }
+
+        private void PostGamerAction(HttpClient client, string userName, int roomId, GamerInfo gamer)
         {
             GameActionsUi action = GameActionsUi.None;
             var read = false;
@@ -103,6 +123,19 @@ namespace RSPGame.UI.Game
                 Console.WriteLine("\n\nTime is over! You haven't selected anything!");
             }
 
+            switch (action)
+            {
+                case GameActionsUi.Rock:
+                    gamer.CountRocks++;
+                    break;
+                case GameActionsUi.Paper:
+                    gamer.CountPapers++;
+                    break;
+                case GameActionsUi.Scissors:
+                    gamer.CountScissors++;
+                    break;
+            }
+
             try
             {
                 var json = JsonConvert.SerializeObject(action);
@@ -115,26 +148,40 @@ namespace RSPGame.UI.Game
             }
         }
 
-        private void GetRoundResult(HttpClient client, string userName, int roomId)
+        private RoundResult GetRoundResult(HttpClient client, string userName, int roomId, GamerInfo gamer)
         {
 
             var response = GameRequests.RequestWithTimer(client, $"/api/round/{roomId}/{userName}", 20);
             if (response == null)
             {
                 Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
-                return;
+                return RoundResult.None;
             }
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 Console.WriteLine("\nERROR:\tServer problems.\n\n");
-                return;
+                return RoundResult.None;
             }
 
             var json = response.Content.ReadAsStringAsync().Result;
             var result = JsonConvert.DeserializeObject<RoundResult>(json);
 
+            switch (result)
+            {
+                case RoundResult.Draw:
+                    gamer.CountDraws++;
+                    break;
+                case RoundResult.Win:
+                    gamer.CountWins++;
+                    break;
+                case RoundResult.Lose:
+                    gamer.CountLoses++;
+                    break;
+            }
+
             PrintResult(result);
+            return result;
         }
 
         private void PrintPreview(int roomId, int roundId, string userName, string opponentName)

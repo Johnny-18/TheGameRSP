@@ -1,12 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RSPGame.Models;
 using RSPGame.UI.Game;
 using RSPGame.UI.PlayRequests;
+using System;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace RSPGame.UI.Menus
 {
@@ -55,7 +54,27 @@ namespace RSPGame.UI.Menus
 
         public async void CreateRoomAction()
         {
-            var json = await RoomRequests.PostAsync(_client, _currentSession.GamerInfo, "create");
+            string json = null;
+            try
+            {
+                json = await RoomRequests.PostAsync(_client, _currentSession.GamerInfo, "create");
+            }
+            catch (NullReferenceException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                return;
+            }
+            catch (HttpRequestException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                return;
+            }
+            catch (AggregateException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                return;
+            }
+
             if (json == null)
             {
                 Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
@@ -71,10 +90,19 @@ namespace RSPGame.UI.Menus
 
             var opponent1 = result
                 .FirstOrDefault(x => !x.Equals(_currentSession.GamerInfo.UserName));
-
-            new GameLogic().StartGame(_client, _currentSession.GamerInfo.UserName, opponent1, id);
-
-            await _client.DeleteAsync($"api/rooms/stop/{id}");
+            try
+            {
+                new GameLogic().StartGame(_client, _currentSession.GamerInfo.UserName, opponent1, id);
+                await _client.DeleteAsync($"api/rooms/stop/{id}");
+            }
+            catch (HttpRequestException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+            }
+            catch (AggregateException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+            }
         }
 
         public async void JoinRoomAction()
@@ -101,7 +129,18 @@ namespace RSPGame.UI.Menus
             var opponent2 = result
                 .FirstOrDefault(x => !x.Equals(_currentSession.GamerInfo.UserName));
 
-            new GameLogic().StartGame(_client, _currentSession.GamerInfo.UserName, opponent2, id);
+            try
+            {
+                new GameLogic().StartGame(_client, _currentSession.GamerInfo.UserName, opponent2, id);
+            }
+            catch (HttpRequestException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+            }
+            catch (AggregateException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n"); ;
+            }
         }
     }
 }

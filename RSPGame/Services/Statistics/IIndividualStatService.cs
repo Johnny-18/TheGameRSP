@@ -9,6 +9,8 @@ namespace RSPGame.Services.Statistics
     {
         Task ChangeGamerInfoAfterRound(GamerInfo gamerInfo, GameActions action, RoundResult status);
 
+        GamerInfo ChangeGamerInfoAfterRound(GamerInfo gamerInfo, GamerInfo gamerNewInfo);
+
         void ChangeOnlineTime(GamerInfo gamerInfo, TimeSpan onlineTime);
     }
 }

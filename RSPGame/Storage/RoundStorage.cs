@@ -29,6 +29,9 @@ namespace RSPGame.Storage
 
         public IEnumerable<GamerStep> PeekGamers(int id)
         {
+            if (_dictionaryRound.Count == 0)
+                return null;
+
             if (!_dictionaryRound.ContainsKey(id))
                 return null;
 

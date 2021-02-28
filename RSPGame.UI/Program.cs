@@ -36,7 +36,7 @@ namespace RSPGame.UI
             {
                 await new AuthorizationMenu(_client, _session).Start();
             }
-            catch (HttpRequestException)
+            catch (AggregateException)
             {
                 Console.WriteLine("\n\nERROR:\tCheck your internet connection and run game again!\n");
             }

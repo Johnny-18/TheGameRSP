@@ -24,7 +24,11 @@ namespace RSPGame.UI.PlayRequests
                 var message = client.PostAsync($"/api/rooms/{path}", content).Result;
                 return message.Content.ReadAsStringAsync();
             }
-            catch (HttpRequestException)
+            catch (AggregateException)
+            {
+                return null;
+            }
+            catch (NullReferenceException)
             {
                 return null;
             }
@@ -46,6 +50,11 @@ namespace RSPGame.UI.PlayRequests
                 message = client.PostAsync($"/api/rooms/join?id={id}", content).Result;
             }
             catch (HttpRequestException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                return null;
+            }
+            catch (AggregateException)
             {
                 Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
                 return null;
