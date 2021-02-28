@@ -54,10 +54,8 @@ namespace RSPGame.Controllers
             if (roomId < 0)
                 return BadRequest();
 
-            var roomRep = _roomService.GetRoomRepById(roomId);
-            if (roomRep == null)
-                return BadRequest();
-
+            _roomService.SaveStatForGamersAsync(roomId);
+            
             return Ok();
         }
 

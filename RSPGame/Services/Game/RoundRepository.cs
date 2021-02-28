@@ -50,28 +50,9 @@ namespace RSPGame.Services.Game
         public Round GetCompleteRound()
         {
             _round.RoundResultForGamer1 = _rspService.GetWinner(_round.UserAction1, _round.UserAction2);
-            if (_round.RoundResultForGamer1 == RoundResult.None)
-            {
-                return null;
-            }
-
             _round.RoundResultForGamer2 = _rspService.GetWinner(_round.UserAction2, _round.UserAction1);
-            if (_round.RoundResultForGamer2 == RoundResult.None)
-            {
-                return null;
-            }
 
-            var round = new Round
-            {
-                Gamer1 = _round.Gamer1,
-                Gamer2 = _round.Gamer2,
-                UserAction1 = _round.UserAction1,
-                UserAction2 = _round.UserAction2,
-                RoundResultForGamer1 = _round.RoundResultForGamer1,
-                RoundResultForGamer2 = _round.RoundResultForGamer2
-            };
-
-            return round;
+            return _round;
         }
 
         public void RefreshRound()

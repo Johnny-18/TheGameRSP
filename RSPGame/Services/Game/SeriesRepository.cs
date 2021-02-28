@@ -5,7 +5,7 @@ namespace RSPGame.Services.Game
 {
     public class SeriesRepository 
     {
-        private readonly ConcurrentStack<Round> _rounds;
+        public readonly ConcurrentStack<Round> _rounds;
 
         public SeriesRepository()
         {

@@ -69,7 +69,6 @@ namespace RSPGame
             services.AddScoped<IGeneralStatService, GeneralStatService>();
 
             services.AddSingleton<RoomStorage>();
-            services.AddSingleton<RoundStorage>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

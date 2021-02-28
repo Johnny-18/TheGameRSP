@@ -9,5 +9,6 @@ namespace RSPGame.Services.Rooms
         Task<int> CreateRoomAsync(GamerInfo gamer, bool isPrivate);
         int JoinRoom(GamerInfo gamer, int id = 0);
         bool RemoveRoom(int id);
+        Task SaveStatForGamersAsync(int roomId);
     }
 }

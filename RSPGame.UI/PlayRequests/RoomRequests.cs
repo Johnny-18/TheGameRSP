@@ -13,23 +13,6 @@ namespace RSPGame.UI.PlayRequests
 {
     public static class RoomRequests
     {
-        public static string Post(HttpClient client, RequestOptions requestOptions)
-        {
-            if (requestOptions == null)
-                return null;
-            
-            try
-            {
-                var response = RequestHandler.HandleRequest(client, requestOptions);
-                return response?.Content;
-            }
-            catch (AggregateException)
-            {
-                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
-                return null;
-            }
-        }
-
         public static GamerInfo[] GetGamers(HttpClient client, int roomId)
         {
             if (client == null)
@@ -68,23 +51,16 @@ namespace RSPGame.UI.PlayRequests
             if (client == null)
                 throw new ArgumentNullException(nameof(client));
             
-            try
+            var requestOptions = new RequestOptions
             {
-                var requestOptions = new RequestOptions
-                {
-                    Address = client.BaseAddress + $"/api/rooms/{roomId}",
-                    Method = RequestMethod.Delete
-                };
+                Address = client.BaseAddress + $"/api/rooms/{roomId}",
+                Method = RequestMethod.Delete
+            };
 
-                var response = RequestHandler.HandleRequest(client, requestOptions);
-                if (response.StatusCode == (int)HttpStatusCode.BadRequest || response.StatusCode == (int)HttpStatusCode.NoContent)
-                {
-                    Console.WriteLine("\nSomething going wrong!\n\n");
-                }
-            }
-            catch (AggregateException)
+            var response = RequestHandler.HandleRequest(client, requestOptions);
+            if (response.StatusCode == (int)HttpStatusCode.BadRequest || response.StatusCode == (int)HttpStatusCode.NoContent)
             {
-                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                Console.WriteLine("\nSomething going wrong!\n\n");
             }
         }
 
@@ -110,16 +86,14 @@ namespace RSPGame.UI.PlayRequests
 
         public static bool JoinRoom(HttpClient client, GamerInfo gamer, int id)
         {
-            if (client == null)
-                throw new ArgumentNullException(nameof(client));
-            if (gamer == null)
-                throw new ArgumentNullException(nameof(gamer));
+            if (client == null || gamer == null)
+                return false;
 
             var json = JsonConvert.SerializeObject(gamer);
 
             var requestOptions = new RequestOptions
             {
-                Address = client.BaseAddress + $"/api/rooms/join?id={id}",
+                Address = client.BaseAddress + $"api/rooms/join?id={id}",
                 Body = json,
                 Method = RequestMethod.Post
             };
@@ -182,6 +156,17 @@ namespace RSPGame.UI.PlayRequests
             }
 
             return true;
+        }
+
+        public static void SaveStatRounds(HttpClient client, int roomId)
+        {
+            var requestOptions = new RequestOptions
+            {
+                Address = client.BaseAddress + $"api/rooms/save/{roomId}",
+                Method = RequestMethod.Get
+            };
+            
+            RequestHandler.HandleRequest(client, requestOptions);
         }
     }
 }

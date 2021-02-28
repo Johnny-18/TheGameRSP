@@ -11,10 +11,7 @@ namespace RSPGame.Models
         
         [JsonProperty("token")]
         public string Token { get; set; }
-        
-        [JsonProperty("countLoginFailed")]
-        public int CountLoginFailed { get; set; }
-        
+
         [JsonProperty("gamerInfo")]
         public GamerInfo GamerInfo { get; set; }
     }

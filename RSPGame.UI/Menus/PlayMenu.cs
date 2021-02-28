@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net.Http;
 using Newtonsoft.Json;
 using RSPGame.Models;
@@ -20,7 +21,7 @@ namespace RSPGame.UI.Menus
             _currentSession = currentSession;
         }
 
-        public void Start()
+        public async void Start()
         {
             while (true)
             {
@@ -52,34 +53,76 @@ namespace RSPGame.UI.Menus
                             Address = _client.BaseAddress +  "api/rooms/join",
                             Method = RequestMethod.Post
                         };
-                        
-                        var content = RoomRequests.Post(_client, requestOptions);
+
+                        var response = RequestHandler.HandleRequest(_client, requestOptions);
+                        var content = response.Content;
                         if (string.IsNullOrEmpty(content)) 
                             break;
-                        
+
                         var roomId = JsonConvert.DeserializeObject<int>(content);
                         Console.WriteLine($"You will play in room {roomId}!");
                         Console.WriteLine($"Waiting for opponent!");
 
-                        var gamers = GameRequests.GetGame(_client, roomId, 30);
+                        var gamers = GameRequests.GetGamers(_client, roomId, 30);
                         if (gamers == null || gamers.Length != 2)
                         {
                             Console.WriteLine("Game canceled because opponent did not found!");
                             break;
                         }
-                        
-                        new GameLogic().StartGame(_client, gamers, _currentSession.UserName, roomId);
+
+                        while (true)
+                        {
+                            var seriesStopWatch = new Stopwatch();
+                            seriesStopWatch.Start();
+
+                            while (true)
+                            {
+                                if (seriesStopWatch.Elapsed.Minutes > 5)
+                                {
+                                    //todo save stat and delete room
+                                    RoomRequests.SaveStatRounds(_client, roomId);
+                                    RoomRequests.DeleteRoom(_client, roomId);
+                                    break;
+                                }
+
+                                var round = await new GameLogic().StartGame(_client, gamers, _currentSession.UserName, roomId);
+                                if (round != null)
+                                {
+                                    RoundRequests.AddRoundToRoom(_client, round, roomId);
+                                    RoundRequests.RefreshRound(_client, roomId);
+                                }
+
+                                break;
+                            }
+                            
+                            if (ContinueGame(_client, roomId))
+                            {
+                                //todo save stat and delete room
+                                RoomRequests.SaveStatRounds(_client, roomId);
+                                RoomRequests.DeleteRoom(_client, roomId);
+                                break;
+                            }
+                        }
                         break;
                     case 2:
                         new PrivateRoomMenu(_client, _currentSession).Start();
                         break;
                     case 3:
-                        new GameLogic().PlayWithBotAsync(_client);
+                        new GameLogic().PlayWithBot(_client);
                         break;
                     case 4:
                         return;
                 }
             }
+        }
+        
+        private bool ContinueGame(HttpClient client, int roomId)
+        {
+            var gamers = RoomRequests.GetGamers(client, roomId);
+            if (gamers == null)
+                return false;
+            
+            return gamers.Length == 2;
         }
     }
 }

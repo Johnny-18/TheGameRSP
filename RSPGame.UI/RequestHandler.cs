@@ -12,9 +12,9 @@ namespace RSPGame.UI
         public static Response HandleRequest(HttpClient client, RequestOptions requestOptions)
         {
             if (requestOptions == null)
-                throw new ArgumentNullException(nameof(requestOptions));
+                return null;
             if (!requestOptions.IsValid)
-                throw new ArgumentOutOfRangeException(nameof(requestOptions));
+                return null;
 
             return GetResponse(client, requestOptions).Result;
         }
@@ -33,15 +33,24 @@ namespace RSPGame.UI
             {
                 requestMessage.Headers.Authorization = AuthenticationHeaderValue.Parse(requestOptions.Token);
             }
-            
-            var httpResponseMessage = await client.SendAsync(requestMessage);
-            var response = new Response
-            {
-                StatusCode = (int)httpResponseMessage.StatusCode,
-                Content = await httpResponseMessage.Content.ReadAsStringAsync()
-            };
 
-            return response;
+            try
+            {
+                var httpResponseMessage = await client.SendAsync(requestMessage);
+                
+                var response = new Response
+                {
+                    StatusCode = (int)httpResponseMessage.StatusCode,
+                    Content = await httpResponseMessage.Content.ReadAsStringAsync()
+                };
+
+                return response;
+            }
+            catch (HttpRequestException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n");
+                return null;
+            }
         }
         
         private static HttpMethod MapMethods(RequestMethod method)
@@ -58,8 +67,6 @@ namespace RSPGame.UI
                     return HttpMethod.Put;
                 case RequestMethod.Patch:
                     return HttpMethod.Patch;
-                case RequestMethod.Undefined:
-                    throw new ArgumentOutOfRangeException(nameof(method));
                 default:
                     return null;
             }

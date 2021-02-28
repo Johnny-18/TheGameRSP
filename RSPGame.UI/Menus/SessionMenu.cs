@@ -18,7 +18,7 @@ namespace RSPGame.UI.Menus
             _currentSession = currentSession;
         }
 
-        public Task Start()
+        public void Start()
         {
             while (true)
             {
@@ -48,7 +48,7 @@ namespace RSPGame.UI.Menus
                         Console.WriteLine(_currentSession.GamerInfo.ToString());
                         break;
                     case 4:
-                        return Task.CompletedTask;
+                        return;
                 }
             }
         }

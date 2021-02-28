@@ -4,8 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using RSPGame.Models;
-using RSPGame.Models.RoomModel;
-using RSPGame.Services.Game;
 using RSPGame.Services.Statistics;
 using RSPGame.Storage;
 
@@ -13,8 +11,9 @@ namespace RSPGame.Services.Rooms
 {
     public class RoomService : IRoomService
     {
-        //rooms with 1 free slot
         private readonly RoomStorage _roomStorage;
+
+        private readonly IRspStorage _rspStorage;
 
         private readonly IIndividualStatService _individualStat;
         
@@ -22,9 +21,10 @@ namespace RSPGame.Services.Rooms
 
         private static readonly object Locker = new();
 
-        public RoomService(RoomStorage roomStorage, ILogger<RoomService> logger)
+        public RoomService(RoomStorage roomStorage, ILogger<RoomService> logger, IRspStorage rspStorage)
         {
             _logger = logger;
+            _rspStorage = rspStorage;
             _individualStat = new IndividualStatService();
             _roomStorage = roomStorage;
         }
@@ -33,7 +33,7 @@ namespace RSPGame.Services.Rooms
         {
             lock (Locker)
             {
-                return _roomStorage.Rooms.FirstOrDefault(x => x.GetId() == id);
+                return _roomStorage.Rooms.FirstOrDefault(x => x.Id == id);
             }
         }
 
@@ -43,9 +43,9 @@ namespace RSPGame.Services.Rooms
                 throw new ArgumentNullException(nameof(gamer));
             
             //create private room
-            var roomRep = new RoomRepository(new Room(isPrivate));
+            var roomRep = new RoomRepository(isPrivate);
             
-            _logger.Log(LogLevel.Information, $"Create room with Id {roomRep.GetId()}");
+            _logger.Log(LogLevel.Information, $"Create room with Id {roomRep.Id}");
 
             await Task.Run(() => roomRep.AddGamer(gamer));
 
@@ -61,7 +61,7 @@ namespace RSPGame.Services.Rooms
                     Monitor.Exit(Locker);
             }
             
-            return roomRep.GetId();
+            return roomRep.Id;
         }
 
         public int JoinRoom(GamerInfo gamer, int id = 0)
@@ -77,11 +77,11 @@ namespace RSPGame.Services.Rooms
 
                 if (id == 0)
                 {
-                    roomRep = _roomStorage.Rooms.FirstOrDefault(x => !x.IsPrivate() && x.IsFree());
+                    roomRep = _roomStorage.Rooms.FirstOrDefault(x => !x.IsPrivate && x.IsFree());
                     if (roomRep == null)
                     {
                         //create public room
-                        roomRep = new RoomRepository(new Room(false));
+                        roomRep = new RoomRepository(false);
 
                         roomRep.AddGamer(gamer);
 
@@ -94,7 +94,7 @@ namespace RSPGame.Services.Rooms
                 }
                 else
                 {
-                    roomRep = _roomStorage.Rooms.FirstOrDefault(x => x.GetId() == id && x.IsPrivate() && x.IsFree());
+                    roomRep = _roomStorage.Rooms.FirstOrDefault(x => x.Id == id && x.IsPrivate && x.IsFree());
                     if (roomRep == null)
                     {
                         throw new ArgumentNullException(nameof(roomRep), "No rooms with this id found!");
@@ -109,22 +109,24 @@ namespace RSPGame.Services.Rooms
                     Monitor.Exit(Locker);
             }
             
-            return roomRep.GetId();
+            return roomRep.Id;
         }
 
-        public void SaveStatForGamers(int roomId)
+        public async Task SaveStatForGamersAsync(int roomId)
         {
             var roomRep = GetRoomRepById(roomId);
             if(roomRep == null)
                 return;
 
             var rounds = roomRep.SeriesRepository.GetRounds();
-            var gamers = roomRep.GetGamers().ToList();
-
+            //todo
             foreach (var round in rounds)
             {
-                
+                await _individualStat.ChangeGamerInfoAfterRound(round.Gamer1, round.UserAction1, round.RoundResultForGamer1);
+                await _individualStat.ChangeGamerInfoAfterRound(round.Gamer2, round.UserAction2, round.RoundResultForGamer2);
             }
+
+            await _rspStorage.SaveToFile();
         }
         
         //private void 
@@ -139,7 +141,7 @@ namespace RSPGame.Services.Rooms
         {
             lock (Locker)
             {
-                if (_roomStorage.Rooms.Exists(x => x.GetId() == roomRepository.GetId()))
+                if (_roomStorage.Rooms.Exists(x => x.Id == roomRepository.Id))
                 {
                     _roomStorage.Rooms.Remove(roomRepository);
                     return true;

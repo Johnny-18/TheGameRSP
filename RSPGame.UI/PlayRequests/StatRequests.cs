@@ -34,5 +34,17 @@ namespace RSPGame.UI.PlayRequests
 
             Console.WriteLine("Not enough information for general statistics!");
         }
+        
+        public static void SaveOnlineTime(HttpClient client, Session session)
+        {
+            var requestOptions = new RequestOptions
+            {
+                Address = client.BaseAddress + $"api/stat/individual/{session.UserName}",
+                Method = RequestMethod.Post,
+                Body = JsonConvert.SerializeObject(session.GamerInfo.OnlineTime)
+            };
+            
+            RequestHandler.HandleRequest(client, requestOptions);
+        }
     }
 }

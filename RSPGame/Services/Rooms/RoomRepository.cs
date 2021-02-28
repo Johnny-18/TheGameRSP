@@ -1,41 +1,63 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using RSPGame.Models;
 using RSPGame.Models.Game;
-using RSPGame.Models.RoomModel;
 using RSPGame.Services.Game;
 
 namespace RSPGame.Services.Rooms
 {
     public class RoomRepository
     {
-        public RoomRepository(Room room)
+        public RoomRepository()
         {
-            _room = room;
+            DefaultInitialize();
+        }
+        
+        public RoomRepository(bool isPrivate)
+        {
+            DefaultInitialize();
+            
+            IsPrivate = isPrivate;
+        }
+        
+        private void DefaultInitialize()
+        {
+            Id = _id;
+            _id++;
+            
+            Gamers = new List<GamerInfo>(2);
             SeriesRepository = new SeriesRepository();
             _currentRound = new RoundRepository();
         }
 
-        public readonly SeriesRepository SeriesRepository;
+        public SeriesRepository SeriesRepository;
 
-        private readonly RoundRepository _currentRound;
+        private RoundRepository _currentRound;
         
-        private readonly Room _room;
+        private static int _id;
+
+        static RoomRepository()
+        {
+            _id = 1;
+        }
+        
+        public int Id { get; set; }
+
+        private List<GamerInfo> Gamers { get; set; }
+
+        public bool IsPrivate { get; }
 
         private readonly object _locker = new();
-
-        public int GetId() => _room.Id;
-
-        public IEnumerable<GamerInfo> GetGamers() => _room.Gamers;
-
-        public bool IsPrivate() => _room.IsPrivate;
+        
+        public List<GamerInfo> GetGamers() => Gamers.ToList();
 
         public bool IsFree()
         {
-            if (_room == null || _room.Gamers == null)
+            if (Gamers == null)
                 return false;
             
-            return _room.Gamers.Count != 2;
+            return Gamers.Count != 2;
         }
 
         public void AddGamer(GamerInfo gamer)
@@ -45,7 +67,7 @@ namespace RSPGame.Services.Rooms
             
             lock (_locker)
             {
-                _room.Gamers.Add(gamer);
+                Gamers.Add(gamer);
             }
         }
         

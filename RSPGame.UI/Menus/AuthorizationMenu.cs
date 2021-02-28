@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Net.Http;
-using System.Threading.Tasks;
 using RSPGame.Models;
 using RSPGame.UI.PlayRequests;
 
@@ -15,6 +14,8 @@ namespace RSPGame.UI.Menus
 
         private readonly Stopwatch _stopwatch;
 
+        private int _countLoginFailed;
+
         public AuthorizationMenu(HttpClient client, Session currentSession)
         {
             _client = client;
@@ -22,7 +23,7 @@ namespace RSPGame.UI.Menus
             _stopwatch = new Stopwatch();
         }
 
-        public async Task Start()
+        public void Start()
         {
             Console.Clear();
 
@@ -44,19 +45,19 @@ namespace RSPGame.UI.Menus
 
                 if (_stopwatch.ElapsedMilliseconds > 30000)
                 {
-                    _currentSession.CountLoginFailed = 0;
+                    _countLoginFailed = 0;
                     _stopwatch.Stop();
                 }
               
                 switch (num)
                 {
                     case 1:
-                        await AuthRequests.Register(_client, _currentSession);
+                        AuthRequests.Register(_client, _currentSession);
                         break;
                     case 2:
-                        if (_currentSession.CountLoginFailed < 3)
+                        if (_countLoginFailed < 3)
                         {
-                            await AuthRequests.Login(_client, _currentSession, _stopwatch);
+                            AuthRequests.Login(_client, _currentSession, _stopwatch, ref _countLoginFailed);
                         }
                         else
                         {

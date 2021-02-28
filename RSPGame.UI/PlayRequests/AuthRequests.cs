@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RSPGame.Models;
 using RSPGame.UI.Menus;
@@ -12,18 +11,26 @@ namespace RSPGame.UI.PlayRequests
 {
     public static class AuthRequests
     {
-        public static async Task Register(HttpClient client, Session currentSession)
+        public static void Register(HttpClient client, Session currentSession)
         {
+            if (currentSession == null) 
+                return;
+            
             Console.WriteLine("Registration");
 
             var response = GetResponse(client, "api/auth/register");
+            if (response == null)
+            {
+                return;
+            }
+            
             if (response.StatusCode == (int)HttpStatusCode.OK)
             {
                 var jsonFromApi = response.Content;
 
                 currentSession = JsonConvert.DeserializeObject<Session>(jsonFromApi);
                 
-                await new SessionMenu(client, currentSession).Start();
+                new SessionMenu(client, currentSession).Start();
                 return;
             }
 
@@ -32,27 +39,35 @@ namespace RSPGame.UI.PlayRequests
                 : "Account do not created!");
         }
         
-        public static async Task Login(HttpClient client, Session currentSession, Stopwatch stopwatch)
+        public static void Login(HttpClient client, Session currentSession, Stopwatch stopwatch, ref int countLoginFailed)
         {
+            if (currentSession == null) 
+                return;
+            
             Console.WriteLine("Login");
 
             var response = GetResponse(client, "api/auth/login");
+            if(response == null)
+            {
+                return;
+            }
+            
             if (response.StatusCode == (int)HttpStatusCode.OK)
             {
                 var jsonFromApi = response.Content;
 
                 currentSession = JsonConvert.DeserializeObject<Session>(jsonFromApi);
                 
-                await new SessionMenu(client, currentSession).Start();
+                new SessionMenu(client, currentSession).Start();
                 return;
             }
-            currentSession.CountLoginFailed++;
+            countLoginFailed++;
 
             Console.WriteLine(response.StatusCode == (int)HttpStatusCode.BadRequest
                 ? "Invalid login values!"
                 : "Account do not found!");
 
-            if (currentSession.CountLoginFailed == 3)
+            if (countLoginFailed == 3)
             {
                 stopwatch.Start();
             }

@@ -11,7 +11,7 @@ namespace RSPGame.UI.PlayRequests
 {
     public static class GameRequests
     {
-        public static GamerInfo[] GetGame(HttpClient client, int roomId, int count)
+        public static GamerInfo[] GetGamers(HttpClient client, int roomId, int count)
         {
             if (client == null)
                 return null;
@@ -68,28 +68,20 @@ namespace RSPGame.UI.PlayRequests
                 Action = (GameActions)action
             };
 
-            var json = JsonConvert.SerializeObject(gameRequest);
             var requestOptions = new RequestOptions
             {
                 Address = client.BaseAddress + $"api/rounds/action/{roomId}",
                 Method = RequestMethod.Post,
-                Body = json
+                Body = JsonConvert.SerializeObject(gameRequest)
             };
-            
-            try
-            {
-                var response = RequestHandler.HandleRequest(client, requestOptions);
-                if (response.StatusCode == (int)HttpStatusCode.NotFound || response.StatusCode == (int)HttpStatusCode.BadRequest)
-                {
-                    Console.WriteLine("\nSomething going wrong!.\n\n");
-                }
 
-                Console.WriteLine($"Your choice: {action.ToString()}");
-            }
-            catch (AggregateException)
+            var response = RequestHandler.HandleRequest(client, requestOptions);
+            if (response.StatusCode == (int)HttpStatusCode.NotFound || response.StatusCode == (int)HttpStatusCode.BadRequest)
             {
-                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                Console.WriteLine("\nSomething going wrong!.\n\n");
             }
+
+            Console.WriteLine($"Your choice: {action.ToString()}");
         }
     }
 }

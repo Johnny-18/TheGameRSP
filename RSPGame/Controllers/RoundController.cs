@@ -80,8 +80,8 @@ namespace RSPGame.Controllers
             return Ok();
         }
         
-        [HttpDelete("{roomId}")]
-        public IActionResult DeleteLastRound([FromRoute] int roomId)
+        [HttpPut("{roomId}")]
+        public IActionResult RefreshLastRound([FromRoute] int roomId)
         {
             var roomRep = GetRoom(roomId);
             if (roomRep == null)

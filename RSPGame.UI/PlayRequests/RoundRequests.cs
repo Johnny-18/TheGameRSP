@@ -20,7 +20,35 @@ namespace RSPGame.UI.PlayRequests
                 Body = JsonConvert.SerializeObject(round)
             };
 
-            var response = RequestHandler.HandleRequest(client, requestOptions);
+            RequestHandler.HandleRequest(client, requestOptions);
+        }
+
+        public static void RefreshRound(HttpClient client, int roomId)
+        {
+            if (client == null) 
+                return;
+
+            var requestOptions = new RequestOptions
+            {
+                Address = client.BaseAddress + $"api/rounds/{roomId}",
+                Method = RequestMethod.Put
+            };
+            
+            RequestHandler.HandleRequest(client, requestOptions);
+        }
+
+        public static void DeleteLastRound(HttpClient client, int roomId)
+        {
+            if (client == null) 
+                return;
+            
+            var requestOptions = new RequestOptions
+            {
+                Address = client.BaseAddress + $"api/rounds/{roomId}",
+                Method = RequestMethod.Delete
+            };
+
+            RequestHandler.HandleRequest(client, requestOptions);
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Net.Http;
 using Newtonsoft.Json;
 using RSPGame.Models;
@@ -21,7 +20,7 @@ namespace RSPGame.UI.Menus
             _currentSession = currentSession;
         }
 
-        public void Start()
+        public async void Start()
         {
             while (true)
             {
@@ -44,7 +43,6 @@ namespace RSPGame.UI.Menus
                 switch (num)
                 {
                     case 1:
-                        //
                         var json = JsonConvert.SerializeObject(_currentSession.GamerInfo);
                         var requestOptions = new RequestOptions
                         {
@@ -53,23 +51,20 @@ namespace RSPGame.UI.Menus
                             Method = RequestMethod.Post
                         };
 
-                        var content = RoomRequests.Post(_client, requestOptions);
+                        var response = RequestHandler.HandleRequest(_client, requestOptions);
+                        var content = response.Content;
 
                         var roomId = JsonConvert.DeserializeObject<int>(content);
 
                         Console.WriteLine($"\nRoom with id {roomId} has been created!");
                         Console.WriteLine("\nWaiting for opponent\n\n");
-                        
-                        var period = new Stopwatch();
-                        
-                        period.Start();
-                        
+
                         while (true)
                         {
-                            var gamerInfos = GameRequests.GetGame(_client, roomId, 10);
+                            var gamerInfos = GameRequests.GetGamers(_client, roomId, 30);
                             if (gamerInfos != null && gamerInfos.Length == 2)
                             {
-                                new GameLogic().StartGame(_client, gamerInfos, _currentSession.UserName, roomId);
+                                await new GameLogic().StartGame(_client, gamerInfos, _currentSession.UserName, roomId);
                                 break;
                             }
 
@@ -83,21 +78,21 @@ namespace RSPGame.UI.Menus
 
                         if (!int.TryParse(Console.ReadLine(), out var id2))
                         {
-                            Console.WriteLine("\nERROR:\tThe only numbers can be entered. Try again\n\n");
+                            Console.WriteLine("\nERROR:\tThe only numbers can be entered. Try again\n");
                             break;
                         }
                         else if (id2 < 0)
                         {
-                            Console.WriteLine("\nERROR:\tIncorrect number. Try again\n\n");
+                            Console.WriteLine("\nERROR:\tIncorrect number. Try again\n");
                             break;
                         }
                         
-                        if (RoomRequests.JoinRoom(_client, _currentSession.GamerInfo, id2)) 
+                        if (RoomRequests.JoinRoom(_client, _currentSession.GamerInfo, id2) == false) 
                             break;
 
-                        var gamers = GameRequests.GetGame(_client, id2, 30);
+                        var gamers = GameRequests.GetGamers(_client, id2, 3);
                         
-                        new GameLogic().StartGame(_client, gamers, _currentSession.UserName, id2);
+                        await new GameLogic().StartGame(_client, gamers, _currentSession.UserName, id2);
                         break;
                     case 3:
                         return;

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using RSPGame.Models;
 using RSPGame.Services;
 using RSPGame.UI.Menus;
@@ -18,20 +17,6 @@ namespace RSPGame.UI
 
         public static async Task Main()
         {
-            // var session = new Session
-            // {
-            //     UserName = "dsfds",
-            //     Token = "wjdyweqtfdyguhwqijokdowjqhgfdqrwtfyudhijokqwdkjmqwhngydtfrqwtydguhiqow12",
-            //     GamerInfo = new GamerInfo
-            //     {
-            //         UserName = "dfsf",
-            //         OnlineTime = new TimeSpan(1, 1, 1, 1)
-            //     }
-            // };
-            // var json = JsonConvert.SerializeObject(session);
-            //
-            // var ses = JsonConvert.DeserializeObject<Session>(json);
-            
             var fileWorker = new FileWorker();
             var baseAddress = await fileWorker.DeserializeAsync<BaseAddress>(_path);
             if (baseAddress == null || string.IsNullOrEmpty(baseAddress.BaseUrl))
@@ -49,7 +34,7 @@ namespace RSPGame.UI
 
             try
             {
-                await new AuthorizationMenu(_client, _session).Start();
+                new AuthorizationMenu(_client, _session).Start();
             }
             catch (HttpRequestException)
             {
