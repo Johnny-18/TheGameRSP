@@ -58,12 +58,12 @@ namespace RSPGame.Storage
 
             return _users.Select(x => x.Value).ToList();
         }
-
-        private async Task CheckCollection()
+        
+        public async Task SaveToFile()
         {
-            if (_users == null)
+            if (_users != null && _users.Count > 0)
             {
-                await GetFromFile(_path);
+                await _fileWorker.SaveToFileAsync(_path, _users);
             }
         }
 
@@ -75,9 +75,9 @@ namespace RSPGame.Storage
 
         public async Task SaveToFile()
         {
-            if (_users != null && _users.Count > 0)
+            if (_users == null)
             {
-                await _fileWorker.SaveToFileAsync(_path, _users);
+                await GetFromFile(_path);
             }
         }
 

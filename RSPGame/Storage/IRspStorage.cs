@@ -15,5 +15,7 @@ namespace RSPGame.Storage
         void TryUpdate(string userName, User newUser);
 
         Task<User> GetUserByUserNameAsync(string userName);
+
+        Task SaveToFile();
     }
 }

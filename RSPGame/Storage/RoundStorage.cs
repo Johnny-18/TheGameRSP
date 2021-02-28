@@ -27,7 +27,7 @@ namespace RSPGame.Storage
             _dictionaryRound[id].Add(round);
         }
 
-        public IEnumerable<GamerStep> PeekGamers(int id)
+        public IEnumerable<GamerStep> GetGamerSteps(int id)
         {
             if (_dictionaryRound.Count == 0)
                 return null;

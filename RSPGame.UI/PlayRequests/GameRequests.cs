@@ -11,7 +11,7 @@ namespace RSPGame.UI.PlayRequests
 {
     public static class GameRequests
     {
-        public static HttpResponseMessage RequestWithTimer(HttpClient client, string path, int seconds)
+        public static async Task<HttpResponseMessage> RequestWithTimer(HttpClient client, string path, int seconds)
         {
             var counter = 0;
             HttpResponseMessage response;
@@ -20,10 +20,12 @@ namespace RSPGame.UI.PlayRequests
 
             while (true)
             {
-                if (stopwatch.ElapsedMilliseconds < 1000) continue;
+                if (stopwatch.ElapsedMilliseconds < 1000) 
+                    continue;
+
                 try
                 {
-                    response = client.GetAsync(path).Result;
+                    response = await client.GetAsync(path);
                 }
                 catch (HttpRequestException)
                 {
@@ -38,7 +40,8 @@ namespace RSPGame.UI.PlayRequests
 
                 counter++;
                 stopwatch.Restart();
-                if (counter == seconds) break;
+                if (counter == seconds) 
+                    break;
             }
 
             return response;
@@ -52,7 +55,7 @@ namespace RSPGame.UI.PlayRequests
                 return null;
             }
 
-            var response = RequestWithTimer(client, $"api/rooms/{roomId}", 30);
+            var response = await RequestWithTimer(client, $"api/rooms/{roomId}", 30);
             if (response == null)
             {
                 Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");

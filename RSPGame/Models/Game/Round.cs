@@ -1,0 +1,19 @@
+using RSPGame.Models.GameModel;
+
+namespace RSPGame.Models.Game
+{
+    public class Round
+    {
+        public GamerInfo Gamer1 { get; set; }
+        
+        public GameActions UserAction1 { get; set; }
+        
+        public RoundResult RoundResultForGamer1 { get; set; }
+        
+        public GamerInfo Gamer2 { get; set; }
+        
+        public GameActions UserAction2 { get; set; }
+        
+        public RoundResult RoundResultForGamer2 { get; set; }
+    }
+}

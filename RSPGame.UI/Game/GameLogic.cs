@@ -1,3 +1,4 @@
+
 ﻿using Newtonsoft.Json;
 using RSPGame.UI.PlayRequests;
 using System;
@@ -6,6 +7,7 @@ using System.Net;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using RSPGame.Models.GameModel;
 
@@ -135,6 +137,7 @@ namespace RSPGame.UI.Game
                     gamer.CountScissors++;
                     break;
             }
+        }
 
             try
             {
