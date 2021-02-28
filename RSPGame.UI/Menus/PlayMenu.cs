@@ -11,9 +11,11 @@ namespace RSPGame.UI.Menus
 {
     public class PlayMenu
     {
-        private Session _currentSession;
+        private readonly Session _currentSession;
 
         private readonly HttpClient _client;
+
+        private readonly Stopwatch _onlineTime = new Stopwatch();
 
         public PlayMenu(HttpClient client, Session currentSession)
         {
@@ -23,6 +25,9 @@ namespace RSPGame.UI.Menus
 
         public async void Start()
         {
+            _onlineTime.Start();
+            Console.Clear();
+            
             while (true)
             {
                 int num;
@@ -103,14 +108,25 @@ namespace RSPGame.UI.Menus
                                 break;
                             }
                         }
+
+                        _currentSession.GamerInfo.OnlineTime += _onlineTime.Elapsed;
+                        _onlineTime.Restart();
                         break;
                     case 2:
                         new PrivateRoomMenu(_client, _currentSession).Start();
+                        _currentSession.GamerInfo.OnlineTime += _onlineTime.Elapsed;
+                        _onlineTime.Restart();
                         break;
                     case 3:
                         new GameLogic().PlayWithBot(_client);
+                        _currentSession.GamerInfo.OnlineTime += _onlineTime.Elapsed;
+                        _onlineTime.Restart();
                         break;
                     case 4:
+                        _currentSession.GamerInfo.OnlineTime += _onlineTime.Elapsed;
+                        _onlineTime.Restart();
+                        
+                        StatRequests.SaveOnlineTime(_client, _currentSession);
                         return;
                 }
             }

@@ -16,6 +16,8 @@ namespace RSPGame.UI.Menus
 
         private int _countLoginFailed;
 
+        private readonly Stopwatch _onlineTime = new Stopwatch();
+
         public AuthorizationMenu(HttpClient client, Session currentSession)
         {
             _client = client;
@@ -26,6 +28,7 @@ namespace RSPGame.UI.Menus
         public void Start()
         {
             Console.Clear();
+            _onlineTime.Start();
 
             while (true)
             {
@@ -53,6 +56,9 @@ namespace RSPGame.UI.Menus
                 {
                     case 1:
                         AuthRequests.Register(_client, _currentSession);
+                        
+                        _currentSession.GamerInfo.OnlineTime += _onlineTime.Elapsed;
+                        _onlineTime.Restart();
                         break;
                     case 2:
                         if (_countLoginFailed < 3)
@@ -63,15 +69,29 @@ namespace RSPGame.UI.Menus
                         {
                             Console.WriteLine("You were temporarily blocked due to incorrect authorization!");
                         }
+                        
+                        _currentSession.GamerInfo.OnlineTime += _onlineTime.Elapsed;
+                        _onlineTime.Restart();
                         break;
                     case 3:
                         StatRequests.GetGeneralStat(_client);
+                        
+                        _currentSession.GamerInfo.OnlineTime += _onlineTime.Elapsed;
+                        _onlineTime.Restart();
                         break;
                     case 4:
                         Console.WriteLine("Goodbye!");
+                        
+                        _currentSession.GamerInfo.OnlineTime += _onlineTime.Elapsed;
+                        _onlineTime.Restart();
                         return;
                     default:
                         Console.WriteLine("Incorrect number. Try again");
+                        
+                        _currentSession.GamerInfo.OnlineTime += _onlineTime.Elapsed;
+                        _onlineTime.Restart();
+                        
+                        StatRequests.SaveOnlineTime(_client, _currentSession);
                         break;
                 }
             }

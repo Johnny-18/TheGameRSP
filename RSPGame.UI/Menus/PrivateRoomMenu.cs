@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net.Http;
 using Newtonsoft.Json;
 using RSPGame.Models;
@@ -10,9 +11,11 @@ namespace RSPGame.UI.Menus
 {
     public class PrivateRoomMenu
     {
-        private Session _currentSession;
+        private readonly Session _currentSession;
 
         private readonly HttpClient _client;
+
+        private readonly Stopwatch _onlineTime = new Stopwatch();
 
         public PrivateRoomMenu(HttpClient client, Session currentSession)
         {
@@ -22,6 +25,9 @@ namespace RSPGame.UI.Menus
 
         public async void Start()
         {
+            _onlineTime.Start();
+            Console.Clear();
+            
             while (true)
             {
                 int num;
@@ -72,6 +78,9 @@ namespace RSPGame.UI.Menus
                             Console.WriteLine("Opponent do not found!");
                             break;
                         }
+                        
+                        _currentSession.GamerInfo.OnlineTime += _onlineTime.Elapsed;
+                        _onlineTime.Restart();
                         break;
                     case 2:
                         Console.Write("Enter the id of the desired room: ");
@@ -93,8 +102,15 @@ namespace RSPGame.UI.Menus
                         var gamers = GameRequests.GetGamers(_client, id2, 3);
                         
                         await new GameLogic().StartGame(_client, gamers, _currentSession.UserName, id2);
+                        
+                        _currentSession.GamerInfo.OnlineTime += _onlineTime.Elapsed;
+                        _onlineTime.Restart();
                         break;
                     case 3:
+                        _currentSession.GamerInfo.OnlineTime += _onlineTime.Elapsed;
+                        _onlineTime.Restart();
+                        
+                        StatRequests.SaveOnlineTime(_client, _currentSession);
                         return;
                 }
             }
