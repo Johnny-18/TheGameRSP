@@ -121,7 +121,7 @@ namespace RSPGame.UI.Game
                 opponent = gamers[0];
             }
             
-            Console.WriteLine($"Room ID:\t{roomId}");
+            Console.WriteLine($"Room ID: {roomId}");
             Console.WriteLine($"Match:\t{current.UserName} vs {opponent.UserName}");
             Console.WriteLine("Rules:\tRock > scissors; scissors > paper; paper > rock.\n");
 
