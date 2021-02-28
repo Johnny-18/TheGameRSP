@@ -23,18 +23,22 @@ namespace RSPGame.UI.PlayRequests
             RequestHandler.HandleRequest(client, requestOptions);
         }
 
-        public static void RefreshRound(HttpClient client, int roomId)
+        public static bool Put(HttpClient client, int roomId, string url)
         {
             if (client == null) 
-                return;
+                return false;
 
             var requestOptions = new RequestOptions
             {
-                Address = client.BaseAddress + $"api/rounds/{roomId}",
+                Address = url,
                 Method = RequestMethod.Put
             };
             
-            RequestHandler.HandleRequest(client, requestOptions);
+            var response = RequestHandler.HandleRequest(client, requestOptions);
+            if(response.StatusCode == 200)
+                return true;
+
+            return false;
         }
 
         public static void DeleteLastRound(HttpClient client, int roomId)

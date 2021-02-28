@@ -33,6 +33,12 @@ namespace RSPGame.UI
             {
                 requestMessage.Headers.Authorization = AuthenticationHeaderValue.Parse(requestOptions.Token);
             }
+            
+            // if(!string.IsNullOrEmpty(requestOptions.Token))
+            // {
+            //     client.DefaultRequestHeaders.Authorization =
+            //         new AuthenticationHeaderValue("Bearer", requestOptions.Token);
+            // }
 
             try
             {

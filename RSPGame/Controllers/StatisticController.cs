@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RSPGame.Models;
 using RSPGame.Services.Statistics;
 using RSPGame.Storage;
 
@@ -36,6 +36,7 @@ namespace RSPGame.Controllers
             return Ok(result);
         }
 
+        [Authorize]
         [HttpPost("individual/{userName}")]
         public async Task<IActionResult> OnlineTime([FromRoute] string userName, [FromBody] TimeSpan onlineTime)
         {

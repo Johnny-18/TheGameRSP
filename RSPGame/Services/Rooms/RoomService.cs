@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using RSPGame.Models;
+using RSPGame.Models.Game;
 using RSPGame.Services.Statistics;
 using RSPGame.Storage;
 
@@ -125,6 +126,29 @@ namespace RSPGame.Services.Rooms
                 await _individualStat.ChangeGamerInfoAfterRound(round.Gamer1, round.UserAction1, round.RoundResultForGamer1);
                 await _individualStat.ChangeGamerInfoAfterRound(round.Gamer2, round.UserAction2, round.RoundResultForGamer2);
             }
+            
+            rounds.TryPeek(out Round result);
+            if(result == null)
+                return;
+
+            var user1 = await _rspStorage.GetUserByUserNameAsync(result.Gamer1.UserName);
+            var newUser1 = new User
+            {
+                UserName = user1.UserName,
+                PasswordHash = user1.PasswordHash,
+                GamerInfo = result.Gamer1
+            };
+            
+            var user2 = await _rspStorage.GetUserByUserNameAsync(result.Gamer2.UserName);
+            var newUser2 = new User
+            {
+                UserName = user2.UserName,
+                PasswordHash = user2.PasswordHash,
+                GamerInfo = result.Gamer2
+            };
+
+            _rspStorage.TryUpdate(user1.UserName, newUser1);
+            _rspStorage.TryUpdate(user2.UserName, newUser2);
 
             await _rspStorage.SaveToFile();
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Net;
 using System.Net.Http;
 using Newtonsoft.Json;
 using RSPGame.Models;
@@ -23,7 +24,7 @@ namespace RSPGame.UI.Menus
             _currentSession = currentSession;
         }
 
-        public async void Start()
+        public void Start()
         {
             _onlineTime.Start();
             Console.Clear();
@@ -56,10 +57,17 @@ namespace RSPGame.UI.Menus
                         {
                             Body = json,
                             Address = _client.BaseAddress +  "api/rooms/join",
-                            Method = RequestMethod.Post
+                            Method = RequestMethod.Post,
+                            Token = _currentSession.Token
                         };
 
                         var response = RequestHandler.HandleRequest(_client, requestOptions);
+                        if (response.StatusCode == (int) HttpStatusCode.Unauthorized)
+                        {
+                            Console.WriteLine("You need to login! Or register your account!");
+                            return;
+                        }
+                        
                         var content = response.Content;
                         if (string.IsNullOrEmpty(content)) 
                             break;
@@ -74,51 +82,21 @@ namespace RSPGame.UI.Menus
                             Console.WriteLine("Game canceled because opponent did not found!");
                             break;
                         }
-
-                        while (true)
-                        {
-                            var seriesStopWatch = new Stopwatch();
-                            seriesStopWatch.Start();
-
-                            while (true)
-                            {
-                                if (seriesStopWatch.Elapsed.Minutes > 5)
-                                {
-                                    //todo save stat and delete room
-                                    RoomRequests.SaveStatRounds(_client, roomId);
-                                    RoomRequests.DeleteRoom(_client, roomId);
-                                    break;
-                                }
-
-                                var round = await new GameLogic().StartGame(_client, gamers, _currentSession.UserName, roomId);
-                                if (round != null)
-                                {
-                                    RoundRequests.AddRoundToRoom(_client, round, roomId);
-                                    RoundRequests.RefreshRound(_client, roomId);
-                                }
-
-                                break;
-                            }
-                            
-                            if (ContinueGame(_client, roomId))
-                            {
-                                //todo save stat and delete room
-                                RoomRequests.SaveStatRounds(_client, roomId);
-                                RoomRequests.DeleteRoom(_client, roomId);
-                                break;
-                            }
-                        }
-
+                        
+                        new GameLogic().StartGame(_client, gamers, _currentSession.UserName, roomId);
+                        
                         _currentSession.GamerInfo.OnlineTime += _onlineTime.Elapsed;
                         _onlineTime.Restart();
                         break;
                     case 2:
                         new PrivateRoomMenu(_client, _currentSession).Start();
+                        
                         _currentSession.GamerInfo.OnlineTime += _onlineTime.Elapsed;
                         _onlineTime.Restart();
                         break;
                     case 3:
                         new GameLogic().PlayWithBot(_client);
+                        
                         _currentSession.GamerInfo.OnlineTime += _onlineTime.Elapsed;
                         _onlineTime.Restart();
                         break;
@@ -130,15 +108,6 @@ namespace RSPGame.UI.Menus
                         return;
                 }
             }
-        }
-        
-        private bool ContinueGame(HttpClient client, int roomId)
-        {
-            var gamers = RoomRequests.GetGamers(client, roomId);
-            if (gamers == null)
-                return false;
-            
-            return gamers.Length == 2;
         }
     }
 }

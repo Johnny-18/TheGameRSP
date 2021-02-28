@@ -58,6 +58,12 @@ namespace RSPGame.Storage
             
             return _users.Select(x => x.Value).ToList();
         }
+
+        public void TryUpdate(string userName, User newUser)
+        {
+            if(_users.ContainsKey(userName))
+                _users[userName] = newUser;
+        }
         
         public async Task SaveToFile()
         {

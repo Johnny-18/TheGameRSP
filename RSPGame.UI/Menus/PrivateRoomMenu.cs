@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Net;
 using System.Net.Http;
 using Newtonsoft.Json;
 using RSPGame.Models;
@@ -23,7 +24,7 @@ namespace RSPGame.UI.Menus
             _currentSession = currentSession;
         }
 
-        public async void Start()
+        public void Start()
         {
             _onlineTime.Start();
             Console.Clear();
@@ -58,7 +59,17 @@ namespace RSPGame.UI.Menus
                         };
 
                         var response = RequestHandler.HandleRequest(_client, requestOptions);
+                        if (response.StatusCode == (int) HttpStatusCode.Unauthorized)
+                        {
+                            Console.WriteLine("You need to login! Or register your account!");
+                            return;
+                        }
+                        
                         var content = response.Content;
+                        if (string.IsNullOrEmpty(content))
+                        {
+                            break;
+                        }
 
                         var roomId = JsonConvert.DeserializeObject<int>(content);
 
@@ -70,7 +81,7 @@ namespace RSPGame.UI.Menus
                             var gamerInfos = GameRequests.GetGamers(_client, roomId, 30);
                             if (gamerInfos != null && gamerInfos.Length == 2)
                             {
-                                await new GameLogic().StartGame(_client, gamerInfos, _currentSession.UserName, roomId);
+                                new GameLogic().StartGame(_client, gamerInfos, _currentSession.UserName, roomId);
                                 break;
                             }
 
@@ -101,7 +112,7 @@ namespace RSPGame.UI.Menus
 
                         var gamers = GameRequests.GetGamers(_client, id2, 3);
                         
-                        await new GameLogic().StartGame(_client, gamers, _currentSession.UserName, id2);
+                        new GameLogic().StartGame(_client, gamers, _currentSession.UserName, id2);
                         
                         _currentSession.GamerInfo.OnlineTime += _onlineTime.Elapsed;
                         _onlineTime.Restart();

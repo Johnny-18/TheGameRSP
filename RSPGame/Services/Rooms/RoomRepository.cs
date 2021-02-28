@@ -46,6 +46,8 @@ namespace RSPGame.Services.Rooms
 
         private List<GamerInfo> Gamers { get; set; }
 
+        public int ReadyCounter { get; private set; }
+
         public bool IsPrivate { get; }
 
         private readonly object _locker = new();
@@ -58,6 +60,16 @@ namespace RSPGame.Services.Rooms
                 return false;
             
             return Gamers.Count != 2;
+        }
+
+        public void SetReady()
+        {
+            ReadyCounter++;
+
+            if (ReadyCounter == 2)
+            {
+                ReadyCounter = 0;
+            }
         }
 
         public void AddGamer(GamerInfo gamer)

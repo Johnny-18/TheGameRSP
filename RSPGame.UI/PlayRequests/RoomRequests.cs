@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RSPGame.Models;
 using RSPGame.Models.Game;
@@ -29,7 +27,6 @@ namespace RSPGame.UI.PlayRequests
                 var response = RequestHandler.HandleRequest(client, requestOptions);
                 if (response.StatusCode == (int)HttpStatusCode.NotFound || response.StatusCode == (int)HttpStatusCode.BadRequest)
                 {
-                    //Console.WriteLine("\nThe room was not found. Check the number again.\n\n");
                     return null;
                 }
 
@@ -101,6 +98,12 @@ namespace RSPGame.UI.PlayRequests
             try
             {
                 var response = RequestHandler.HandleRequest(client, requestOptions);
+                if (response.StatusCode == (int) HttpStatusCode.Unauthorized)
+                {
+                    Console.WriteLine("You need to login! Or register your account!");
+                    return false;
+                }
+                
                 if (response.StatusCode != (int)HttpStatusCode.OK)
                 {
                     Console.WriteLine("\nThe room was not found. Check the number again.\n\n");
@@ -121,15 +124,27 @@ namespace RSPGame.UI.PlayRequests
             }
         }
 
-        public static async Task<RoomRepository> GetRoomById(HttpClient client, int roomId)
+        public static RoomRepository GetRoomById(HttpClient client, int roomId)
         {
             if (client == null)
-                throw new ArgumentNullException(nameof(client));
+                return null;
 
-            var response = await client.GetAsync($"api/rooms/{roomId}");
-            if (response.StatusCode == HttpStatusCode.OK)
+            var requestOptions = new RequestOptions
             {
-                var json = await response.Content.ReadAsStringAsync();
+                Address = client.BaseAddress + $"api/rooms/{roomId}",
+                Method = RequestMethod.Get
+            };
+            
+            var response = RequestHandler.HandleRequest(client, requestOptions);
+            if (response.StatusCode == (int) HttpStatusCode.Unauthorized)
+            {
+                Console.WriteLine("You need to login! Or register your account!");
+                return null;
+            }
+
+            if (response.StatusCode == (int)HttpStatusCode.OK)
+            {
+                var json = response.Content;
 
                 return JsonConvert.DeserializeObject<RoomRepository>(json);
             }

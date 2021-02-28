@@ -27,6 +27,12 @@ namespace RSPGame.UI.Game
             };
             
             var response = RequestHandler.HandleRequest(client, requestOptions);
+            if (response.StatusCode == (int) HttpStatusCode.Unauthorized)
+            {
+                Console.WriteLine("You need to login! Or register your account!");
+                return;
+            }
+            
             if (response.StatusCode == (int) HttpStatusCode.OK)
             {
                 json = response.Content;
@@ -36,15 +42,72 @@ namespace RSPGame.UI.Game
             PrintResult(roundResult);
         }
 
-        public async Task<Round> StartGame(HttpClient client, GamerInfo[] gamers, string currentUser, int roomId)
+        public void StartGame(HttpClient client, GamerInfo[] gamers, string currentUser, int roomId)
         {
             while (true)
             {
-                var roundTaskResult = await StartRound(client, gamers, currentUser, roomId);
+                var seriesStopWatch = new Stopwatch();
+                seriesStopWatch.Start();
+
+                while (true)
+                {
+                    if (seriesStopWatch.Elapsed.Minutes > 5)
+                    {
+                        RoomRequests.SaveStatRounds(client, roomId);
+                        RoomRequests.DeleteRoom(client, roomId);
+                        break;
+                    }
+
+                    var round = StartRound(client, gamers, currentUser, roomId);
+                    if (round != null)
+                    {
+                        RoundRequests.AddRoundToRoom(client, round, roomId);
+                        seriesStopWatch.Restart();
+                    }
+
+                    break;
+                }
+
+                if (WantToContinue(client, roomId) == false)
+                {
+                    return;
+                }
+
+                do
+                {
+                    
+                } while (RoundRequests.Put(client, roomId, client.BaseAddress + $"api/rounds/ready/check/{roomId}") == false);
+                
+                RoundRequests.Put(client, roomId, client.BaseAddress + $"api/rounds/refresh/{roomId}");
+            }
+        }
+
+        private bool WantToContinue(HttpClient client, int roomId)
+        {
+            Console.WriteLine("If you want to continue play enter 0,");
+            Console.WriteLine("another number for leave from the room:");
+            var input = Console.ReadLine();
+
+            if (input == "0")
+            {
+                RoundRequests.Put(client, roomId, client.BaseAddress + $"api/rounds/ready/{roomId}");
+                return true;
+            }
+
+            RoomRequests.SaveStatRounds(client, roomId);
+            RoomRequests.DeleteRoom(client, roomId);
+            return false;
+        }
+
+        private Round StartRound(HttpClient client, GamerInfo[] gamers, string currentUser, int roomId)
+        {
+            while (true)
+            {
+                var roundTaskResult = GetRound(client, gamers, currentUser, roomId);
                 if (roundTaskResult == null || !roundTaskResult.IsValid())
                 {
                     Console.WriteLine("Round was canceled!");
-                    RoundRequests.RefreshRound(client, roomId);
+                    RoundRequests.Put(client, roomId, client.BaseAddress + $"api/rounds/refresh/{roomId}");
                     return null;
                 }
                 
@@ -53,7 +116,7 @@ namespace RSPGame.UI.Game
             }
         }
 
-        private async Task<Round> StartRound(HttpClient client, GamerInfo[] gamers, string currentUser, int roomId)
+        private Round GetRound(HttpClient client, GamerInfo[] gamers, string currentUser, int roomId)
         {
             Round round;
 
@@ -81,7 +144,7 @@ namespace RSPGame.UI.Game
                                 requestPeriodSw.Restart();
                                 continue;
                             }
-                            
+
                             break;
                         }
 
@@ -143,7 +206,6 @@ namespace RSPGame.UI.Game
             Console.WriteLine("1.\tRock");
             Console.WriteLine("2.\tScissors");
             Console.WriteLine("3.\tPaper");
-            Console.WriteLine("4.\tExit");
             
 
             Console.WriteLine();
@@ -156,9 +218,9 @@ namespace RSPGame.UI.Game
                     return GameActionsUi.Scissors;
                 case 3:
                     return GameActionsUi.Paper;
-                default:
-                    return GameActionsUi.None;
             }
+
+            return GameActionsUi.None;
         }
 
         private RoundResult GetCorrectResultByUserName(Round round, string userName)
@@ -193,7 +255,7 @@ namespace RSPGame.UI.Game
             {
                 Console.WriteLine(message);
                 var input = Console.ReadLine();
-                if (int.TryParse(input, out var number) || number > 0 && number < 5)
+                if (int.TryParse(input, out var number) && number > 0 && number < 4)
                 {
                     return number;
                 }

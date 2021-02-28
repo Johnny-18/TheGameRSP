@@ -7,7 +7,7 @@ namespace RSPGame.Models.Game
         public GameActions UserAction1 { get; set; }
         
         public RoundResult RoundResultForGamer1 { get; set; }
-        
+
         public GamerInfo Gamer2 { get; set; }
         
         public GameActions UserAction2 { get; set; }

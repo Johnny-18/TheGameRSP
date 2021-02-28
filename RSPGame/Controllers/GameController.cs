@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RSPGame.Models;
 using RSPGame.Services;
 
 namespace RSPGame.Controllers
 {
+    //[Authorize]
     [ApiController]
     [Route("api/game")]
     public class GameController : ControllerBase

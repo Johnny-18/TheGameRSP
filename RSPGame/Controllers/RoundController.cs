@@ -1,10 +1,12 @@
 ﻿using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RSPGame.Models.Game;
 using RSPGame.Services.Rooms;
 
 namespace RSPGame.Controllers
 {
+    //[Authorize]
     [ApiController]
     [Route("api/rounds")]
     public class RoundController : ControllerBase
@@ -80,7 +82,29 @@ namespace RSPGame.Controllers
             return Ok();
         }
         
-        [HttpPut("{roomId}")]
+        [HttpPut("ready/{roomId}")]
+        public IActionResult SetReady([FromRoute] int roomId)
+        {
+            var roomRep = GetRoom(roomId);
+            if (roomRep == null)
+                return NoContent();
+            
+            roomRep.SetReady();
+            
+            return Ok();
+        }
+        
+        [HttpPut("ready/check/{roomId}")]
+        public IActionResult Check([FromRoute] int roomId)
+        {
+            var roomRep = GetRoom(roomId);
+            if (roomRep == null)
+                return NoContent();
+            
+            return Ok(roomRep.ReadyCounter == 2);
+        }
+        
+        [HttpPut("refresh/{roomId}")]
         public IActionResult RefreshLastRound([FromRoute] int roomId)
         {
             var roomRep = GetRoom(roomId);
@@ -88,7 +112,8 @@ namespace RSPGame.Controllers
                 return NoContent();
             
             roomRep.RefreshCurrentRound();
-            return Ok();
+
+            return Forbid();
         }
 
         private RoomRepository GetRoom(int roomId)

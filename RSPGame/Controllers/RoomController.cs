@@ -1,12 +1,13 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RSPGame.Models;
 using RSPGame.Services.Rooms;
 
 namespace RSPGame.Controllers
 {
+    //[Authorize]
     [ApiController]
     [Route("api/rooms")]
     public class RoomController : ControllerBase
