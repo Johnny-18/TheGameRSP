@@ -7,6 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RSPGame", "RSPGame.csproj",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RSPGame.UI", "..\RSPGame.UI\RSPGame.UI.csproj", "{E0066E06-32C8-48B6-83EC-5C4F15EF3152}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "..\Tests\Tests.csproj", "{57D0CE3C-FE46-45E6-806B-020DFB38CB6B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5F049587-47D2-49AA-98F3-96AFEAAA5B30}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +28,10 @@ Global
 		{E0066E06-32C8-48B6-83EC-5C4F15EF3152}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0066E06-32C8-48B6-83EC-5C4F15EF3152}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E0066E06-32C8-48B6-83EC-5C4F15EF3152}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57D0CE3C-FE46-45E6-806B-020DFB38CB6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57D0CE3C-FE46-45E6-806B-020DFB38CB6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57D0CE3C-FE46-45E6-806B-020DFB38CB6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57D0CE3C-FE46-45E6-806B-020DFB38CB6B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

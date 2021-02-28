@@ -1,6 +1,6 @@
-namespace RSPGame.Models
+namespace RSPGame.UI.Game
 {
-    public enum GameActions
+    public enum GameActionsUi
     {
         None,
         Rock,

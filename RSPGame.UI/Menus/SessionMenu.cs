@@ -1,19 +1,32 @@
 ﻿using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+using RSPGame.Models;
+using RSPGame.UI.PlayRequests;
 
 namespace RSPGame.UI.Menus
 {
-    public static class SessionMenu
+    public class SessionMenu
     {
-        public static void Start()
+        private readonly Session _currentSession;
+
+        private readonly HttpClient _client;
+
+        public SessionMenu(HttpClient client, Session currentSession)
+        {
+            _client = client;
+            _currentSession = currentSession;
+        }
+
+        public async Task Start()
         {
             while (true)
             {
                 int num;
-                Console.WriteLine("1.\tPlay");
+                Console.WriteLine("\n1.\tPlay");
                 Console.WriteLine("2.\tStatistics");
                 Console.WriteLine("3.\tMy statistics");
                 Console.WriteLine("4.\tLogout");
-                Console.WriteLine("5.\tExit");
 
                 while (true)
                 {
@@ -26,19 +39,16 @@ namespace RSPGame.UI.Menus
                 switch (num)
                 {
                     case 1:
-                        PlayMenu.Start();
+                        await new PlayMenu(_client, _currentSession).Start();
                         break;
                     case 2:
-                        //
+                        await StatRequests.GetGeneralStat(_client);
                         break;
                     case 3:
-                        //
+                        StatRequests.GetIndividualStat(_client, _currentSession);
                         break;
                     case 4:
                         return;
-                    case 5:
-                        //
-                        break;
                 }
             }
         }

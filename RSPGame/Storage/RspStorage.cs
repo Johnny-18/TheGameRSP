@@ -1,15 +1,16 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using RSPGame.Models;
 using RSPGame.Models.OptionsModel;
-using RSPGame.Services;
+using RSPGame.Services.FileWorker;
 
 namespace RSPGame.Storage
 {
-    public class RspStorage
+    public class RspStorage : IRspStorage
     {
         public RspStorage(IFileWorker fileWorker, IOptions<FilesOptions> path)
         {
@@ -23,7 +24,7 @@ namespace RSPGame.Storage
 
         private ConcurrentDictionary<string, User> _users;
 
-        public async Task<User> GetUserByUserName(string userName)
+        public async Task<User> GetUserByUserNameAsync(string userName)
         {
             await CheckCollection();
 
@@ -32,16 +33,7 @@ namespace RSPGame.Storage
             return user;
         }
 
-        public async Task<User> GetUserById(Guid id)
-        {
-            await CheckCollection();
-
-            var user = _users.FirstOrDefault(x => x.Value.Id == id).Value;
-
-            return user;
-        }
-
-        public async Task<bool> TryAddUser(User user)
+        public async Task<bool> TryAddUserAsync(User user)
         {
             await CheckCollection();
             
@@ -60,6 +52,13 @@ namespace RSPGame.Storage
             return true;
         }
 
+        public async Task<IEnumerable<User>> GetUsersAsync()
+        {
+            await CheckCollection();
+
+            return _users.Select(x => x.Value).ToList();
+        }
+
         private async Task CheckCollection()
         {
             if (_users == null)
@@ -68,7 +67,13 @@ namespace RSPGame.Storage
             }
         }
 
-        private async Task SaveToFile()
+        public void TryUpdate(string userName, User newUser)
+        {
+            if (_users.ContainsKey(userName))
+                _users[userName] = newUser;
+        }
+
+        public async Task SaveToFile()
         {
             if (_users != null && _users.Count > 0)
             {

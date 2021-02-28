@@ -1,10 +1,27 @@
 ﻿using System;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using RSPGame.Models;
+using RSPGame.UI.Game;
+using RSPGame.UI.PlayRequests;
 
 namespace RSPGame.UI.Menus
 {
-    public static class PlayMenu
+    public class PlayMenu
     {
-        public static void Start()
+        private readonly Session _currentSession;
+
+        private readonly HttpClient _client;
+
+        public PlayMenu(HttpClient client, Session currentSession)
+        {
+            _client = client;
+            _currentSession = currentSession;
+        }
+
+        public async Task Start()
         {
             while (true)
             {
@@ -25,18 +42,73 @@ namespace RSPGame.UI.Menus
                 switch (num)
                 {
                     case 1:
-                        //
+                        QuickSearch();
                         break;
                     case 2:
-                        PrivateRoomMenu.Start();
+                        await new PrivateRoomMenu(_client, _currentSession).Start();
                         break;
                     case 3:
-                        //
+                        await new GameLogic().PlayWithBotAsync(_client);
                         break;
                     case 4:
                         return;
                 }
             }
         }
+
+        public async void QuickSearch()
+        {
+            string json;
+            try
+            {
+                json = await RoomRequests.PostAsync(_client, _currentSession.GamerInfo, "join");
+            }
+            catch (System.NullReferenceException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                return;
+            }
+            catch (HttpRequestException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                return;
+            }
+            catch (AggregateException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(json))
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                return;
+            }
+
+            Console.WriteLine("\nWaiting for opponent\n\n");
+
+            var id = JsonConvert.DeserializeObject<int>(json);
+
+            var result = (await GameRequests.GetGame(_client, id))?.ToArray();
+            if (result == null) return;
+
+            var opponent = result
+                .FirstOrDefault(x => !x.Equals(_currentSession.GamerInfo.UserName));
+
+            try
+            {
+                new GameLogic().StartGame(_client, _currentSession.GamerInfo.UserName, opponent, id);
+                await _client.DeleteAsync($"api/rooms/stop/{id}");
+            }
+            catch (HttpRequestException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+            }
+            catch (AggregateException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n"); 
+            }
+        }
+
     }
 }

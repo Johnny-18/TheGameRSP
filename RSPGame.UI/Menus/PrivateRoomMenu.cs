@@ -1,14 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using RSPGame.Models;
+using RSPGame.UI.Game;
+using RSPGame.UI.PlayRequests;
+using System;
 using System.Linq;
-using System.Text;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace RSPGame.UI.Menus
 {
-    public static class PrivateRoomMenu
+    public class PrivateRoomMenu
     {
-        public static void Start()
+        private readonly Session _currentSession;
+
+        private readonly HttpClient _client;
+
+        public PrivateRoomMenu(HttpClient client, Session currentSession)
+        {
+            _client = client;
+            _currentSession = currentSession;
+        }
+
+        public Task Start()
         {
             while (true)
             {
@@ -28,14 +41,105 @@ namespace RSPGame.UI.Menus
                 switch (num)
                 {
                     case 1:
-                        //
+                        CreateRoomAction();
                         break;
                     case 2:
-                        //
+                        JoinRoomAction();
                         break;
                     case 3:
-                        return;
+                        return Task.CompletedTask;
                 }
+            }
+        }
+
+        public async void CreateRoomAction()
+        {
+            string json = null;
+            try
+            {
+                json = await RoomRequests.PostAsync(_client, _currentSession.GamerInfo, "create");
+            }
+            catch (NullReferenceException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                return;
+            }
+            catch (HttpRequestException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                return;
+            }
+            catch (AggregateException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                return;
+            }
+
+            if (json == null)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                return;
+            }
+            var id = JsonConvert.DeserializeObject<int>(json);
+
+            Console.WriteLine($"\nRoom with id {id} has been created!");
+            Console.WriteLine("\nWaiting for opponent\n\n");
+
+            var result = (await GameRequests.GetGame(_client, id))?.ToArray();
+            if (result == null) return;
+
+            var opponent1 = result
+                .FirstOrDefault(x => !x.Equals(_currentSession.GamerInfo.UserName));
+            try
+            {
+                new GameLogic().StartGame(_client, _currentSession.GamerInfo.UserName, opponent1, id);
+                await _client.DeleteAsync($"api/rooms/stop/{id}");
+            }
+            catch (HttpRequestException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+            }
+            catch (AggregateException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+            }
+        }
+
+        public async void JoinRoomAction()
+        {
+            Console.Write("Enter the id of the desired room: ");
+
+            if (!int.TryParse(Console.ReadLine(), out var id))
+            {
+                Console.WriteLine("\nERROR:\tThe only numbers can be entered. Try again\n\n");
+                return;
+            }
+            else if (id < 1 || id > 1000)
+            {
+                Console.WriteLine("\nERROR:\tIncorrect number. Try again\n\n");
+                return;
+            }
+
+            if (RoomRequests.JoinAsync(_client, _currentSession.GamerInfo, id) == null)
+                return;
+
+            var result = (await GameRequests.GetGame(_client, id))?.ToArray();
+            if (result == null) return;
+
+            var opponent2 = result
+                .FirstOrDefault(x => !x.Equals(_currentSession.GamerInfo.UserName));
+
+            try
+            {
+                new GameLogic().StartGame(_client, _currentSession.GamerInfo.UserName, opponent2, id);
+            }
+            catch (HttpRequestException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+            }
+            catch (AggregateException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n"); ;
             }
         }
     }

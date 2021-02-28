@@ -1,13 +1,11 @@
-using System;
 using System.Text.Json.Serialization;
+using RSPGame.Models.GameModel;
 
 namespace RSPGame.Models
 {
     public class User
     {
-        [JsonPropertyName("id")]
-        public Guid Id { get; set; }
-        
+
         [JsonPropertyName("userName")]
         public string UserName { get; set; }
         
