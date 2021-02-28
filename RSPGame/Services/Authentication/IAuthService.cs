@@ -8,7 +8,5 @@ namespace RSPGame.Services.Authentication
         public Task<Session> RegisterAsync(RequestUser userForRegister);
         
         public Task<Session> LoginAsync(RequestUser user);
-
-        public void Logout(Session user);
     }
 }

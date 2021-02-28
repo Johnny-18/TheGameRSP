@@ -42,17 +42,5 @@ namespace RSPGame.Controllers
             
             return Ok(session);
         }
-        
-        [Authorize]
-        [HttpPost("logout")]
-        public IActionResult Logout([FromBody] Session session)
-        {
-            if (session == null)
-                return BadRequest();
-
-            _authService.Logout(session);
-
-            return Ok(session);
-        }
     }
 }

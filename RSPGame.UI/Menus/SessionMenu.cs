@@ -64,6 +64,8 @@ namespace RSPGame.UI.Menus
                     case 4:
                         _currentSession.GamerInfo.OnlineTime += _onlineTime.Elapsed;
                         _onlineTime.Restart();
+
+                        _currentSession.Token = "";
                         
                         StatRequests.SaveOnlineTime(_client, _currentSession);
                         return;

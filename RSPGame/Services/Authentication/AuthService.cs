@@ -75,14 +75,5 @@ namespace RSPGame.Services.Authentication
                 Token = token
             };
         }
-
-        public void Logout(Session user)
-        {
-            if (user == null)
-                throw new ArgumentNullException(nameof(user));
-            
-            //clear token
-            user.Token = null;
-        }
     }
 }
