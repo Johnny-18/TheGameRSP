@@ -246,13 +246,21 @@ namespace RSPGame.UI.Game
         public async Task PlayWithBotAsync(HttpClient client)
         {
             Console.Clear();
-
             GameActionsUi action = GetAction();
 
             var json = JsonConvert.SerializeObject(action);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            var response = await client.PostAsync($"/api/bot", content);
+            
+            HttpResponseMessage response;
+            try
+            {
+                response = await client.PostAsync($"/api/bot", content);
+            }
+            catch (HttpRequestException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                return;
+            }
 
             if (response.StatusCode == HttpStatusCode.OK)
                 json = response.Content.ReadAsStringAsync().Result;

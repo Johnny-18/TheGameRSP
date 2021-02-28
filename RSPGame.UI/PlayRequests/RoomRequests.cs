@@ -51,18 +51,18 @@ namespace RSPGame.UI.PlayRequests
             }
             catch (HttpRequestException)
             {
-                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n");
                 return null;
             }
             catch (AggregateException)
             {
-                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n");
                 return null;
             }
 
             if (message.StatusCode == HttpStatusCode.NotFound)
             {
-                Console.WriteLine("\nThe room was not found. Check the number again.\n\n");
+                Console.WriteLine("\nThe room was not found. Check the number again.\n");
                 return null;
             }
 

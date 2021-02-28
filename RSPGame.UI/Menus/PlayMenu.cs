@@ -56,32 +56,32 @@ namespace RSPGame.UI.Menus
             }
         }
 
-        public async void QuickSearch()
+        private async void QuickSearch()
         {
             string json;
             try
             {
                 json = await RoomRequests.PostAsync(_client, _currentSession.GamerInfo, "join");
             }
-            catch (System.NullReferenceException)
+            catch (NullReferenceException)
             {
-                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                PrintError();
                 return;
             }
             catch (HttpRequestException)
             {
-                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                PrintError();
                 return;
             }
             catch (AggregateException)
             {
-                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                PrintError();
                 return;
             }
 
             if (string.IsNullOrEmpty(json))
             {
-                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                PrintError();
                 return;
             }
 
@@ -102,13 +102,13 @@ namespace RSPGame.UI.Menus
             }
             catch (HttpRequestException)
             {
-                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
-            }
-            catch (AggregateException)
-            {
-                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n"); 
+                PrintError();
             }
         }
 
+        private void PrintError()
+        {
+            Console.WriteLine("\nERROR:\tCheck your internet connection\n");
+        }
     }
 }

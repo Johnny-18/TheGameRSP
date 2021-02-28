@@ -14,43 +14,51 @@ namespace RSPGame.UI.PlayRequests
         public static async Task GetGeneralStat(HttpClient client)
         {
             Console.WriteLine("General statistics");
-
-            var response = await client.GetAsync("api/stat/general");
-            if (response.StatusCode == HttpStatusCode.OK)
+            try
             {
-                var jsonFromApi = await response.Content.ReadAsStringAsync();
-                
-                var gamerInfos = JsonConvert.DeserializeObject<IEnumerable<GamerInfo>>(jsonFromApi);
-                foreach (var gamerInfo in gamerInfos)
+                var response = await client.GetAsync("api/stat/general");
+                if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    Console.WriteLine(gamerInfo.ToString());
-                }
+                    var jsonFromApi = await response.Content.ReadAsStringAsync();
                 
-                return;
-            }
+                    var gamerInfos = JsonConvert.DeserializeObject<IEnumerable<GamerInfo>>(jsonFromApi);
+                    foreach (var gamerInfo in gamerInfos)
+                    {
+                        Console.WriteLine(gamerInfo.ToString());
+                    }
+                
+                    return;
+                }
 
-            Console.WriteLine("Not enough information for general statistics!");
+                Console.WriteLine("Not enough information for general statistics!");
+            }
+            catch (HttpRequestException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n");
+            }
         }
 
         public static void GetIndividualStat(HttpClient client, Session session)
         {
-            Console.WriteLine("Individual statistics");
-
-            var response = client.GetAsync($"api/stat/individual/{session.UserName}").Result;
-
-            if (response == null)
-                return;
-
-            if (response.StatusCode == HttpStatusCode.OK)
+            try
             {
-                var json = response.Content.ReadAsStringAsync().Result;
+                Console.WriteLine("Individual statistics");
 
-                var gamerInfos = JsonConvert.DeserializeObject<GamerInfo>(json);
+                var response = client.GetAsync($"api/stat/individual/{session.UserName}").Result;
 
-                Console.WriteLine(gamerInfos.ToString());
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var json = response.Content.ReadAsStringAsync().Result;
+
+                    var gamerInfos = JsonConvert.DeserializeObject<GamerInfo>(json);
+
+                    Console.WriteLine(gamerInfos.ToString());
+                }
             }
-
-            Console.WriteLine("Something going wrong!");
+            catch (AggregateException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n");
+            }
         }
     }
 }

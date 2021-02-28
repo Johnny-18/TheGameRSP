@@ -48,20 +48,20 @@ namespace RSPGame.UI.PlayRequests
         {
             if (client == null)
             {
-                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n");
                 return null;
             }
 
             var response = RequestWithTimer(client, $"api/rooms/{roomId}", 30);
             if (response == null)
             {
-                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n");
                 return null;
             }
 
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
-                Console.WriteLine("\nThe game could not be found. Please try again.\n\n");
+                Console.WriteLine("\nThe game could not be found. Please try again.\n");
                 await client.DeleteAsync($"api/rooms/stop/{roomId}");
                 return null;
             }

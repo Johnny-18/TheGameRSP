@@ -52,38 +52,38 @@ namespace RSPGame.UI.Menus
             }
         }
 
-        public async void CreateRoomAction()
+        private async void CreateRoomAction()
         {
             string json = null;
             try
             {
                 json = await RoomRequests.PostAsync(_client, _currentSession.GamerInfo, "create");
             }
-            catch (NullReferenceException)
-            {
-                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
-                return;
-            }
             catch (HttpRequestException)
             {
-                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                PrintError();
                 return;
             }
             catch (AggregateException)
             {
-                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                PrintError();
+                return;
+            }
+            catch (NullReferenceException)
+            {
+                PrintError();
                 return;
             }
 
             if (json == null)
             {
-                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                PrintError();
                 return;
             }
             var id = JsonConvert.DeserializeObject<int>(json);
 
             Console.WriteLine($"\nRoom with id {id} has been created!");
-            Console.WriteLine("\nWaiting for opponent\n\n");
+            Console.WriteLine("\nWaiting for opponent\n");
 
             var result = (await GameRequests.GetGame(_client, id))?.ToArray();
             if (result == null) return;
@@ -97,26 +97,32 @@ namespace RSPGame.UI.Menus
             }
             catch (HttpRequestException)
             {
-                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                PrintError();
             }
             catch (AggregateException)
             {
-                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                PrintError();
             }
         }
 
-        public async void JoinRoomAction()
+        private void PrintError()
+        {
+            Console.WriteLine("\nERROR:\tCheck your internet connection\n");
+        }
+
+        private async void JoinRoomAction()
         {
             Console.Write("Enter the id of the desired room: ");
 
             if (!int.TryParse(Console.ReadLine(), out var id))
             {
-                Console.WriteLine("\nERROR:\tThe only numbers can be entered. Try again\n\n");
+                Console.WriteLine("\nERROR:\tThe only numbers can be entered. Try again\n");
                 return;
             }
-            else if (id < 1 || id > 1000)
+
+            if (id < 1 || id > 1000)
             {
-                Console.WriteLine("\nERROR:\tIncorrect number. Try again\n\n");
+                Console.WriteLine("\nERROR:\tIncorrect number. Try again\n");
                 return;
             }
 
@@ -135,11 +141,15 @@ namespace RSPGame.UI.Menus
             }
             catch (HttpRequestException)
             {
-                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                PrintError();
             }
             catch (AggregateException)
             {
-                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n"); ;
+                PrintError();
+            }
+            catch (NullReferenceException)
+            {
+                PrintError();
             }
         }
     }
