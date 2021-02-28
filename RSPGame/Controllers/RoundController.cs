@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RSPGame.Models.Game;
 using RSPGame.Services.Rooms;
 
 namespace RSPGame.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     [Route("api/rounds")]
     public class RoundController : ControllerBase
@@ -75,9 +77,11 @@ namespace RSPGame.Controllers
             var roomRep = GetRoom(roomId);
             if (roomRep == null)
                 return NoContent();
+
+            if (roomRep.SeriesRepository._rounds.Any(x => x.Id == round.Id))
+                return Forbid();
             
             roomRep.SeriesRepository.AddRound(round);
-            
             return Ok();
         }
         

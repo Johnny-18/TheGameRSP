@@ -29,16 +29,11 @@ namespace RSPGame.UI
                 requestMessage.Content = new StringContent(requestOptions.Body, Encoding.UTF8, "application/json");
             }
 
-            if (!string.IsNullOrEmpty(requestOptions.Token))
+            if(!string.IsNullOrEmpty(requestOptions.Token))
             {
-                requestMessage.Headers.Authorization = AuthenticationHeaderValue.Parse(requestOptions.Token);
+                client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", requestOptions.Token);
             }
-            
-            // if(!string.IsNullOrEmpty(requestOptions.Token))
-            // {
-            //     client.DefaultRequestHeaders.Authorization =
-            //         new AuthenticationHeaderValue("Bearer", requestOptions.Token);
-            // }
 
             try
             {

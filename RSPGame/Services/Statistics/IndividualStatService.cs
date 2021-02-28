@@ -9,11 +9,11 @@ namespace RSPGame.Services.Statistics
         public async Task ChangeGamerInfoAfterRound(GamerInfo gamerInfo, GameActions action, RoundResult status)
         {
             if (gamerInfo == null)
-                throw new ArgumentNullException(nameof(gamerInfo));
+                return;
             if (action == GameActions.None)
-                throw new ArgumentException("Invalid action!");
+                return;
             if (status == RoundResult.None)
-                throw new ArgumentException("Invalid game status!");
+                return;
 
             await Task.Run(() =>
             {
@@ -57,9 +57,9 @@ namespace RSPGame.Services.Statistics
         public void ChangeOnlineTime(GamerInfo gamerInfo, TimeSpan onlineTime)
         {
             if (gamerInfo == null)
-                throw new ArgumentNullException(nameof(gamerInfo));
+                return;
             if (onlineTime == TimeSpan.Zero)
-                throw new ArgumentException("Online time is zero!");
+                return;
 
             gamerInfo.OnlineTime += onlineTime;
         }

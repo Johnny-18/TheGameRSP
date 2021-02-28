@@ -7,7 +7,7 @@ namespace RSPGame.UI.PlayRequests
 {
     public static class RoundRequests
     {
-        public static void AddRoundToRoom(HttpClient client, Round round, int roomId)
+        public static void AddRoundToRoom(HttpClient client, Round round, string token, int roomId)
         {
             if (client == null || round == null) 
                 return;
@@ -16,13 +16,14 @@ namespace RSPGame.UI.PlayRequests
             {
                 Address = client.BaseAddress + $"api/rounds/{roomId}",
                 Method = RequestMethod.Post,
-                Body = JsonConvert.SerializeObject(round)
+                Body = JsonConvert.SerializeObject(round),
+                Token = token
             };
 
             RequestHandler.HandleRequest(client, requestOptions);
         }
 
-        public static bool Put(HttpClient client, int roomId, string url)
+        public static bool Put(HttpClient client, string token, int roomId, string url)
         {
             if (client == null) 
                 return false;
@@ -30,28 +31,18 @@ namespace RSPGame.UI.PlayRequests
             var requestOptions = new RequestOptions
             {
                 Address = url,
-                Method = RequestMethod.Put
+                Method = RequestMethod.Put,
+                Token = token
             };
             
             var response = RequestHandler.HandleRequest(client, requestOptions);
+            if (response == null)
+                return false;
+            
             if(response.StatusCode == 200)
                 return true;
 
             return false;
-        }
-
-        public static void DeleteLastRound(HttpClient client, int roomId)
-        {
-            if (client == null) 
-                return;
-            
-            var requestOptions = new RequestOptions
-            {
-                Address = client.BaseAddress + $"api/rounds/{roomId}",
-                Method = RequestMethod.Delete
-            };
-
-            RequestHandler.HandleRequest(client, requestOptions);
         }
     }
 }

@@ -69,34 +69,6 @@ namespace Tests
             Assert.Equal(1, gamerInfo.CountRocks);
         }
 
-        [Theory]
-        [InlineData(GameActions.None, RoundResult.None)]
-        [InlineData(GameActions.Paper, RoundResult.Win)]
-        [InlineData(GameActions.Scissors, RoundResult.Lose)]
-        [InlineData(GameActions.Rock, RoundResult.Draw)]
-        public async System.Threading.Tasks.Task ChangeGamerInfoAfterRound_ThrowArgumentNullException_WhenGamerInfo_IsNull(GameActions action, RoundResult result)
-        {
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _service.ChangeGamerInfoAfterRound(null, action, result));
-        }
-        
-        [Theory]
-        [InlineData(RoundResult.Win)]
-        [InlineData(RoundResult.Lose)]
-        [InlineData(RoundResult.Draw)]
-        public async System.Threading.Tasks.Task ChangeGamerInfoAfterRound_ThrowArgumentException_WhenGameActions_IsNone(RoundResult result)
-        {
-            await Assert.ThrowsAsync<ArgumentException>(() => _service.ChangeGamerInfoAfterRound(new GamerInfo(), GameActions.None, result));
-        }
-        
-        [Theory]
-        [InlineData(GameActions.Paper)]
-        [InlineData(GameActions.Scissors)]
-        [InlineData(GameActions.Rock)]
-        public async System.Threading.Tasks.Task ChangeGamerInfoAfterRound_ThrowArgumentException_WhenRoundResult_IsNone(GameActions action)
-        {
-            await Assert.ThrowsAsync<ArgumentException>(() => _service.ChangeGamerInfoAfterRound(new GamerInfo(), action, RoundResult.None));
-        }
-
         [Fact]
         public void ChangeOnlineTime_MustBeAddedTime()
         {
@@ -106,18 +78,6 @@ namespace Tests
             _service.ChangeOnlineTime(gamerInfo, onlineTime);
             
             Assert.Equal(onlineTime, gamerInfo.OnlineTime);
-        }
-        
-        [Fact]
-        public void ChangeOnlineTime_ThrowArgumentNullException_If_GamerInfo_IsNull()
-        {
-            Assert.Throws<ArgumentNullException>(() => _service.ChangeOnlineTime(null, TimeSpan.MaxValue));
-        }
-        
-        [Fact]
-        public void ChangeOnlineTime_ThrowArgumentException_If_TimeSpan_IsZero()
-        {
-            Assert.Throws<ArgumentException>(() => _service.ChangeOnlineTime(new GamerInfo(), TimeSpan.Zero));
         }
 
         public static IEnumerable<object[]> GamerInfoGameActionsRoundResultForWin()

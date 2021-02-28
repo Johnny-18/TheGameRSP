@@ -80,7 +80,7 @@ namespace RSPGame.UI.Menus
                         }
                         break;
                     case 3:
-                        StatRequests.GetGeneralStat(_client);
+                        StatRequests.GetGeneralStat(_client, _currentSession);
                         
                         if(_currentSession?.GamerInfo != null)
                         {

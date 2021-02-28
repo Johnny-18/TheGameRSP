@@ -52,6 +52,9 @@ namespace RSPGame.UI.Menus
                 switch (num)
                 {
                     case 1:
+                        if (_currentSession?.GamerInfo == null)
+                            break;
+                        
                         var json = JsonConvert.SerializeObject(_currentSession.GamerInfo);
                         var requestOptions = new RequestOptions
                         {
@@ -62,6 +65,9 @@ namespace RSPGame.UI.Menus
                         };
 
                         var response = RequestHandler.HandleRequest(_client, requestOptions);
+                        if(response == null)
+                            break;
+                        
                         if (response.StatusCode == (int) HttpStatusCode.Unauthorized)
                         {
                             Console.WriteLine("You need to login! Or register your account!");
@@ -76,31 +82,40 @@ namespace RSPGame.UI.Menus
                         Console.WriteLine($"You will play in room {roomId}!");
                         Console.WriteLine($"Waiting for opponent!");
 
-                        var gamers = GameRequests.GetGamers(_client, roomId, 30);
+                        var gamers = GameRequests.GetGamers(_client, _currentSession.Token, roomId, 30);
                         if (gamers == null || gamers.Length != 2)
                         {
                             Console.WriteLine("Game canceled because opponent did not found!");
                             break;
                         }
                         
-                        new GameLogic().StartGame(_client, gamers, _currentSession.UserName, roomId);
+                        new GameLogic().StartGame(_client, gamers, _currentSession, roomId);
                         
                         _currentSession.GamerInfo.OnlineTime += _onlineTime.Elapsed;
                         _onlineTime.Restart();
                         break;
                     case 2:
+                        if (_currentSession?.GamerInfo == null)
+                            break;
+                        
                         new PrivateRoomMenu(_client, _currentSession).Start();
                         
                         _currentSession.GamerInfo.OnlineTime += _onlineTime.Elapsed;
                         _onlineTime.Restart();
                         break;
                     case 3:
-                        new GameLogic().PlayWithBot(_client);
+                        if (_currentSession?.GamerInfo == null)
+                            break;
+                        
+                        new GameLogic().PlayWithBot(_client, _currentSession.Token);
                         
                         _currentSession.GamerInfo.OnlineTime += _onlineTime.Elapsed;
                         _onlineTime.Restart();
                         break;
                     case 4:
+                        if (_currentSession?.GamerInfo == null)
+                            break;
+                        
                         _currentSession.GamerInfo.OnlineTime += _onlineTime.Elapsed;
                         _onlineTime.Restart();
                         

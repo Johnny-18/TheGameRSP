@@ -14,7 +14,7 @@ namespace RSPGame.UI.Game
 {
     public class GameLogic
     {
-        public void PlayWithBot(HttpClient client)
+        public void PlayWithBot(HttpClient client, string token)
         {
             var action = GetAction();
 
@@ -23,10 +23,14 @@ namespace RSPGame.UI.Game
             {
                 Address = client.BaseAddress + "api/game/bot",
                 Method = RequestMethod.Post,
-                Body = json
+                Body = json,
+                Token = token
             };
             
             var response = RequestHandler.HandleRequest(client, requestOptions);
+            if(response == null)
+                return;
+            
             if (response.StatusCode == (int) HttpStatusCode.Unauthorized)
             {
                 Console.WriteLine("You need to login! Or register your account!");
@@ -42,7 +46,7 @@ namespace RSPGame.UI.Game
             PrintResult(roundResult);
         }
 
-        public void StartGame(HttpClient client, GamerInfo[] gamers, string currentUser, int roomId)
+        public void StartGame(HttpClient client, GamerInfo[] gamers, Session session, int roomId)
         {
             while (true)
             {
@@ -53,22 +57,22 @@ namespace RSPGame.UI.Game
                 {
                     if (seriesStopWatch.Elapsed.Minutes > 5)
                     {
-                        RoomRequests.SaveStatRounds(client, roomId);
-                        RoomRequests.DeleteRoom(client, roomId);
+                        RoomRequests.SaveStatRounds(client, session.Token, roomId);
+                        RoomRequests.DeleteRoom(client, session.Token, roomId);
                         break;
                     }
 
-                    var round = StartRound(client, gamers, currentUser, roomId);
+                    var round = StartRound(client, gamers, session, roomId);
                     if (round != null)
                     {
-                        RoundRequests.AddRoundToRoom(client, round, roomId);
+                        RoundRequests.AddRoundToRoom(client, round, session.Token, roomId);
                         seriesStopWatch.Restart();
                     }
 
                     break;
                 }
 
-                if (WantToContinue(client, roomId) == false)
+                if (WantToContinue(client, session.Token, roomId) == false)
                 {
                     return;
                 }
@@ -76,13 +80,13 @@ namespace RSPGame.UI.Game
                 do
                 {
                     
-                } while (RoundRequests.Put(client, roomId, client.BaseAddress + $"api/rounds/ready/check/{roomId}") == false);
+                } while (RoundRequests.Put(client, session.Token, roomId, client.BaseAddress + $"api/rounds/ready/check/{roomId}") == false);
                 
-                RoundRequests.Put(client, roomId, client.BaseAddress + $"api/rounds/refresh/{roomId}");
+                RoundRequests.Put(client, session.Token, roomId, client.BaseAddress + $"api/rounds/refresh/{roomId}");
             }
         }
 
-        private bool WantToContinue(HttpClient client, int roomId)
+        private bool WantToContinue(HttpClient client, string token, int roomId)
         {
             Console.WriteLine("If you want to continue play enter 0,");
             Console.WriteLine("another number for leave from the room:");
@@ -90,33 +94,33 @@ namespace RSPGame.UI.Game
 
             if (input == "0")
             {
-                RoundRequests.Put(client, roomId, client.BaseAddress + $"api/rounds/ready/{roomId}");
+                RoundRequests.Put(client, token, roomId, client.BaseAddress + $"api/rounds/ready/{roomId}");
                 return true;
             }
 
-            RoomRequests.SaveStatRounds(client, roomId);
-            RoomRequests.DeleteRoom(client, roomId);
+            RoomRequests.SaveStatRounds(client, token, roomId);
+            RoomRequests.DeleteRoom(client, token, roomId);
             return false;
         }
 
-        private Round StartRound(HttpClient client, GamerInfo[] gamers, string currentUser, int roomId)
+        private Round StartRound(HttpClient client, GamerInfo[] gamers, Session session, int roomId)
         {
             while (true)
             {
-                var roundTaskResult = GetRound(client, gamers, currentUser, roomId);
+                var roundTaskResult = GetRound(client, gamers, session, roomId);
                 if (roundTaskResult == null || !roundTaskResult.IsValid())
                 {
                     Console.WriteLine("Round was canceled!");
-                    RoundRequests.Put(client, roomId, client.BaseAddress + $"api/rounds/refresh/{roomId}");
+                    RoundRequests.Put(client, session.Token, roomId, client.BaseAddress + $"api/rounds/refresh/{roomId}");
                     return null;
                 }
                 
-                PrintResult(GetCorrectResultByUserName(roundTaskResult, currentUser));
+                PrintResult(GetCorrectResultByUserName(roundTaskResult, session.UserName));
                 return roundTaskResult;
             }
         }
 
-        private Round GetRound(HttpClient client, GamerInfo[] gamers, string currentUser, int roomId)
+        private Round GetRound(HttpClient client, GamerInfo[] gamers, Session session, int roomId)
         {
             Round round;
 
@@ -128,13 +132,13 @@ namespace RSPGame.UI.Game
             
             var cancelTokenSource = new CancellationTokenSource();
             
-            var task = Task.Run(() => UserActionInRound(client, gamers, currentUser, roomId), cancelTokenSource.Token);
+            var task = Task.Run(() => UserActionInRound(client, gamers, session, roomId), cancelTokenSource.Token);
 
             while (true)
             {
                 if (requestPeriodSw.ElapsedMilliseconds > 1000)
                 {
-                    round = RoomRequests.GetRound(client, client.BaseAddress + $"api/rounds/complete/{roomId}");
+                    round = RoomRequests.GetRound(client, session.Token, client.BaseAddress + $"api/rounds/complete/{roomId}");
                     if (round != null)
                     {
                         if (roundConfigurationSw.Elapsed.Seconds < 20)
@@ -178,11 +182,11 @@ namespace RSPGame.UI.Game
             return round;
         }
 
-        private void UserActionInRound(HttpClient client, GamerInfo[] gamers, string currentUser, int roomId)
+        private void UserActionInRound(HttpClient client, GamerInfo[] gamers, Session session, int roomId)
         {
             GamerInfo current;
             GamerInfo opponent;
-            if (currentUser == gamers[0].UserName)
+            if (session.UserName == gamers[0].UserName)
             {
                 current = gamers[0];
                 opponent = gamers[1];
@@ -200,14 +204,14 @@ namespace RSPGame.UI.Game
             var action = GetAction();
             if (action == GameActionsUi.None)
             {
-                if(RoomRequests.DeleteGamer(client, current, roomId))
+                if(RoomRequests.DeleteGamer(client, session, roomId))
                 {
                     Console.WriteLine("You leave from the game!");
                     return;
                 }
             }
 
-            GameRequests.GameAction(client, current, action, roomId);
+            GameRequests.GameAction(client, session, action, roomId);
         }
 
         private GameActionsUi GetAction()
@@ -244,16 +248,16 @@ namespace RSPGame.UI.Game
             switch (result)
             {
                 case RoundResult.Draw:
-                    Console.WriteLine("Draw!");
+                    Console.WriteLine("\nDraw!\n");
                     break;
                 case RoundResult.Win:
-                    Console.WriteLine("You Win!");
+                    Console.WriteLine("\nYou Win!\n");
                     break;
                 case RoundResult.Lose:
-                    Console.WriteLine("You Lose!");
+                    Console.WriteLine("\nYou Lose!\n");
                     break;
                 case RoundResult.None:
-                    Console.WriteLine("Round was canceled!");
+                    Console.WriteLine("\nRound was canceled!\n");
                     break;
             }
         }
@@ -269,7 +273,7 @@ namespace RSPGame.UI.Game
                     return number;
                 }
 
-                Console.WriteLine("Incorrect number. Try again");
+                Console.WriteLine("\nIncorrect number. Try again\n");
             }
         }
     }

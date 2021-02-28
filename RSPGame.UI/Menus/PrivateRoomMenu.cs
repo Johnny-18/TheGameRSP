@@ -50,15 +50,22 @@ namespace RSPGame.UI.Menus
                 switch (num)
                 {
                     case 1:
+                        if (_currentSession?.GamerInfo == null)
+                            break;
+                        
                         var json = JsonConvert.SerializeObject(_currentSession.GamerInfo);
                         var requestOptions = new RequestOptions
                         {
                             Address = _client.BaseAddress + "api/rooms/create",
                             Body = json,
-                            Method = RequestMethod.Post
+                            Method = RequestMethod.Post,
+                            Token = _currentSession.Token
                         };
 
                         var response = RequestHandler.HandleRequest(_client, requestOptions);
+                        if (response == null)
+                            return;
+                        
                         if (response.StatusCode == (int) HttpStatusCode.Unauthorized)
                         {
                             Console.WriteLine("You need to login! Or register your account!");
@@ -78,15 +85,15 @@ namespace RSPGame.UI.Menus
 
                         while (true)
                         {
-                            var gamerInfos = GameRequests.GetGamers(_client, roomId, 30);
+                            var gamerInfos = GameRequests.GetGamers(_client, _currentSession.Token, roomId, 30);
                             if (gamerInfos != null && gamerInfos.Length == 2)
                             {
-                                new GameLogic().StartGame(_client, gamerInfos, _currentSession.UserName, roomId);
+                                new GameLogic().StartGame(_client, gamerInfos, _currentSession, roomId);
                                 break;
                             }
 
-                            RoomRequests.DeleteRoom(_client, roomId);
-                            Console.WriteLine("Opponent do not found!");
+                            RoomRequests.DeleteRoom(_client, _currentSession.Token, roomId);
+                            Console.WriteLine("\nOpponent do not found!\n");
                             break;
                         }
                         
@@ -94,6 +101,9 @@ namespace RSPGame.UI.Menus
                         _onlineTime.Restart();
                         break;
                     case 2:
+                        if(_currentSession?.GamerInfo == null)
+                            break;
+                        
                         Console.Write("Enter the id of the desired room: ");
 
                         if (!int.TryParse(Console.ReadLine(), out var id2))
@@ -107,17 +117,20 @@ namespace RSPGame.UI.Menus
                             break;
                         }
                         
-                        if (RoomRequests.JoinRoom(_client, _currentSession.GamerInfo, id2) == false) 
+                        if (RoomRequests.JoinRoom(_client, _currentSession, id2) == false) 
                             break;
 
-                        var gamers = GameRequests.GetGamers(_client, id2, 3);
+                        var gamers = GameRequests.GetGamers(_client, _currentSession.Token, id2, 3);
                         
-                        new GameLogic().StartGame(_client, gamers, _currentSession.UserName, id2);
+                        new GameLogic().StartGame(_client, gamers, _currentSession, id2);
                         
                         _currentSession.GamerInfo.OnlineTime += _onlineTime.Elapsed;
                         _onlineTime.Restart();
                         break;
                     case 3:
+                        if (_currentSession?.GamerInfo == null)
+                            break;
+                            
                         _currentSession.GamerInfo.OnlineTime += _onlineTime.Elapsed;
                         _onlineTime.Restart();
                         

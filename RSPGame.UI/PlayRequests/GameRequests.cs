@@ -11,7 +11,7 @@ namespace RSPGame.UI.PlayRequests
 {
     public static class GameRequests
     {
-        public static GamerInfo[] GetGamers(HttpClient client, int roomId, int count)
+        public static GamerInfo[] GetGamers(HttpClient client, string token, int roomId, int count)
         {
             if (client == null)
                 return null;
@@ -23,7 +23,8 @@ namespace RSPGame.UI.PlayRequests
             var requestOptions = new RequestOptions
             {
                 Address = client.BaseAddress + $"api/rooms/gamers/{roomId}",
-                Method = RequestMethod.Get
+                Method = RequestMethod.Get,
+                Token = token
             };
 
             while (true)
@@ -34,6 +35,9 @@ namespace RSPGame.UI.PlayRequests
                 try
                 {
                     var response = RequestHandler.HandleRequest(client, requestOptions);
+                    if (response == null)
+                        return null;
+                    
                     if (response.StatusCode == (int) HttpStatusCode.OK)
                     {
                         var json = response.Content;
@@ -57,14 +61,14 @@ namespace RSPGame.UI.PlayRequests
             }
         }
         
-        public static void GameAction(HttpClient client, GamerInfo gamer, GameActionsUi action, int roomId)
+        public static void GameAction(HttpClient client, Session session, GameActionsUi action, int roomId)
         {
-            if (client == null || gamer == null)
+            if (client == null || session == null || session.GamerInfo == null)
                 return;
 
             var gameRequest = new GameRequest
             {
-                GamerInfo = gamer,
+                GamerInfo = session.GamerInfo,
                 Action = (GameActions)action
             };
 
@@ -72,10 +76,14 @@ namespace RSPGame.UI.PlayRequests
             {
                 Address = client.BaseAddress + $"api/rounds/action/{roomId}",
                 Method = RequestMethod.Post,
-                Body = JsonConvert.SerializeObject(gameRequest)
+                Body = JsonConvert.SerializeObject(gameRequest),
+                Token = session.Token
             };
 
             var response = RequestHandler.HandleRequest(client, requestOptions);
+            if (response == null)
+                return;
+            
             if (response.StatusCode == (int)HttpStatusCode.NotFound || response.StatusCode == (int)HttpStatusCode.BadRequest)
             {
                 Console.WriteLine("\nSomething going wrong!.\n\n");

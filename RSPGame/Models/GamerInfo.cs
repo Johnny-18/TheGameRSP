@@ -57,17 +57,17 @@ namespace RSPGame.Models
             stringBuilder.Append($"Online time: ");
             if (OnlineTime.Days != 0)
             {
-                stringBuilder.Append(OnlineTime.Days.ToString());
+                stringBuilder.Append(OnlineTime.Days);
             }
 
             if (OnlineTime.Hours != 0)
             {
-                stringBuilder.Append(OnlineTime.Hours.ToString());
+                stringBuilder.Append(OnlineTime.Hours);
             }
 
             if (OnlineTime.Minutes != 0)
             {
-                stringBuilder.Append(OnlineTime.Minutes.ToString());
+                stringBuilder.Append(OnlineTime.Minutes);
             }
             
             stringBuilder.AppendLine();

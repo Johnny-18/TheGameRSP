@@ -50,13 +50,13 @@ namespace RSPGame.UI.Menus
                         _onlineTime.Restart();
                         break;
                     case 2:
-                        StatRequests.GetGeneralStat(_client);
+                        StatRequests.GetGeneralStat(_client, _currentSession);
                         
                         _currentSession.GamerInfo.OnlineTime += _onlineTime.Elapsed;
                         _onlineTime.Restart();
                         break;
                     case 3:
-                        Console.WriteLine(_currentSession.GamerInfo.ToString());
+                        StatRequests.GetIndividualStat(_client, _currentSession);
                         
                         _currentSession.GamerInfo.OnlineTime += _onlineTime.Elapsed;
                         _onlineTime.Restart();

@@ -5,7 +5,7 @@ using RSPGame.Services;
 
 namespace RSPGame.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     [Route("api/game")]
     public class GameController : ControllerBase

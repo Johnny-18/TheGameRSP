@@ -7,7 +7,7 @@ using RSPGame.Services.Rooms;
 
 namespace RSPGame.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     [Route("api/rooms")]
     public class RoomController : ControllerBase

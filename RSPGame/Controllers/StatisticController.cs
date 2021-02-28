@@ -26,6 +26,14 @@ namespace RSPGame.Controllers
             _storage = storage;
         }
 
+        [HttpGet("individual/{userName}")]
+        public async Task<IActionResult> GetIndividualStat([FromRoute] string userName)
+        {
+            var user = await _storage.GetUserByUserNameAsync(userName);
+
+            return Ok(user.GamerInfo);
+        }
+
         [HttpGet("general")]
         public async Task<IActionResult> GetGeneralStat()
         {
