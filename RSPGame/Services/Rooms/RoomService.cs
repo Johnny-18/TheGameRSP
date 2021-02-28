@@ -68,7 +68,7 @@ namespace RSPGame.Services.Rooms
         public int JoinRoom(GamerInfo gamer, int id = 0)
         {
             if (gamer == null)
-                throw new ArgumentNullException(nameof(gamer));
+                return -1;
 
             var acquiredLock = false;
             RoomRepository roomRep;
