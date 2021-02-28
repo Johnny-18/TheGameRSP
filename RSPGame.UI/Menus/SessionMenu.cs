@@ -8,7 +8,7 @@ namespace RSPGame.UI.Menus
 {
     public class SessionMenu
     {
-        private Session _currentSession;
+        private readonly Session _currentSession;
 
         private readonly HttpClient _client;
 
@@ -45,7 +45,7 @@ namespace RSPGame.UI.Menus
                         await StatRequests.GetGeneralStat(_client);
                         break;
                     case 3:
-                        Console.WriteLine(_currentSession.GamerInfo.ToString());
+                        StatRequests.GetIndividualStat(_client, _currentSession);
                         break;
                     case 4:
                         return;

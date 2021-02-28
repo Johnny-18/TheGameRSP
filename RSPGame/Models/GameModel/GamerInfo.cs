@@ -56,19 +56,23 @@ namespace RSPGame.Models.GameModel
             stringBuilder.Append($"Online time: ");
             if (OnlineTime.Days != 0)
             {
-                stringBuilder.Append(OnlineTime.Days.ToString());
+                stringBuilder.Append(OnlineTime.Days.ToString() + "d");
             }
 
             if (OnlineTime.Hours != 0)
             {
-                stringBuilder.Append(OnlineTime.Hours.ToString());
+                stringBuilder.Append(OnlineTime.Hours.ToString() + "h");
             }
 
             if (OnlineTime.Minutes != 0)
             {
-                stringBuilder.Append(OnlineTime.Minutes.ToString());
+                stringBuilder.Append(OnlineTime.Minutes.ToString() + "m");
             }
-            
+            if (OnlineTime.Seconds != 0)
+            {
+                stringBuilder.Append(OnlineTime.Seconds.ToString() + "s");
+            }
+
             stringBuilder.AppendLine();
             
             return stringBuilder.ToString();

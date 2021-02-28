@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RSPGame.Models;
@@ -59,12 +58,34 @@ namespace RSPGame.UI.Menus
 
         public async void QuickSearch()
         {
-            var json = await RoomRequests.PostAsync(_client, _currentSession.GamerInfo, "join");
+            string json;
+            try
+            {
+                json = await RoomRequests.PostAsync(_client, _currentSession.GamerInfo, "join");
+            }
+            catch (System.NullReferenceException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                return;
+            }
+            catch (HttpRequestException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                return;
+            }
+            catch (AggregateException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+                return;
+            }
+
             if (string.IsNullOrEmpty(json))
             {
                 Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
                 return;
             }
+
+            Console.WriteLine("\nWaiting for opponent\n\n");
 
             var id = JsonConvert.DeserializeObject<int>(json);
 
@@ -74,9 +95,20 @@ namespace RSPGame.UI.Menus
             var opponent = result
                 .FirstOrDefault(x => !x.Equals(_currentSession.GamerInfo.UserName));
 
-            new GameLogic().StartGame(_client, _currentSession.GamerInfo.UserName, opponent, id);
-
-            await _client.DeleteAsync($"api/rooms/stop/{id}");
+            try
+            {
+                new GameLogic().StartGame(_client, _currentSession.GamerInfo.UserName, opponent, id);
+                await _client.DeleteAsync($"api/rooms/stop/{id}");
+            }
+            catch (HttpRequestException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n");
+            }
+            catch (AggregateException)
+            {
+                Console.WriteLine("\nERROR:\tCheck your internet connection\n\n"); 
+            }
         }
+
     }
 }

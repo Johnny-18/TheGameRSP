@@ -20,7 +20,7 @@ namespace RSPGame.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> CreatePrivateRoom([FromBody] GamerInfo gamer)
+        public async Task<IActionResult> CreateRoom([FromBody] GamerInfo gamer)
         {
             if (gamer == null)
                 return BadRequest();
@@ -31,7 +31,7 @@ namespace RSPGame.Controllers
         }
 
         [HttpPost("join")]
-        public async Task<IActionResult> JoinPrivateRoom([FromBody] GamerInfo gamer, [FromQuery] int id)
+        public async Task<IActionResult> JoinRoom([FromBody] GamerInfo gamer, [FromQuery] int id)
         {
             if (gamer == null)
                 return BadRequest();
@@ -50,7 +50,7 @@ namespace RSPGame.Controllers
         }
 
         [HttpGet("{roomId}")]
-        public IActionResult GetGame([FromRoute] int roomId)
+        public IActionResult GetRoom([FromRoute] int roomId)
         {
             if (roomId == 0 || roomId > 1000)
                 return BadRequest(roomId);
@@ -64,7 +64,7 @@ namespace RSPGame.Controllers
         }
 
         [HttpDelete("stop/{roomId}")]
-        public IActionResult PostStopRoom([FromRoute] int roomId)
+        public IActionResult DeleteRoom([FromRoute] int roomId)
         {
             _roomService.DeleteRoom(roomId);
             return Ok();

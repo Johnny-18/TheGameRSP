@@ -31,9 +31,12 @@ namespace RSPGame.UI.PlayRequests
                 {
                     return null;
                 }
+                catch (NullReferenceException)
+                {
+                    return null;
+                }
 
-                if (response.StatusCode == HttpStatusCode.OK) 
-                    break;
+                if (response.StatusCode == HttpStatusCode.OK) break;
 
                 counter++;
                 stopwatch.Restart();

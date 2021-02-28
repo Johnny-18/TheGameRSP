@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using RSPGame.Storage;
 using System.Linq;
 using RSPGame.Models.GameModel;
@@ -20,7 +22,7 @@ namespace RSPGame.Controllers
         }
 
         [HttpPost("{roomId}/{userName}")]
-        public IActionResult PostGameRound([FromBody] GameActions action, [FromRoute] string userName, [FromRoute] int roomId)
+        public IActionResult PostRound([FromBody] GameActions action, [FromRoute] string userName, [FromRoute] int roomId)
         {
             if (roomId < 0)
                 return BadRequest(roomId);
@@ -37,7 +39,7 @@ namespace RSPGame.Controllers
         }
 
         [HttpGet("{roomId}/{userName}")]
-        public IActionResult GetGameRound([FromRoute] string userName, [FromRoute] int roomId)
+        public IActionResult GetRound([FromRoute] string userName, [FromRoute] int roomId)
         {
             if (roomId < 0)
                 return BadRequest(roomId);
@@ -45,7 +47,8 @@ namespace RSPGame.Controllers
             if (!_roundStorage.ContainRoom(roomId))
                 return NotFound(roomId);
 
-            var gamers = _roundStorage.GetGamerSteps(roomId).ToArray();
+            var gamers = _roundStorage.PeekGamers(roomId).ToArray();
+
             if (gamers.Length != 2)
                 return Conflict();
 
@@ -58,6 +61,54 @@ namespace RSPGame.Controllers
                 return Ok(result);
 
             return Ok(_rspService.InverseResult(result));
+        }
+
+        [HttpDelete("{roomId}")]
+        public IActionResult DeleteSeries([FromRoute] int roomId)
+        {
+            _roundStorage.DeleteGamers(roomId);
+            return Ok();
+        }
+
+        [HttpPost("{roomId}")]
+        public IActionResult SetReady([FromRoute] int roomId, [FromBody] string userName)
+        {
+            if (!_roundStorage.ContainRoom(roomId))
+                return NotFound();
+
+            var gamer = new GamerStep()
+            {
+                UserName = userName,
+                UserAction = GameActions.Ready
+            };
+
+            _roundStorage.AddGamer(roomId, gamer);
+            return Ok();
+        }
+
+        [HttpGet("{roomId}")]
+        public IActionResult IsReady([FromRoute] int roomId)
+        {
+            IEnumerable<GamerStep> gamers;
+
+            try
+            {
+                gamers = _roundStorage.PeekGamers(roomId).ToArray();
+            }
+            catch (ArgumentNullException)
+            {
+                return NotFound();
+            }
+
+            if (gamers == null || gamers.Count() != 2)
+                return NotFound();
+
+            var result = gamers.All(x => x.UserAction == GameActions.Ready);
+
+            if (result)
+                return Ok(result);
+
+            return NotFound();
         }
     }
 }

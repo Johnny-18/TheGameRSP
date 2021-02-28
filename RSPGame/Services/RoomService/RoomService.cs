@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Extensions.Logging;
+using RSPGame.Models.GameModel;
+using RSPGame.Models.RoomModel;
+using RSPGame.Services.Rsp;
+using RSPGame.Services.Statistics;
+using RSPGame.Storage;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using RSPGame.Models.GameModel;
-using RSPGame.Models.RoomModel;
-using RSPGame.Storage;
 
 namespace RSPGame.Services.RoomService
 {
@@ -17,6 +19,7 @@ namespace RSPGame.Services.RoomService
     {
         private readonly RoomStorage _roomStorage;
         private readonly ILogger<RoomService> _logger;
+
 
         private static readonly object Locker = new();
 
@@ -46,7 +49,7 @@ namespace RSPGame.Services.RoomService
             finally
             {
                 if (acquiredLock) Monitor.Exit(Locker);
-                
+
             }
             return room.GetId();
         }
@@ -107,8 +110,9 @@ namespace RSPGame.Services.RoomService
 
         public void DeleteRoom(int id)
         {
-           var room =_roomStorage.GetRooms().FirstOrDefault(x => x.GetId() == id);
-            _roomStorage.RemoveRoom(room);
+            var room = _roomStorage.GetRooms().FirstOrDefault(x => x.GetId() == id);
+            if (room != null)
+                _roomStorage.RemoveRoom(room);
         }
     }
 }

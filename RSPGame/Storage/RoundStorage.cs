@@ -1,20 +1,13 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using RSPGame.Models.GameModel;
 
 namespace RSPGame.Storage
 {
     public class RoundStorage
     {
-        public RoundStorage()
-        {
-            _dictionaryRound = new ConcurrentDictionary<int, BlockingCollection<GamerStep>>();
-        }
-
-        /// <summary>
-        /// Dictionary where int is room id, BlockingCollection<GamerStep> are user actions.
-        /// </summary>
-        private readonly ConcurrentDictionary<int, BlockingCollection<GamerStep>> _dictionaryRound;
+        private readonly ConcurrentDictionary<int, BlockingCollection<GamerStep>> _dictionaryRound = new();
 
         public bool ContainRoom(int id)
         {
@@ -28,15 +21,30 @@ namespace RSPGame.Storage
         {
             _dictionaryRound.TryAdd(id, new BlockingCollection<GamerStep>(2));
 
+            if (_dictionaryRound[id].Count == 2)
+                _dictionaryRound[id] = new BlockingCollection<GamerStep>(2);
+
             _dictionaryRound[id].Add(round);
         }
 
         public IEnumerable<GamerStep> GetGamerSteps(int id)
         {
+            if (_dictionaryRound.Count == 0)
+                return null;
+
             if (!_dictionaryRound.ContainsKey(id))
                 return null;
 
             return _dictionaryRound[id];
+        }
+
+        public void DeleteGamers(int id)
+        {
+            if (_dictionaryRound.ContainsKey(id))
+            {
+                var gamers = _dictionaryRound[id];
+                _dictionaryRound.TryRemove(id, out gamers);
+            }
         }
     }
 }

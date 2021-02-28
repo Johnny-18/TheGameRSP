@@ -21,21 +21,17 @@ namespace RSPGame.Services
             return _service.GetWinner(action, botAction);
         }
 
-        private GameActions BotDecision()
+        private static GameActions BotDecision()
         {
             var random = new Random();
 
-            switch (random.Next(0, 3))
+            return random.Next(0, 3) switch
             {
-                case 0:
-                    return GameActions.Paper;
-                case 1:
-                    return GameActions.Rock;
-                case 2:
-                    return GameActions.Scissors;
-                default:
-                    return GameActions.None;
-            }
+                0 => GameActions.Paper,
+                1 => GameActions.Rock,
+                2 => GameActions.Scissors,
+                _ => GameActions.None
+            };
         }
     }
 }
