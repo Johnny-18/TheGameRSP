@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RSPGame.Models.Game;
 using RSPGame.Services.Rooms;

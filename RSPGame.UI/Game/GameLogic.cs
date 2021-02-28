@@ -144,10 +144,8 @@ namespace RSPGame.UI.Game
                                 requestPeriodSw.Restart();
                                 continue;
                             }
-
-                            break;
                         }
-
+                        
                         if (!task.IsCompleted)
                         {
                             cancelTokenSource.Cancel();
@@ -161,7 +159,18 @@ namespace RSPGame.UI.Game
                         
                         break;
                     }
-                    
+
+                    if (roundConfigurationSw.Elapsed.Seconds > 20)
+                    {
+                        if (!task.IsCompleted)
+                        {
+                            cancelTokenSource.Cancel();
+                            return null;
+                        }
+                        
+                        break;
+                    }
+
                     requestPeriodSw.Restart();
                 }
             }
