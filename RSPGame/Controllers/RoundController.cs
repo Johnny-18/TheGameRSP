@@ -20,7 +20,7 @@ namespace RSPGame.Controllers
         }
 
         [HttpPost("{roomId}/{userName}")]
-        public IActionResult PostGameRound([FromBody] GameActions action, [FromRoute] string userName, [FromRoute] int roomId)
+        public IActionResult PostRound([FromBody] GameActions action, [FromRoute] string userName, [FromRoute] int roomId)
         {
             if (roomId < 1 || roomId > 1000)
                 return BadRequest(roomId);
@@ -37,7 +37,7 @@ namespace RSPGame.Controllers
         }
 
         [HttpGet("{roomId}/{userName}")]
-        public IActionResult GetGameRound([FromRoute] string userName, [FromRoute] int roomId)
+        public IActionResult GetRound([FromRoute] string userName, [FromRoute] int roomId)
         {
             if (roomId < 1 || roomId > 1000)
                 return BadRequest(roomId);
@@ -47,7 +47,7 @@ namespace RSPGame.Controllers
 
             var gamers = _roundStorage.PeekGamers(roomId).ToArray();
 
-            if (gamers.Count() != 2)
+            if (gamers.Length != 2)
                 return Conflict();
 
             var gamer1 = gamers.First();
@@ -59,6 +59,48 @@ namespace RSPGame.Controllers
                 return Ok(result);
 
             return Ok(_rspService.InverseResult(result));
+        }
+
+        [HttpDelete("{roomId}")]
+        public IActionResult DeleteSeries([FromRoute] int roomId)
+        {
+            _roundStorage.DeleteGamers(roomId);
+            return Ok();
+        }
+
+        [HttpPost("{roomId}")]
+        public IActionResult SetReady([FromRoute] int roomId, [FromBody] string userName)
+        {
+            if (!_roundStorage.ContainRoom(roomId))
+                return NotFound();
+
+            var gamer = new GamerStep()
+            {
+                UserName = userName,
+                UserAction = GameActions.Ready
+            };
+
+            _roundStorage.AddGamer(roomId, gamer);
+            return Ok();
+        }
+
+        [HttpGet("{roomId}")]
+        public IActionResult IsReady([FromRoute] int roomId)
+        {
+            var gamers = _roundStorage.PeekGamers(roomId).ToArray();
+
+            if (gamers == null || gamers.Count() != 2)
+                return NotFound();
+
+            if (gamers != null)
+            {
+                var result = gamers.All(x => x.UserAction == GameActions.Ready);
+
+                if (result)
+                    return Ok(result);
+            }
+            
+            return NotFound();
         }
     }
 }

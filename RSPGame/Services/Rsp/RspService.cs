@@ -13,12 +13,9 @@ namespace RSPGame.Services.Rsp
         /// <returns>Round status for gamer1</returns>
         public RoundResult GetWinner(GameActions gamer1, GameActions gamer2)
         {
-            if (gamer1 == GameActions.None && gamer2 == GameActions.None)
-                return RoundResult.Draw;
-            if (gamer1 == GameActions.None) return RoundResult.Lose;
-            if (gamer2 == GameActions.None) return RoundResult.Win;
-               
-            
+            if (gamer1 == GameActions.None || gamer2 == GameActions.None)
+                return RoundResult.None;
+
             if (gamer1 == gamer2)
             {
                 return RoundResult.Draw;

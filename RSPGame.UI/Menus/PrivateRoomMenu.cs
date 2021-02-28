@@ -22,7 +22,7 @@ namespace RSPGame.UI.Menus
             _currentSession = currentSession;
         }
 
-        public async Task Start()
+        public Task Start()
         {
             while (true)
             {
@@ -48,7 +48,7 @@ namespace RSPGame.UI.Menus
                         JoinRoomAction();
                         break;
                     case 3:
-                        return;
+                        return Task.CompletedTask;
                 }
             }
         }

@@ -46,7 +46,7 @@ namespace RSPGame.Services.RoomService
             finally
             {
                 if (acquiredLock) Monitor.Exit(Locker);
-                
+
             }
             return room.GetId();
         }
@@ -107,8 +107,9 @@ namespace RSPGame.Services.RoomService
 
         public void DeleteRoom(int id)
         {
-           var room =_roomStorage.GetRooms().FirstOrDefault(x => x.GetId() == id);
-            _roomStorage.RemoveRoom(room);
+            var room = _roomStorage.GetRooms().FirstOrDefault(x => x.GetId() == id);
+            if (room != null)
+                _roomStorage.RemoveRoom(room);
         }
     }
 }

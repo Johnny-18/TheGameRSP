@@ -5,6 +5,7 @@ namespace RSPGame.Models.GameModel
         None,
         Rock,
         Paper,
-        Scissors
+        Scissors,
+        Ready
     }
 }
