@@ -35,7 +35,7 @@ namespace RSPGame.UI.Menus
                 Console.WriteLine("\nStart menu");
                 Console.WriteLine("1.\tRegistration");
                 Console.WriteLine("2.\tLogin");
-                Console.WriteLine("3.\tStatistics");
+                Console.WriteLine("3.\tLeaderboard");
                 Console.WriteLine("4.\tExit");
 
                 Console.Write("Enter the number: ");

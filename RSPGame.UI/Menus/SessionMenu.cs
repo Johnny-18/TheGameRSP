@@ -30,7 +30,7 @@ namespace RSPGame.UI.Menus
                 int num;
                 Console.WriteLine("\nSession menu");
                 Console.WriteLine("1.\tPlay");
-                Console.WriteLine("2.\tStatistics");
+                Console.WriteLine("2.\tLeaderboard");
                 Console.WriteLine("3.\tMy statistics");
                 Console.WriteLine("4.\tLogout");
 
