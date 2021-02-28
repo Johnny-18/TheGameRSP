@@ -78,7 +78,7 @@ namespace RSPGame.Controllers
             if (roomRep == null)
                 return NoContent();
 
-            if (roomRep.SeriesRepository._rounds.Any(x => x.Id == round.Id))
+            if (roomRep.SeriesRepository.Rounds.Any(x => x.Id == round.Id))
                 return Forbid();
             
             roomRep.SeriesRepository.AddRound(round);
@@ -103,8 +103,11 @@ namespace RSPGame.Controllers
             var roomRep = GetRoom(roomId);
             if (roomRep == null)
                 return NoContent();
-            
-            return Ok(roomRep.ReadyCounter == 2);
+
+            if (roomRep.ReadyCounter == 2)
+                return Ok();
+
+            return NoContent();
         }
         
         [HttpPut("refresh/{roomId}")]

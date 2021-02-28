@@ -120,7 +120,7 @@ namespace RSPGame.Services.Rooms
                 return;
 
             var rounds = roomRep.SeriesRepository.GetRounds();
-            //todo
+
             foreach (var round in rounds)
             {
                 await _individualStat.ChangeGamerInfoAfterRound(round.Gamer1, round.UserAction1, round.RoundResultForGamer1);

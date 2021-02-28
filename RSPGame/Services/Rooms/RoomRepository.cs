@@ -64,12 +64,12 @@ namespace RSPGame.Services.Rooms
 
         public void SetReady()
         {
-            ReadyCounter++;
-
             if (ReadyCounter == 2)
             {
                 ReadyCounter = 0;
             }
+            
+            ReadyCounter++;
         }
 
         public void AddGamer(GamerInfo gamer)

@@ -18,7 +18,8 @@ namespace RSPGame.Services.Statistics
             if (usersFromStorage == null)
                 return null;
             
-            var users = usersFromStorage.Where(x => x.GamerInfo.Games > 10).OrderByDescending(x => x.GamerInfo.Games).Take(10).ToList();
+            var users = usersFromStorage.Where(x => x.GamerInfo.Games > 10).OrderByDescending(x => x.GamerInfo.Games)
+                .Take(10).ToList();
             
             var result = new List<GamerInfo>();
             

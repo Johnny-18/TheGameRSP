@@ -32,6 +32,7 @@ namespace RSPGame.UI.Menus
             while (true)
             {
                 int num;
+                Console.WriteLine("\nPlay Menu");
                 Console.WriteLine("1.\tQuick search");
                 Console.WriteLine("2.\tPrivate room");
                 Console.WriteLine("3.\tWith bot");

@@ -21,22 +21,22 @@ namespace RSPGame.UI
 
         private static async Task<Response> GetResponse(HttpClient client, RequestOptions requestOptions)
         {
-            using var requestMessage = new HttpRequestMessage(MapMethods(requestOptions.Method),
-                new Uri(requestOptions.Address));
-
-            if (!string.IsNullOrEmpty(requestOptions.Body))
-            {
-                requestMessage.Content = new StringContent(requestOptions.Body, Encoding.UTF8, "application/json");
-            }
-
-            if(!string.IsNullOrEmpty(requestOptions.Token))
-            {
-                client.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", requestOptions.Token);
-            }
-
             try
             {
+                using var requestMessage = new HttpRequestMessage(MapMethods(requestOptions.Method),
+                    new Uri(requestOptions.Address));
+                
+                if (!string.IsNullOrEmpty(requestOptions.Body))
+                {
+                    requestMessage.Content = new StringContent(requestOptions.Body, Encoding.UTF8, "application/json");
+                }
+
+                if(!string.IsNullOrEmpty(requestOptions.Token))
+                {
+                    client.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", requestOptions.Token);
+                }
+                
                 var httpResponseMessage = await client.SendAsync(requestMessage);
                 
                 var response = new Response
@@ -47,7 +47,7 @@ namespace RSPGame.UI
 
                 return response;
             }
-            catch (HttpRequestException)
+            catch (Exception)
             {
                 Console.WriteLine("\nERROR:\tCheck your internet connection\n");
                 return null;

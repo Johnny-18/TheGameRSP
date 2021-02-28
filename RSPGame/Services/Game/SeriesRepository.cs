@@ -5,11 +5,11 @@ namespace RSPGame.Services.Game
 {
     public class SeriesRepository 
     {
-        public readonly ConcurrentStack<Round> _rounds;
+        public readonly ConcurrentStack<Round> Rounds;
 
         public SeriesRepository()
         {
-            _rounds = new ConcurrentStack<Round>();
+            Rounds = new ConcurrentStack<Round>();
         }
 
         public void AddRound(Round round)
@@ -17,26 +17,12 @@ namespace RSPGame.Services.Game
             if (round == null) 
                 return;
 
-            _rounds.Push(round);
-        }
-
-        public Round RemoveLastRound()
-        {
-            _rounds.TryPop(out var round);
-
-            return round;
-        }
-
-        public Round GetLastRound()
-        {
-            _rounds.TryPeek(out var round);
-
-            return round;
+            Rounds.Push(round);
         }
 
         public ConcurrentStack<Round> GetRounds()
         {
-            return _rounds ?? new ConcurrentStack<Round>();
+            return Rounds ?? new ConcurrentStack<Round>();
         }
     }
 }

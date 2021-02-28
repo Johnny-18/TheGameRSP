@@ -10,7 +10,7 @@ namespace RSPGame.Controllers
 {
     [ApiController]
     [Route("api/stat")]
-    public class StatisticController : ControllerBase
+    public class StatisticsController : ControllerBase
     {
         private readonly IGeneralStatService _generalStat;
 
@@ -18,7 +18,7 @@ namespace RSPGame.Controllers
 
         private readonly IRspStorage _storage;
 
-        public StatisticController(IIndividualStatService individualStat, IGeneralStatService generalStat,
+        public StatisticsController(IIndividualStatService individualStat, IGeneralStatService generalStat,
             IRspStorage storage)
         {
             _individualStat = individualStat;

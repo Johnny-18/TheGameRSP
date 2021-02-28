@@ -32,6 +32,7 @@ namespace RSPGame.UI.Menus
             while (true)
             {
                 int num;
+                Console.WriteLine("\nPrivate room menu");
                 Console.WriteLine("1.\tCreate room");
                 Console.WriteLine("2.\tJoin room");
                 Console.WriteLine("3.\tBack");

@@ -8,11 +8,11 @@ namespace RSPGame.Controllers
     [Authorize]
     [ApiController]
     [Route("api/game")]
-    public class GameController : ControllerBase
+    public class SinglePlayerController : ControllerBase
     {
         private readonly SinglePlayerService _bot;
 
-        public GameController(SinglePlayerService bot)
+        public SinglePlayerController(SinglePlayerService bot)
         {
             _bot = bot;
         }

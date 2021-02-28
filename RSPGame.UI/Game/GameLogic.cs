@@ -74,15 +74,37 @@ namespace RSPGame.UI.Game
 
                 if (WantToContinue(client, session.Token, roomId) == false)
                 {
+                    Console.WriteLine("Game over\n");
                     return;
                 }
-
-                do
-                {
-                    
-                } while (RoundRequests.Put(client, session.Token, roomId, client.BaseAddress + $"api/rounds/ready/check/{roomId}") == false);
                 
-                RoundRequests.Put(client, session.Token, roomId, client.BaseAddress + $"api/rounds/refresh/{roomId}");
+                RoundRequests.Put(client, session.Token,  client.BaseAddress + $"api/rounds/ready/{roomId}");
+
+                var stopWatch = new Stopwatch();
+                stopWatch.Start();
+                int counter = 0;
+                
+                while (true)
+                {
+                    if (stopWatch.ElapsedMilliseconds > 1000)
+                    {
+                        if (RoundRequests.Put(client, session.Token, client.BaseAddress + $"api/rounds/ready/check/{roomId}"))
+                        {
+                            break;
+                        }
+                        
+                        counter++;
+                        stopWatch.Restart();
+                    }
+
+                    if (counter == 10)
+                    {
+                        Console.WriteLine("Gamer over!\n");
+                        return;
+                    }
+                }
+                
+                RoundRequests.Put(client, session.Token, client.BaseAddress + $"api/rounds/refresh/{roomId}");
             }
         }
 
@@ -94,7 +116,6 @@ namespace RSPGame.UI.Game
 
             if (input == "0")
             {
-                RoundRequests.Put(client, token, roomId, client.BaseAddress + $"api/rounds/ready/{roomId}");
                 return true;
             }
 
@@ -111,7 +132,7 @@ namespace RSPGame.UI.Game
                 if (roundTaskResult == null || !roundTaskResult.IsValid())
                 {
                     Console.WriteLine("Round was canceled!");
-                    RoundRequests.Put(client, session.Token, roomId, client.BaseAddress + $"api/rounds/refresh/{roomId}");
+                    RoundRequests.Put(client, session.Token, client.BaseAddress + $"api/rounds/refresh/{roomId}");
                     return null;
                 }
                 

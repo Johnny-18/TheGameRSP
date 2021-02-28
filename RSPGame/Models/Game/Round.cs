@@ -15,7 +15,7 @@ namespace RSPGame.Models.Game
             _id++;
         }
         
-        public int Id { get; set; }
+        public int Id { get; }
         
         public GamerInfo Gamer1 { get; set; }
         

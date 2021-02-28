@@ -13,11 +13,11 @@ namespace RSPGame.UI.PlayRequests
         public static void DeleteRoom(HttpClient client, string token, int roomId)
         {
             if (client == null)
-                throw new ArgumentNullException(nameof(client));
+                return;
             
             var requestOptions = new RequestOptions
             {
-                Address = client.BaseAddress + $"/api/rooms/{roomId}",
+                Address = client.BaseAddress + $"api/rooms/{roomId}",
                 Method = RequestMethod.Delete,
                 Token = token
             };
@@ -28,7 +28,7 @@ namespace RSPGame.UI.PlayRequests
             
             if (response.StatusCode == (int)HttpStatusCode.BadRequest || response.StatusCode == (int)HttpStatusCode.NoContent)
             {
-                Console.WriteLine("\nSomething going wrong!\n\n");
+                Console.WriteLine("\nSomething going wrong!\n");
             }
         }
 

@@ -32,8 +32,7 @@ namespace RSPGame.UI.Menus
 
             while (true)
             {
-                Console.WriteLine();
-                Console.WriteLine("Start menu");
+                Console.WriteLine("\nStart menu");
                 Console.WriteLine("1.\tRegistration");
                 Console.WriteLine("2.\tLogin");
                 Console.WriteLine("3.\tStatistics");

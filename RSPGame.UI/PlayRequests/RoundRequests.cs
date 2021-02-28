@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http;
 using Newtonsoft.Json;
 using RSPGame.Models.Game;
@@ -23,7 +24,7 @@ namespace RSPGame.UI.PlayRequests
             RequestHandler.HandleRequest(client, requestOptions);
         }
 
-        public static bool Put(HttpClient client, string token, int roomId, string url)
+        public static bool Put(HttpClient client, string token, string url)
         {
             if (client == null) 
                 return false;
@@ -38,8 +39,8 @@ namespace RSPGame.UI.PlayRequests
             var response = RequestHandler.HandleRequest(client, requestOptions);
             if (response == null)
                 return false;
-            
-            if(response.StatusCode == 200)
+                
+            if(response.StatusCode == (int)HttpStatusCode.OK)
                 return true;
 
             return false;

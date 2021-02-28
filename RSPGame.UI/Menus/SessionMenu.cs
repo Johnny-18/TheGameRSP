@@ -28,6 +28,7 @@ namespace RSPGame.UI.Menus
             while (true)
             {
                 int num;
+                Console.WriteLine("\nSession menu");
                 Console.WriteLine("1.\tPlay");
                 Console.WriteLine("2.\tStatistics");
                 Console.WriteLine("3.\tMy statistics");
